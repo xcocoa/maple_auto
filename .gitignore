@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志文件
+logs/
+*.log
+
+# 截图和调试文件（这些是临时文件）
+*.png
+*.jpg
+*.jpeg
+screen*.png
+current_screen.png
+live_screen.png
+game_current.png
+roguelike_screen.png
+test_screen.png
+direct_screen.png
+exec_screen.png
+
+# 调试输出
+debug_*.png
+debug_*.jpg
+
+# 临时文件
+temp/
+tmp/
+*.tmp
+
+# 配置文件（可选，如果需要保留隐私）
+# config/*.yaml
+
+# 数据库
+*.db
+*.sqlite
+
+# 操作系统
+.DS_Store
+Thumbs.db
