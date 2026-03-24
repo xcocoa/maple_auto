@@ -2,15 +2,37 @@
 """
 战斗控制模块
 处理攻击、躲避等战斗相关操作
+支持：技能优先级、冷却跟踪、dodge 整合
 """
 
 import time
 import random
-from typing import Dict, Any, Optional, Tuple
-from dataclasses import dataclass
+import logging
+from typing import Dict, Any, Optional, Tuple, List
+from dataclasses import dataclass, field
 
 from core.adb import ADB
 from modules.minimap import MapObject
+from modules.movement import MovementController
+
+logger = logging.getLogger('AutoRogue')
+
+
+@dataclass
+class SkillSlot:
+    """技能槽 - 带冷却跟踪"""
+    index: int
+    pos: Tuple[int, int]
+    cooldown: float = 0.5       # 技能冷却时间（秒）
+    is_aoe: bool = False        # 是否群体技能
+    priority: int = 0           # 技能优先级（越高越优先）
+    last_use_time: float = 0.0  # 上次使用时间
+
+    def is_ready(self) -> bool:
+        return time.time() - self.last_use_time >= self.cooldown
+
+    def use(self) -> None:
+        self.last_use_time = time.time()
 
 
 @dataclass
@@ -19,11 +41,13 @@ class CombatConfig:
     attack_interval: float = 0.3
     move_interval: float = 0.1
     jump_cooldown: float = 0.6
-    dodge_threshold: float = 0.3  # 血量低于 30% 开始躲避
+    dodge_threshold: float = 0.3     # 血量低于 30% 开始躲避
+    dodge_enemy_count: int = 5       # 怪物数量大于此值触发 dodge
+    dodge_cooldown: float = 1.5
 
 
 class CombatController:
-    """战斗控制器"""
+    """战斗控制器 - 带技能优先级和冷却管理"""
 
     def __init__(self, adb: ADB, config: Dict[str, Any], skill_positions: list):
         self.adb = adb
@@ -31,80 +55,114 @@ class CombatController:
             attack_interval=config.get('attack_interval', 0.3),
             move_interval=config.get('move_interval', 0.1),
             jump_cooldown=config.get('jump_cooldown', 0.6),
-            dodge_threshold=config.get('dodge_threshold', 0.3)
+            dodge_threshold=config.get('dodge_threshold', 0.3),
         )
 
-        self.skill_positions = skill_positions
-        self.jump_pos = config.get('jump_pos', [1200, 630])
-        self.joystick_pos = config.get('joystick', [200, 550])
+        # 共享移动控制器
+        self._movement = MovementController(
+            adb=adb,
+            joystick_pos=config.get('joystick', [200, 550]),
+            jump_pos=config.get('jump_pos', [1200, 630]),
+            move_interval=self.config.move_interval
+        )
+
+        # 初始化技能槽（带冷却跟踪）
+        self.skill_slots: List[SkillSlot] = []
+        skill_configs = config.get('skill_configs', [])
+        for i, pos in enumerate(skill_positions):
+            slot_cfg = skill_configs[i] if i < len(skill_configs) else {}
+            self.skill_slots.append(SkillSlot(
+                index=i,
+                pos=tuple(pos),
+                cooldown=slot_cfg.get('cooldown', 0.5),
+                is_aoe=slot_cfg.get('is_aoe', i >= 3),  # 默认后3个技能为AOE
+                priority=slot_cfg.get('priority', i),
+            ))
 
         # 状态跟踪
         self.last_attack_time = 0.0
-        self.last_move_time = 0.0
         self.last_jump_time = 0.0
         self.last_dodge_time = 0.0
-        self.current_direction = 0
 
-    def attack(self, skill_index: Optional[int] = None) -> bool:
+    def attack(self, skill_index: Optional[int] = None,
+               monster_count: int = 1) -> bool:
         """
-        执行攻击
-        skill_index: 技能索引，None 则随机选择
+        执行攻击（智能技能选择）
+        skill_index: 指定技能索引，None 则自动选择
+        monster_count: 当前怪物数量，用于选择 AOE 技能
         """
         now = time.time()
         if now - self.last_attack_time < self.config.attack_interval:
             return False
 
-        if skill_index is not None and skill_index < len(self.skill_positions):
-            pos = self.skill_positions[skill_index]
-        else:
-            # 随机选择一个技能
-            pos = random.choice(self.skill_positions)
-
-        self.adb.tap(pos[0], pos[1])
-        self.last_attack_time = now
-        return True
-
-    def move(self, direction: int, duration: int = 100) -> bool:
-        """
-        移动
-        direction: -1 左，0 停止，1 右
-        """
-        now = time.time()
-        if now - self.last_move_time < self.config.move_interval:
+        if skill_index is not None:
+            # 指定技能
+            slot = self._get_skill_slot(skill_index)
+            if slot and slot.is_ready():
+                self._execute_skill(slot)
+                return True
             return False
 
-        if direction == 0:
+        # 智能选择技能
+        skill = self._select_best_skill(monster_count)
+        if skill:
+            self._execute_skill(skill)
             return True
 
-        jx, jy = self.joystick_pos
-        offset = 100
+        return False
 
-        if direction == 1:  # 右
-            self.adb.swipe(jx, jy, jx + offset, jy, duration)
-        elif direction == -1:  # 左
-            self.adb.swipe(jx, jy, jx - offset, jy, duration)
+    def _select_best_skill(self, monster_count: int) -> Optional[SkillSlot]:
+        """根据场景智能选择最佳技能"""
+        ready_skills = [s for s in self.skill_slots if s.is_ready()]
+        if not ready_skills:
+            return None
 
-        self.last_move_time = now
-        self.current_direction = direction
-        return True
+        # 怪物数量 > 3：优先群体技能
+        if monster_count > 3:
+            aoe_skills = [s for s in ready_skills if s.is_aoe]
+            if aoe_skills:
+                return max(aoe_skills, key=lambda s: s.priority)
+
+        # 默认：按优先级选择最高的
+        return max(ready_skills, key=lambda s: s.priority)
+
+    def _get_skill_slot(self, index: int) -> Optional[SkillSlot]:
+        """获取技能槽"""
+        if 0 <= index < len(self.skill_slots):
+            return self.skill_slots[index]
+        return None
+
+    def _execute_skill(self, skill: SkillSlot) -> None:
+        """执行技能"""
+        self.adb.tap(skill.pos[0], skill.pos[1])
+        skill.use()
+        self.last_attack_time = time.time()
+
+    def move(self, direction: int, duration: int = 100) -> bool:
+        """移动（委托给共享控制器）"""
+        return self._movement.move(direction, duration)
 
     def jump(self) -> bool:
-        """跳跃"""
+        """跳跃（带冷却）"""
         now = time.time()
         if now - self.last_jump_time < self.config.jump_cooldown:
             return False
-
-        self.adb.tap(self.jump_pos[0], self.jump_pos[1])
         self.last_jump_time = now
-        return True
+        return self._movement.jump()
 
-    def dodge(self, direction: Optional[int] = None) -> bool:
+    def dodge(self, direction: Optional[int] = None,
+              monster_count: int = 0) -> bool:
         """
         躲避动作
         direction: 躲避方向，None 则随机
+        monster_count: 怪物数量（用于判断是否需要dodge）
         """
         now = time.time()
-        if now - self.last_dodge_time < 1.5:
+        if now - self.last_dodge_time < self.config.dodge_cooldown:
+            return False
+
+        # 判断是否需要 dodge
+        if monster_count < self.config.dodge_enemy_count:
             return False
 
         if direction is None:
@@ -116,6 +174,7 @@ class CombatController:
         self.jump()
 
         self.last_dodge_time = now
+        logger.debug(f"Dodge triggered, direction={direction}, monsters={monster_count}")
         return True
 
     def navigate_to(
@@ -131,19 +190,15 @@ class CombatController:
         dx = target.x - player.x
         dy = target.y - player.y
 
-        # 到达阈值
         threshold = 25 if is_npc else 15
 
         if abs(dx) < threshold and abs(dy) < threshold:
             return True
 
-        # 确定移动方向
         if abs(dx) > abs(dy) * 1.5:
-            # 水平移动为主
             direction = 1 if dx > 0 else -1
             self.move(direction)
         else:
-            # 垂直方向 - 需要跳跃
             if dy < -20:  # 目标在上方
                 if self.jump():
                     self.move(1 if dx > 0 else -1)
@@ -163,3 +218,7 @@ class CombatController:
         if abs(dx) > 15:
             return 1 if dx > 0 else -1
         return 0
+
+    def get_ready_skill_count(self) -> int:
+        """获取当前可用技能数量"""
+        return sum(1 for s in self.skill_slots if s.is_ready())

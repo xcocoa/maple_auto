@@ -5,8 +5,9 @@
 """
 
 import cv2
+import random
 import numpy as np
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 
 from core.adb import ADB
@@ -101,7 +102,6 @@ class SkillDetector:
         """获取一个可用的攻击技能位置"""
         available = [s for s in self.available_skills if s.unlocked and s.name != "跳跃"]
         if available:
-            import random
             skill = random.choice(available)
             return skill.pos
         return None
