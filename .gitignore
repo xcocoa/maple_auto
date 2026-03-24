@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
 .Python
 env/
 venv/
@@ -66,3 +65,13 @@ tmp/
 # 操作系统
 .DS_Store
 Thumbs.db
+
+# 虚拟环境
+.venv/
+
+# Android 构建产物
+newApp/app/build/
+newApp/.gradle/
+*.class
+*.dex
+*.jar
