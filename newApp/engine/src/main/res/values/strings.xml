@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="float_play">运行</string>
+    <string name="float_pause">暂停</string>
+    <string name="float_stop">停止</string>
+    <string name="float_settings">设置</string>
+    <string name="float_close">关闭</string>
+    <string name="float_release_to_close">松开即可关闭</string>
+    <string name="settings_save">保存</string>
+</resources>

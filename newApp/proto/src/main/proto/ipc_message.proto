@@ -1,0 +1,12 @@
+syntax = "proto3";
+option java_package = "com.maple.auto.proto";
+option java_outer_classname = "IpcProto";
+
+message IpcMessage {
+    int32 cmd = 1;
+    repeated int32 int_args = 2;
+    repeated string str_args = 3;
+    bytes file_data = 4;
+    int64 timestamp = 5;
+    int32 sequence = 6;
+}
