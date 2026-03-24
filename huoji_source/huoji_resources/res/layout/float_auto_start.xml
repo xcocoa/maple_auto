@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="80.0dp" android:layout_height="90.0dp"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center" android:orientation="vertical" android:background="@drawable/bg_float_view" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_margin="5.0dp">
+        <TextView android:textSize="13.0sp" android:textColor="@color/white" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="启动" />
+        <TextView android:textSize="13.0sp" android:textColor="@color/white" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="倒计时" />
+        <TextView android:textSize="20.0sp" android:textStyle="bold" android:textColor="@color/white" android:id="@id/tv_countdown_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="-" />
+    </LinearLayout>
+    <ImageView android:id="@id/im_remvoe_view" android:layout_width="15.0dp" android:layout_height="15.0dp" android:src="@drawable/img_ad_delete_btn" android:layout_alignParentRight="true" />
+</RelativeLayout>

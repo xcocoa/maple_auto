@@ -1,0 +1,62 @@
+package io.reactivex.internal.operators.flowable;
+
+import io.reactivex.Flowable;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import z2.yc0;
+import z2.zc0;
+
+/* JADX INFO: loaded from: classes2.dex */
+public final class FlowableHide<T> extends AbstractFlowableWithUpstream<T, T> {
+
+    public static final class HideSubscriber<T> implements FlowableSubscriber<T>, zc0 {
+        public final yc0<? super T> downstream;
+        public zc0 upstream;
+
+        public HideSubscriber(yc0<? super T> yc0Var) {
+            this.downstream = yc0Var;
+        }
+
+        @Override // z2.zc0
+        public void cancel() {
+            this.upstream.cancel();
+        }
+
+        @Override // z2.yc0
+        public void onComplete() {
+            this.downstream.onComplete();
+        }
+
+        @Override // z2.yc0
+        public void onError(Throwable th) {
+            this.downstream.onError(th);
+        }
+
+        @Override // z2.yc0
+        public void onNext(T t) {
+            this.downstream.onNext(t);
+        }
+
+        @Override // io.reactivex.FlowableSubscriber, z2.yc0
+        public void onSubscribe(zc0 zc0Var) {
+            if (SubscriptionHelper.validate(this.upstream, zc0Var)) {
+                this.upstream = zc0Var;
+                this.downstream.onSubscribe(this);
+            }
+        }
+
+        @Override // z2.zc0
+        public void request(long j) {
+            this.upstream.request(j);
+        }
+    }
+
+    public FlowableHide(Flowable<T> flowable) {
+        super(flowable);
+    }
+
+    @Override // io.reactivex.Flowable
+    public void subscribeActual(yc0<? super T> yc0Var) {
+        this.source.subscribe((FlowableSubscriber) new HideSubscriber(yc0Var));
+    }
+}

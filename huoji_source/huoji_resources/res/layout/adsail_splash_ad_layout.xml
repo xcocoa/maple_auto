@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.haorui.sdk.adsail_ad.splash.HRSplashRootView android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <cn.haorui.sdk.core.view.gif.GifImageView android:id="@id/adsail_splash_image" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" />
+    <FrameLayout android:id="@id/adsail_splash_video" android:layout_width="match_parent" android:layout_height="match_parent" />
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginLeft="10.0dp" android:layout_marginRight="60.0dp">
+        <TextView android:textSize="10.0sp" android:textColor="#ffffff" android:id="@id/adsail_download_layer_textview" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10.0dp" android:text="@string/adsail_splash_download_desc" android:shadowColor="#000000" android:shadowDx="1.0" android:shadowDy="1.0" android:shadowRadius="2.0" android:layout_alignParentBottom="true" />
+    </RelativeLayout>
+    <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true" android:layout_alignParentBottom="true">
+        <include android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/adsail_ad_tag_view_right" />
+    </FrameLayout>
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+        <RelativeLayout android:id="@id/adsail_shakeRoot" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="80.0dp" android:layout_alignParentBottom="true">
+            <cn.haorui.sdk.core.view.gif.GifImageView android:id="@id/adsail_shake_img" android:background="@drawable/adsail_bg_alpha_oval" android:layout_width="80.0dp" android:layout_height="80.0dp" android:layout_centerHorizontal="true" />
+            <TextView android:textSize="16.0sp" android:textColor="#ffffff" android:id="@id/adsail_shake_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dp" android:text="摇一摇" android:shadowColor="#000000" android:shadowDx="1.0" android:shadowDy="1.0" android:shadowRadius="2.0" android:layout_below="@id/adsail_shake_img" android:layout_centerHorizontal="true" />
+            <TextView android:textSize="13.0sp" android:textColor="#ffffff" android:id="@id/adsail_shake_text_bottom" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="20.0dp" android:layout_marginTop="10.0dp" android:layout_marginRight="20.0dp" android:text="摇动下载或跳转至第三方应用" android:singleLine="true" android:shadowColor="#000000" android:shadowDx="1.0" android:shadowDy="1.0" android:shadowRadius="2.0" android:layout_below="@id/adsail_shake_text" android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+        <TextView android:textSize="18.0sp" android:textColor="#ffffff" android:gravity="center" android:id="@id/adsail_jump_btn" android:background="@drawable/adsail_shape_skip_btn" android:paddingTop="12.0dp" android:paddingBottom="12.0dp" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="49.0dp" android:layout_marginRight="49.0dp" android:layout_marginBottom="50.0dp" android:text="点击前往至第三方应用" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+    <cn.haorui.sdk.core.view.SwipeView android:id="@id/adsail_SwipeViewParent" android:background="#00ffffff" android:visibility="gone" android:layout_width="match_parent" android:layout_height="match_parent">
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="40.0dp" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true">
+            <cn.haorui.sdk.core.view.gif.GifImageView android:id="@id/adsail_swipeImageView" android:layout_width="match_parent" android:layout_height="wrap_content" />
+            <TextView android:textSize="16.0sp" android:textStyle="bold" android:textColor="#ffffff" android:id="@id/adsail_swipe_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dp" android:text="滑动屏幕" android:layout_below="@id/adsail_swipeImageView" android:layout_centerHorizontal="true" />
+            <TextView android:textSize="13.0sp" android:textStyle="bold" android:textColor="#ffffff" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dp" android:text="跳转至详情页" android:layout_below="@id/adsail_swipe_text" android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+    </cn.haorui.sdk.core.view.SwipeView>
+    <cn.haorui.sdk.adsail_ad.splash.SplashSkipView android:id="@id/adsail_skipView" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="38.0dp" android:layout_marginRight="11.0dp" android:layout_alignParentTop="true" android:layout_alignParentEnd="true" style="@android:style/Widget.ProgressBar" />
+    <ImageView android:id="@id/adsail_click_eye_close" android:visibility="gone" android:layout_width="60.0dp" android:layout_height="60.0dp" android:layout_marginTop="5.0dp" android:layout_marginRight="5.0dp" android:src="@drawable/adsail_ic_express_close_big" android:scaleType="centerCrop" android:layout_alignParentRight="true" />
+</cn.haorui.sdk.adsail_ad.splash.HRSplashRootView>

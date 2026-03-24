@@ -1,0 +1,13 @@
+version: 3.0.1
+apkFileName: 火鸡v8.3.0.apk
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: 21
+  targetSdkVersion: 26
+versionInfo:
+  versionCode: 2024092009
+  versionName: 6.7.3
+resourcesInfo:
+  packageId: 127

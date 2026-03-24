@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.cyjh.elfin.ui.view.customview.loadwidget.swiperefresh.FindSwipeRefreshLayout android:id="@id/comm_swipe_refresh_ly" android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent">
+            <com.cyjh.elfin.ui.view.customview.loadwidget.swiperefresh.BaseListView android:id="@id/comm_refresh_lv" android:scrollbars="none" android:fadingEdge="none" android:layout_width="match_parent" android:layout_height="match_parent" android:cacheColorHint="@android:color/transparent" android:divider="#dedee9" android:dividerHeight="0.70000005dp" android:headerDividersEnabled="false" android:footerDividersEnabled="false" />
+        </LinearLayout>
+    </com.cyjh.elfin.ui.view.customview.loadwidget.swiperefresh.FindSwipeRefreshLayout>
+</LinearLayout>

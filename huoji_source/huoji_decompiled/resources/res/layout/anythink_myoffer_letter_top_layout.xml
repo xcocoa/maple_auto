@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/anythink_myoffer_letter_top"
+    android:background="@drawable/anythink_myoffer_letter_top"
+    android:layout_width="match_parent"
+    android:layout_height="111dp">
+    <TextView
+        android:textSize="18dp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:id="@+id/anythink_myoffer_btn_banner_cta"
+        android:background="@drawable/anythink_myoffer_splash_bg_rectangle_btn_cta_asseblem"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_alignParentBottom="true"
+        style="@style/anythink_myoffer_single_line"/>
+    <ImageView
+        android:id="@+id/anythink_myoffer_letter_icon"
+        android:visibility="gone"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:src="@drawable/anythink_myoffer_letter_tip"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        style="@style/anythink_myoffer_single_line"/>
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="22dp"
+        android:layout_alignParentBottom="true"
+        layout="@layout/anythink_myoffer_include_4_element"/>
+</RelativeLayout>

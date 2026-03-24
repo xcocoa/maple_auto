@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/gray1" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.cyjh.elfin.ui.view.customview.TitleView android:id="@id/titleView" style="@style/titleview" />
+    <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:background="@color/white" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <TextView android:textSize="@dimen/sp_16" android:textColor="@color/c_80p_131c3c" android:ellipsize="end" android:id="@id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="@dimen/dp_16" android:layout_marginTop="@dimen/dp_12" android:layout_marginRight="@dimen/dp_16" android:text="@string/not_bind_project_number" android:singleLine="true" />
+        <EditText android:textSize="16.0sp" android:textColor="@color/gray2" android:ellipsize="end" android:gravity="center" android:id="@id/et_project_number" android:background="@android:color/white" android:paddingLeft="@dimen/dp_8" android:paddingRight="@dimen/dp_8" android:layout_width="match_parent" android:layout_height="@dimen/dp_45" android:layout_marginLeft="@dimen/dp_16" android:layout_marginTop="@dimen/dp_12" android:layout_marginRight="@dimen/dp_16" android:hint="@string/edit_project_number_hint" android:singleLine="true" />
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/dp_24" android:layout_marginBottom="@dimen/dp_25">
+            <TextView android:textSize="@dimen/sp_16" android:textColor="@color/c_80p_131c3c" android:gravity="center" android:id="@id/tv_binding" android:background="@drawable/common_button_bg_selector" android:paddingLeft="@dimen/dp_8" android:paddingTop="@dimen/dp_6" android:paddingRight="@dimen/dp_8" android:paddingBottom="@dimen/dp_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/binding" />
+            <TextView android:textSize="@dimen/sp_16" android:textColor="@color/c_80p_131c3c" android:gravity="center" android:id="@id/tv_change" android:background="@drawable/common_button_bg_selector" android:paddingLeft="@dimen/dp_8" android:paddingTop="@dimen/dp_6" android:paddingRight="@dimen/dp_8" android:paddingBottom="@dimen/dp_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="@dimen/dp_12" android:text="@string/change" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

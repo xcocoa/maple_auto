@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+        <com.anythink.core.common.ui.component.RoundImageView android:id="@id/anythink_myoffer_splash_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" />
+        <FrameLayout android:id="@id/anythink_myoffer_splash_ad_content_image_area" android:layout_width="match_parent" android:layout_height="match_parent" />
+    </RelativeLayout>
+    <include android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignTop="@id/anythink_myoffer_splash_skip_area" android:layout_alignBottom="@id/anythink_myoffer_splash_skip_area" layout="@layout/anythink_myoffer_include_splash_ad_layout_ad_label" />
+    <include layout="@layout/anythink_myoffer_include_guide2click_mask" />
+    <RelativeLayout android:id="@id/anythink_myoffer_splash_ad_bottom_container" android:background="@drawable/anythink_myoffer_splash_bg_info" android:paddingTop="40.0dp" android:layout_width="match_parent" android:layout_height="116.0dp" android:layout_alignParentBottom="true">
+        <com.anythink.core.common.ui.component.RoundImageView android:id="@id/anythink_myoffer_splash_icon" android:layout_width="46.0dp" android:layout_height="46.0dp" android:layout_marginLeft="24.0dp" android:layout_marginRight="12.0dp" android:scaleType="centerCrop" />
+        <com.anythink.basead.ui.ScanningAnimTextView android:textSize="@dimen/anythink_myoffer_splash_cta_text_size" android:textColor="#d9ffffff" android:ellipsize="end" android:gravity="center" android:id="@id/anythink_myoffer_splash_ad_install_btn" android:background="@drawable/anythink_myoffer_splash_bg_rectangle_btn_cta_asseblem" android:paddingLeft="@dimen/anythink_myoffer_landscape_banner_cta_padding_horizontal" android:paddingRight="@dimen/anythink_myoffer_landscape_banner_cta_padding_horizontal" android:layout_width="@dimen/anythink_myoffer_landscape_banner_cta_max_width" android:layout_height="46.0dp" android:layout_marginRight="24.0dp" android:maxLines="1" android:layout_alignParentRight="true" style="@style/anythink_myoffer_single_line" />
+        <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:id="@id/anythink_myoffer_ll_title_desc_container" android:paddingRight="24.0dp" android:layout_width="0.0dp" android:layout_height="0.0dp" android:layout_marginTop="-3.0dp" android:layout_marginRight="24.0dp" android:layout_toLeftOf="@id/anythink_myoffer_splash_ad_install_btn" android:layout_toRightOf="@id/anythink_myoffer_splash_icon" android:layout_alignTop="@id/anythink_myoffer_splash_icon" android:layout_alignBottom="@id/anythink_myoffer_splash_icon">
+            <TextView android:textSize="17.0dp" android:textColor="#ffffff" android:ellipsize="end" android:id="@id/anythink_myoffer_splash_ad_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:lineSpacingMultiplier="1.0" />
+            <TextView android:textSize="12.0dp" android:textColor="#ffffff" android:ellipsize="end" android:id="@id/anythink_myoffer_splash_desc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4.0dp" android:maxLines="1" android:lineSpacingMultiplier="1.0" />
+        </LinearLayout>
+        <include android:visibility="gone" android:layout_width="wrap_content" android:layout_height="46.0dp" android:layout_marginRight="20.0dp" android:layout_toLeftOf="@id/anythink_myoffer_splash_ad_install_btn" layout="@layout/anythink_myoffer_include_invalid_button" />
+    </RelativeLayout>
+    <include android:layout_width="match_parent" android:layout_height="22.0dp" android:layout_alignParentBottom="true" layout="@layout/anythink_myoffer_include_4_element" />
+    <include layout="@layout/anythink_myoffer_include_guide2click_container" />
+    <include android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="14.0dp" android:layout_marginRight="12.0dp" android:layout_alignParentTop="true" android:layout_alignParentRight="true" layout="@layout/anythink_myoffer_include_splash_ad_layout_skip_area" />
+</merge>

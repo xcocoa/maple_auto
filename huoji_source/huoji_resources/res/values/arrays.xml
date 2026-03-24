@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_pagetitles_name">
+        <item>功能设置</item>
+        <item>使用说明</item>
+    </string-array>
+    <string-array name="test_signs">
+        <item>c6bd901f</item>
+        <item>0ddf44be</item>
+        <item>950e5927</item>
+        <item>6460d8df</item>
+        <item>11fb887f</item>
+        <item>117e4900</item>
+        <item>bd113950</item>
+        <item>a99f6f97</item>
+    </string-array>
+</resources>

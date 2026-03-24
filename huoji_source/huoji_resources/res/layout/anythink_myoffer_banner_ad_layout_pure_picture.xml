@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@id/anythink_myoffer_banner_root" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.anythink.basead.ui.CloseImageView android:id="@id/anythink_myoffer_banner_close" style="@style/anythink_myoffer_banner_close_view" />
+    <RelativeLayout android:id="@id/anythink_myoffer_banner_container" android:background="#66000000" android:paddingLeft="10.0dp" android:paddingRight="95.0dp" android:visibility="gone" android:layout_width="match_parent" android:layout_height="32.0dp" android:layout_alignParentBottom="true">
+        <com.anythink.core.common.ui.MarqueeTextView android:textSize="11.0sp" android:textColor="#ffffff" android:id="@id/anythink_myoffer_banner_version_name" android:paddingLeft="0.0dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3.0dp" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" style="@style/anythink_myoffer_banner_versionname_text_style" />
+        <TextView android:textSize="11.0sp" android:textColor="#ffffff" android:id="@id/anythink_myoffer_banner_privacy_agreement" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/anythink_myoffer_panel_privacy" android:layout_toRightOf="@id/anythink_myoffer_banner_version_name" android:layout_alignTop="@id/anythink_myoffer_banner_version_name" style="@style/anythink_myoffer_banner_privacy_text_style" />
+        <View android:id="@id/anythink_myoffer_banner_center_line" android:background="#ffffff" android:layout_width="1.0dp" android:layout_height="11.0dp" android:layout_marginTop="1.0dp" android:layout_toRightOf="@id/anythink_myoffer_banner_privacy_agreement" android:layout_alignTop="@id/anythink_myoffer_banner_privacy_agreement" android:layout_centerVertical="true" />
+        <TextView android:textSize="11.0sp" android:textColor="#ffffff" android:id="@id/anythink_myoffer_banner_permission_manage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/anythink_myoffer_panel_permission" android:layout_toRightOf="@id/anythink_myoffer_banner_center_line" android:layout_alignTop="@id/anythink_myoffer_banner_privacy_agreement" style="@style/anythink_myoffer_banner_privacy_text_style" />
+        <TextView android:textSize="11.0sp" android:textColor="#ffffff" android:gravity="left" android:id="@id/anythink_myoffer_banner_publisher_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="0.0dp" android:layout_below="@id/anythink_myoffer_banner_version_name" style="@style/anythink_myoffer_single_line.nofontpadding" />
+    </RelativeLayout>
+    <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignTop="@id/anythink_myoffer_banner_container" android:layout_alignParentRight="true" android:layout_alignParentBottom="true">
+        <com.anythink.core.common.ui.component.RoundImageView android:id="@id/anythink_myoffer_banner_self_ad_logo" android:layout_width="65.0dp" android:layout_height="17.0dp" />
+    </LinearLayout>
+    <include layout="@layout/anythink_myoffer_include_guide2click_mask" />
+    <include layout="@layout/anythink_myoffer_include_guide2click_container" />
+</RelativeLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:textSize="9dp"
+        android:textColor="#99ffffff"
+        android:gravity="center_vertical"
+        android:id="@+id/anythink_myoffer_special_countdown_text"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"/>
+    <TextView
+        android:textSize="9dp"
+        android:textColor="#ffffff"
+        android:id="@+id/anythink_myoffer_special_cancel_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="9dp"
+        android:text="@string/anythink_myoffer_special_note_cancel"/>
+</merge>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout style="@style/studio_page"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.cyjh.elfin.ui.view.customview.TitleView android:id="@id/titleView" style="@style/titleview" />
+    <TextView android:text="@string/studio_bind_h" style="@style/studio_bind_h" />
+    <TextView android:id="@id/tv_studio_bind_code" style="@style/studio_bind_code" />
+    <TextView android:id="@id/tv_studio_unbind" android:text="@string/studio_bind_clear" style="@style/studio_bind_btn" />
+    <TextView android:id="@id/tv_studio_change" android:text="@string/studio_bind_change" style="@style/studio_bind_btn_change" />
+</LinearLayout>

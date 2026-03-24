@@ -1,0 +1,157 @@
+package com.anythink.basead.ui;
+
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.FrameLayout;
+import androidx.annotation.Nullable;
+import com.anythink.core.common.o.i;
+
+/* JADX INFO: loaded from: classes.dex */
+public class SpreadAnimLayout extends FrameLayout {
+    private Paint a;
+    private ValueAnimator b;
+    private a c;
+    private RectF d;
+    private RectF e;
+    private int f;
+    private int g;
+    private int h;
+    private Paint i;
+    private boolean j;
+    private boolean k;
+
+    public static class a {
+        public RectF a;
+        public int b;
+    }
+
+    public SpreadAnimLayout(Context context) {
+        this(context, null, 0);
+    }
+
+    public SpreadAnimLayout(Context context, @Nullable AttributeSet attributeSet) {
+        this(context, attributeSet, 0);
+    }
+
+    public SpreadAnimLayout(Context context, @Nullable AttributeSet attributeSet, int i) {
+        super(context, attributeSet, i);
+        this.j = true;
+        setWillNotDraw(false);
+        int color = getResources().getColor(i.a(context, "color_spread", com.anythink.expressad.foundation.h.i.d));
+        this.g = getResources().getDimensionPixelSize(i.a(getContext(), "myoffer_spread_max_distance_normal", "dimen"));
+        this.f = i.a(context, 4.0f);
+        this.h = 1000;
+        Paint paint = new Paint();
+        this.a = paint;
+        paint.setAntiAlias(true);
+        this.a.setAlpha(255);
+        this.a.setColor(color);
+        Paint paint2 = new Paint(1);
+        this.i = paint2;
+        paint2.setColor(-1);
+        this.i.setStyle(Paint.Style.FILL);
+        this.i.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+    }
+
+    @Override // android.view.View
+    public void draw(Canvas canvas) {
+        if (!this.j || !this.k) {
+            super.draw(canvas);
+            return;
+        }
+        int iSaveLayer = canvas.saveLayer(0.0f, 0.0f, getWidth(), getHeight(), null, 31);
+        this.a.setAlpha(this.c.b);
+        RectF rectF = this.c.a;
+        int i = this.f;
+        canvas.drawRoundRect(rectF, i, i, this.a);
+        RectF rectF2 = this.d;
+        int i2 = this.f;
+        canvas.drawRoundRect(rectF2, i2, i2, this.i);
+        canvas.restoreToCount(iSaveLayer);
+        super.draw(canvas);
+    }
+
+    @Override // android.widget.FrameLayout, android.view.ViewGroup, android.view.View
+    public void onLayout(boolean z, int i, int i2, int i3, int i4) {
+        super.onLayout(z, i, i2, i3, i4);
+    }
+
+    @Override // android.widget.FrameLayout, android.view.View
+    public void onMeasure(int i, int i2) {
+        super.onMeasure(i, i2);
+        int i3 = this.g;
+        setPadding(i3, i3, i3, i3);
+    }
+
+    @Override // android.view.View
+    public void onWindowVisibilityChanged(int i) {
+        super.onWindowVisibilityChanged(i);
+        if (this.j) {
+            if (i == 0) {
+                post(new Runnable() { // from class: com.anythink.basead.ui.SpreadAnimLayout.1
+                    @Override // java.lang.Runnable
+                    public final void run() {
+                        SpreadAnimLayout.this.startSpreadAnimation();
+                    }
+                });
+                return;
+            }
+            ValueAnimator valueAnimator = this.b;
+            if (valueAnimator != null) {
+                valueAnimator.end();
+            }
+        }
+    }
+
+    public void setMaxSpreadDistance(int i) {
+        this.g = i;
+    }
+
+    public void setRoundRadius(int i) {
+        this.f = i;
+    }
+
+    public void startSpreadAnimation() {
+        View childAt = getChildAt(0);
+        if (childAt == null) {
+            return;
+        }
+        this.j = true;
+        if (!this.k) {
+            this.d = new RectF(childAt.getLeft(), childAt.getTop(), childAt.getRight(), childAt.getBottom());
+            this.e = new RectF(this.d);
+            a aVar = new a();
+            this.c = aVar;
+            aVar.b = 255;
+            aVar.a = this.e;
+            this.g = Math.min(this.g, Math.min((getWidth() - childAt.getWidth()) / 2, (getHeight() - childAt.getHeight()) / 2));
+            ValueAnimator valueAnimatorOfFloat = ValueAnimator.ofFloat(0.0f, 1.0f);
+            this.b = valueAnimatorOfFloat;
+            valueAnimatorOfFloat.setDuration(this.h);
+            this.b.setRepeatMode(1);
+            this.b.setRepeatCount(-1);
+            this.b.setInterpolator(new AccelerateDecelerateInterpolator());
+            this.b.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() { // from class: com.anythink.basead.ui.SpreadAnimLayout.2
+                @Override // android.animation.ValueAnimator.AnimatorUpdateListener
+                public final void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    float fFloatValue = ((Float) valueAnimator.getAnimatedValue()).floatValue();
+                    SpreadAnimLayout.this.c.b = (int) ((1.0f - fFloatValue) * 255.0f);
+                    SpreadAnimLayout.this.c.a.set(SpreadAnimLayout.this.d);
+                    float f = -((int) (SpreadAnimLayout.this.g * fFloatValue));
+                    SpreadAnimLayout.this.c.a.inset(f, f);
+                    SpreadAnimLayout.this.postInvalidate();
+                }
+            });
+            this.k = true;
+        }
+        this.b.start();
+    }
+}

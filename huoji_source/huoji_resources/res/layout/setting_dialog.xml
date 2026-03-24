@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:orientation="vertical" android:background="@drawable/bg_white_notranslucent" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <ImageView android:id="@id/setting_dialog_imageview_back" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/setting_arrow_left" />
+        <TextView android:textAppearance="?android:textAppearanceLarge" android:textColor="@color/gray2" android:gravity="center" android:id="@id/textView1" android:padding="7.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/floatview_elfin_setting" android:layout_weight="1.0" />
+        <ImageView android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/setting_arrow_left" />
+    </LinearLayout>
+    <ScrollView android:layout_width="match_parent" android:layout_height="0.0dp" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <Switch android:id="@id/setting_swtich_volume_key_ctrl" android:text="@string/setting_volume_key_ctrl" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <Switch android:id="@id/setting_swtich_floatview_ctrl" android:text="@string/setting_floatview_ctrl" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <Switch android:id="@id/setting_swtich_waggle_stop" android:text="@string/setting_waggle_stop" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <Switch android:id="@id/setting_swtich_call_stop" android:text="@string/setting_call_stop" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <Switch android:id="@id/setting_swtich_vibration" android:text="@string/setting_vibration" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <LinearLayout android:orientation="vertical" android:id="@id/layout_boot_script" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <Switch android:id="@id/setting_swtich_open_run" android:checked="false" android:text="@string/setting_open_run_script" style="@style/setting_switch" />
+                <View style="@style/setting_splitline" />
+            </LinearLayout>
+            <Switch android:id="@id/switch_setting_flash_back_auto_restart" android:text="@string/flash_back_auto_restart" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <Switch android:id="@id/switch_setting_automatically_run_script" android:text="@string/automatically_run_script" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <LinearLayout android:background="@color/white" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <TextView android:text="@string/automatically_run_countdown" android:layout_weight="1.0" style="@style/setting_switch" />
+                <Spinner android:id="@id/sp_run_script_countdown" android:layout_width="150.0dp" android:layout_height="wrap_content" />
+            </LinearLayout>
+            <View style="@style/setting_splitline" />
+            <Switch android:id="@id/switch_setting_collect_logcat" android:text="@string/log_collection" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <Switch android:id="@id/switch_setting_error_dialog" android:text="@string/error_pop_up_window" style="@style/setting_switch" />
+            <View style="@style/setting_splitline" />
+            <Button android:textSize="16.0sp" android:textColor="@color/gray2" android:gravity="left|center" android:id="@id/setting_button_scriptlog" android:background="@android:color/transparent" android:paddingLeft="15.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/setting_scriptlog" android:drawableRight="@drawable/setting_arrow_right" />
+            <View style="@style/setting_splitline" />
+            <Button android:textSize="16.0sp" android:textColor="@color/gray2" android:gravity="left|center" android:id="@id/setting_button_update" android:background="@android:color/transparent" android:paddingLeft="15.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/setting_update" />
+            <View style="@style/setting_splitline" />
+            <Button android:textSize="16.0sp" android:textColor="@color/gray2" android:gravity="left|center" android:id="@id/setting_button_exitapp" android:background="@android:color/transparent" android:paddingLeft="15.0dp" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/scriptui_exitapp" />
+            <View style="@style/setting_splitline" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

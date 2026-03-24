@@ -1,0 +1,17 @@
+.class public interface abstract Lcom/hlzn/socketclient/pbmsg/MessageProtobuf$ScriptStopOrBuilder;
+.super Ljava/lang/Object;
+.source ""
+
+# interfaces
+.implements Lcom/google/protobuf/MessageOrBuilder;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/hlzn/socketclient/pbmsg/MessageProtobuf;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x609
+    name = "ScriptStopOrBuilder"
+.end annotation

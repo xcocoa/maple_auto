@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.anythink.core.common.ui.component.RoundImageView android:id="@id/anythink_myoffer_splash_bg" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" />
+    <com.anythink.basead.ui.WrapRoundImageView android:id="@id/anythink_myoffer_splash_ad_content_image_area" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_centerInParent="true" />
+    <include layout="@layout/anythink_myoffer_include_guide2click_mask" />
+    <com.anythink.basead.ui.ScanningAnimTextView android:textSize="@dimen/anythink_myoffer_splash_cta_text_size" android:textColor="#ffffffff" android:ellipsize="end" android:gravity="center" android:id="@id/anythink_myoffer_splash_ad_install_btn" android:background="@drawable/anythink_myoffer_splash_bg_rectangle_btn_cta_asseblem" android:paddingLeft="@dimen/anythink_myoffer_splash_cta_padding_horizontal_v2" android:paddingRight="@dimen/anythink_myoffer_splash_cta_padding_horizontal_v2" android:layout_width="match_parent" android:layout_height="@dimen/anythink_myoffer_splash_cta_height" android:layout_marginLeft="24.0dp" android:layout_marginRight="24.0dp" android:layout_marginBottom="92.0dp" android:text="@string/anythink_myoffer_cta_learn_more" android:maxLines="1" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" style="@style/anythink_myoffer_single_line" />
+    <include android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="44.0dp" android:layout_alignParentBottom="true" layout="@layout/anythink_myoffer_include_invalid_button" />
+    <include android:layout_width="match_parent" android:layout_height="22.0dp" android:layout_alignParentBottom="true" layout="@layout/anythink_myoffer_include_4_element_withbg" />
+    <include layout="@layout/anythink_myoffer_include_guide2click_container" />
+    <include layout="@layout/anythink_myoffer_include_splash_ad_layout_skip_area" />
+</merge>

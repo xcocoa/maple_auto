@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout android:id="@id/anythink_myoffer_g2c_item_container" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_centerInParent="true">
+        <ImageView android:id="@id/anythink_myoffer_center_line" android:layout_width="match_parent" android:layout_height="1.0dp" android:layout_centerInParent="true" />
+        <ImageView android:id="@id/anythink_myoffer_g2c_white_line" android:visibility="invisible" android:layout_width="match_parent" android:layout_height="4.0dp" android:layout_marginLeft="16.0dp" android:layout_marginRight="16.0dp" android:layout_marginBottom="16.0dp" android:src="@drawable/anythink_myoffer_dash_white_line" android:layout_above="@id/anythink_myoffer_center_line" android:layout_centerHorizontal="true" android:layerType="software" />
+        <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/anythink_myoffer_center_line">
+            <ImageView android:id="@id/anythink_myoffer_g2c_slide_finger" android:layout_width="36.0dp" android:layout_height="36.0dp" android:src="@drawable/anythink_myoffer_g2c_slide_finger" />
+            <TextView android:textSize="14.0dp" android:textColor="#ffffff" android:id="@id/anythink_myoffer_g2c_slide_hint" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="14.0dp" android:text="@string/anythink_myoffer_g2c_slide_to_click" />
+        </LinearLayout>
+    </RelativeLayout>
+</merge>

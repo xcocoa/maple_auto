@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/dialog_bg_to_splash"
+    android:paddingTop="@dimen/distance_30"
+    android:paddingBottom="@dimen/distance_20"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:textSize="@dimen/text_sp14"
+        android:textColor="@color/blank1"
+        android:id="@+id/id_tv_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/distance_30"
+        android:layout_marginRight="@dimen/distance_30"
+        android:lineSpacingExtra="5dp"/>
+    <TextView
+        android:textSize="@dimen/text_sp16"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:id="@+id/id_tv_known"
+        android:background="@drawable/btn_color_select_bg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/distance_36"
+        android:layout_marginLeft="@dimen/distance_18"
+        android:layout_marginTop="@dimen/distance_28"
+        android:layout_marginRight="@dimen/distance_18"
+        android:text="@string/i_known"
+        android:layout_below="@+id/id_tv_message"/>
+</RelativeLayout>

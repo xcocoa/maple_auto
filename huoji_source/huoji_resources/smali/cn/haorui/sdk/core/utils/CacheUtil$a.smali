@@ -1,0 +1,14 @@
+.class public synthetic Lcn/haorui/sdk/core/utils/CacheUtil$a;
+.super Ljava/lang/Object;
+.source ""
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcn/haorui/sdk/core/utils/CacheUtil;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1009
+    name = null
+.end annotation

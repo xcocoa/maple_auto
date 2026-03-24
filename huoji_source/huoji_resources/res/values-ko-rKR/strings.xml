@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_cancel_button">취소</string>
+    <string name="dialog_no_button">아니오</string>
+    <string name="dialog_ok_button">확인</string>
+    <string name="dialog_yes_button">예</string>
+    <string name="inputkb">입력기</string>
+    <string name="toast_cloud_root_failed">임시 루트권한 획득 실패</string>
+    <string name="toast_cloud_root_success">임시 루트권한 획득 성공</string>
+    <string name="toast_engine_crash_then_restart">스크립트가 비정상적으로 종료되었습니다.</string>
+    <string name="toast_engine_no_permission">권한이 없습니다.</string>
+    <string name="toast_failed_got_root">%s 루트권한이 필요합니다.</string>
+    <string name="toast_on_start_script">실행 시작</string>
+    <string name="toast_on_stop_script">실행 중지</string>
+    <string name="toast_run_failed">실행 이상(%d)</string>
+    <string name="toast_script_already_running">다른 스크립트가 이미 실행중입니다.</string>
+    <string name="toast_script_engine_failed_start">스크립트 환경 초기화 실패</string>
+    <string name="toast_starting_script_engine">스크립트 환경 초기화 중</string>
+    <string name="ui_show_invalid_color_value">유효하지 않은 색상값입니다.</string>
+    <string name="ui_show_negative_button_label">종료</string>
+    <string name="ui_show_not_found_float">ID 가 % s 인 부유 창 을 찾 을 수 없습니다</string>
+    <string name="ui_show_not_found_ui">ID가 “%s” 인 인터페이스를 찾지 못했습니다.</string>
+    <string name="ui_show_not_found_widget">ID가 “%s” 인 위젯을 찾지 못했습니다.</string>
+    <string name="ui_show_positive_button_label">계속</string>
+</resources>

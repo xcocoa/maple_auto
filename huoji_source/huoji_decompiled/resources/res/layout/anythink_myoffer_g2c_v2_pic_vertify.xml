@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.anythink.basead.ui.guidetoclickv2.picverify.PictureVerifyView
+        android:id="@+id/anythink_myoffer_g2c_picvertify"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:layout_centerInParent="true"/>
+    <com.anythink.basead.ui.guidetoclickv2.picverify.TextSeekbar
+        android:id="@+id/anythink_myoffer_g2c_picvertify_seekbar"
+        android:visibility="gone"
+        android:layout_width="300dp"
+        android:layout_height="24dp"
+        android:layout_centerHorizontal="true"/>
+</merge>

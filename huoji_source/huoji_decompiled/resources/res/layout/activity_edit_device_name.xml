@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/gray1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.cyjh.elfin.ui.view.customview.TitleView
+        android:id="@+id/titleView"
+        style="@style/titleview"/>
+    <LinearLayout style="@style/studio_equ">
+        <EditText
+            android:id="@+id/et_device_name"
+            android:background="@null"
+            android:text="@string/edit_device_name_hint"
+            style="@style/studio_equ_name"/>
+        <ImageView
+            android:id="@+id/iv_clear"
+            style="@style/studio_equ_del"/>
+    </LinearLayout>
+</LinearLayout>

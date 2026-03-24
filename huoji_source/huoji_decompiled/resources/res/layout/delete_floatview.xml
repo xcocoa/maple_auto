@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:id="@+id/deletefloatview_linearlayout"
+    android:layout_width="100dp"
+    android:layout_height="100dp">
+    <ImageView
+        android:id="@+id/deletefloatview_imageview_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/delete_floatview_out"/>
+    <TextView
+        android:textStyle="bold"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:id="@+id/deletefloatview_textview_delete"
+        android:background="@drawable/floatview_elfin_textview"
+        android:padding="3dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/deletefloatview_delete"/>
+</LinearLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <com.anythink.nativead.api.ATNativeView
+        android:id="@+id/native_ad_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+        <include
+            android:id="@+id/native_selfrender_view"
+            layout="@layout/layout_native_self"/>
+    </com.anythink.nativead.api.ATNativeView>
+</LinearLayout>

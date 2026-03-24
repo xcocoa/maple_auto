@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:background="@drawable/d_wait_dialog_bg"
+    android:layout_width="100dp"
+    android:layout_height="100dp">
+    <ImageView
+        android:id="@+id/wait_dialog_iv"
+        android:background="@anim/anin_wait_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:textSize="14sp"
+        android:textColor="#c4cad1"
+        android:id="@+id/wait_dialog_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="加载中..."/>
+</LinearLayout>

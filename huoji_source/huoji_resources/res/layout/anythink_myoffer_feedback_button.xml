@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/anythink_myoffer_feedback_ll_id" android:background="@drawable/anythink_myoffer_bg_feedback_button" android:paddingLeft="8.0dp" android:paddingRight="8.0dp" android:layout_width="wrap_content" android:layout_height="24.0dp"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:layout_width="12.0dp" android:layout_height="12.0dp" android:src="@drawable/anythink_myoffer_feedback_icon" />
+    <TextView android:textSize="12.0dp" android:textColor="#ffffff" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="2.0dp" android:text="@string/anythink_myoffer_feedback_text" style="@style/anythink_myoffer_single_line.nofontpadding" />
+</LinearLayout>

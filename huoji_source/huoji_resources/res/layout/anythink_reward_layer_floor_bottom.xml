@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@id/anythink_viewgroup_ctaroot" android:background="@color/anythink_reward_cta_bg" android:layout_width="match_parent" android:layout_height="60.0dp" android:layout_centerVertical="true"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:id="@id/anythink_iv_appicon" android:layout_width="40.0dp" android:layout_height="40.0dp" android:layout_marginLeft="5.0dp" android:scaleType="centerCrop" android:layout_centerVertical="true" android:layout_marginStart="5.0dp" />
+    <TextView android:textSize="18.0sp" android:textColor="#ffffff" android:gravity="center" android:id="@id/anythink_tv_install" android:background="@drawable/anythink_reward_shape_end_pager" android:layout_width="150.0dp" android:layout_height="38.0dp" android:layout_marginLeft="5.0dp" android:layout_marginRight="5.0dp" android:text="@string/anythink_reward_clickable_cta_btntext" android:layout_alignParentRight="true" android:layout_centerVertical="true" android:layout_alignParentEnd="true" />
+    <RelativeLayout android:layout_width="wrap_content" android:layout_height="40.0dp" android:layout_marginLeft="3.0dp" android:layout_toLeftOf="@id/anythink_tv_install" android:layout_toRightOf="@id/anythink_iv_appicon" android:layout_centerVertical="true" android:layout_alignWithParentIfMissing="true" android:layout_marginStart="3.0dp" android:layout_toStartOf="@id/anythink_tv_install" android:layout_toEndOf="@id/anythink_iv_appicon">
+        <TextView android:textStyle="bold" android:textColor="@android:color/white" android:ellipsize="end" android:id="@id/anythink_tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" />
+        <TextView android:textSize="11.0sp" android:textColor="@android:color/white" android:ellipsize="end" android:id="@id/anythink_tv_desc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3.0dp" android:maxLines="1" android:layout_below="@id/anythink_tv_title" />
+    </RelativeLayout>
+</RelativeLayout>

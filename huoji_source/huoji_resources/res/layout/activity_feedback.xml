@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.cyjh.elfin.ui.view.customview.TitleView android:id="@id/titleview_feedback" android:layout_width="match_parent" android:layout_height="45.0dp" />
+    <FrameLayout android:id="@id/frameLayout_feedback" android:layout_width="match_parent" android:layout_height="0.0dp" android:layout_weight="1.0" />
+</LinearLayout>

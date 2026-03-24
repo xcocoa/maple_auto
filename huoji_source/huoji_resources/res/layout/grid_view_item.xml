@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:id="@id/id_iv_grid_item" android:layout_width="match_parent" android:layout_height="100.0dp" android:src="@mipmap/img_add_img_select" android:scaleType="centerCrop" />
+    <RelativeLayout android:id="@id/id_ll_delete_img" android:paddingTop="5.0dp" android:paddingRight="5.0dp" android:layout_width="50.0dp" android:layout_height="50.0dp" android:layout_alignParentTop="true" android:layout_alignParentRight="true">
+        <ImageView android:id="@id/id_img_delete_select" android:visibility="invisible" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@mipmap/ing_delete_select_img" android:layout_alignParentTop="true" android:layout_alignParentRight="true" />
+    </RelativeLayout>
+</RelativeLayout>

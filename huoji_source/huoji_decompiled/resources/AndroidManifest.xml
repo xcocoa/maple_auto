@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="2024092009"
+    android:versionName="6.7.3"
+    android:compileSdkVersion="28"
+    android:compileSdkVersionCodename="9"
+    package="com.ac"
+    platformBuildVersionCode="28"
+    platformBuildVersionName="9">
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="26"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES"/>
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent>
+        <package android:name="com.google.android.gms"/>
+        <package android:name="com.android.vending"/>
+        <package android:name="com.android.creator"/>
+        <package android:name="com.mdid.msa"/>
+        <package android:name="com.samsung.android.deviceidservice"/>
+        <package android:name="com.coolpad.deviceidsupport"/>
+        <package android:name="com.heytap.openid"/>
+        <package android:name="com.huawei.hwid"/>
+        <package android:name="com.huawei.hwid.tv"/>
+        <package android:name="com.huawei.hms"/>
+        <package android:name="com.asus.msa.SupplementaryDID"/>
+        <package android:name="com.zui.deviceidservice"/>
+    </queries>
+    <uses-permission android:name="com.asus.msa.SupplementaryDID.ACCESS"/>
+    <uses-permission android:name="freemme.permission.msa"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_USER_DICTIONARY"/>
+    <uses-permission android:name="android.permission.ACCESS_MTK_MMHW"/>
+    <uses-permission android:name="android.permission.DIAGNOSTIC"/>
+    <uses-permission android:name="android.permission.ACCESS_CACHE_FILESYSTEM"/>
+    <uses-permission android:name="android.permission.SAMSUNG_TUNTAP"/>
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
+    <application
+        android:theme="@style/Theme.App"
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher"
+        android:name="com.cyjh.elfin.base.AppContext"
+        android:allowBackup="true"
+        android:supportsRtl="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory">
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false"/>
+        <activity
+            android:theme="@style/AppTheme"
+            android:name="com.cyjh.elfin.ui.activity.SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:configChanges="smallestScreenSize|screenSize|screenLayout|orientation|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:theme="@style/viewpager_indicators"
+            android:name="com.cyjh.elfin.ui.activity.ElfinFreeActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:configChanges="smallestScreenSize|screenSize|screenLayout|orientation|keyboardHidden"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.SettingActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.ScriptLogActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.ScriptLogDetailActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.FeedbackActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.feedback.lib.activity.ImageSelectActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.H5LinkJumpPageActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.MessagePushActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.MessageDetailActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.SweepCodeActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.SweepCodeZbarActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.guide.RecognitionGuideActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.UnbindRegistrationCodeActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.BindRegisterCodeActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:authorities="@string/pay_appid"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+        <service android:name="com.cyjh.elfin.services.KeepMainService"/>
+        <activity
+            android:theme="@style/OnePxActivityStyle"
+            android:name="com.cyjh.mobileanjian.screencap.TestActivity"
+            android:process=":enginfloat"
+            android:taskAffinity="com.test.myapp.OTHER_TASK"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"/>
+        <service
+            android:name="com.cyjh.elfin.floatingwindowprocess.service.FloatingWindowService"
+            android:exported="true"
+            android:process=":enginfloat">
+            <intent-filter>
+                <action android:name="com.cyjh.elfin.floatingwindowprocess.service.FloatingWindowService"/>
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="com.cyjh.elfin.base.glidemodule.CustomGlideModule"
+            android:value="GlideModule"/>
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="579ad79de0f55a8b3c001633"/>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="BillApk"/>
+        <provider
+            android:name="androidx.lifecycle.ProcessLifecycleOwnerInitializer"
+            android:exported="false"
+            android:multiprocess="true"
+            android:authorities="@string/pay_vsersion"/>
+        <provider
+            android:name="net.grandcentrix.tray.provider.TrayContentProvider"
+            android:exported="false"
+            android:multiprocess="false"
+            android:authorities="@string/pay_vsersion_1"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.studio.StudioBindActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.studio.StudioBindClearActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.cyjh.elfin.ui.activity.studio.EditDeviceNameActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:theme="@android:style/Theme.Dialog"
+            android:name="com.cyjh.root.ui.activity.ScreenShotActivity"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.cyjh.root.ui.activity.SelectApplicationListActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:name="com.cyjh.root.ui.activity.FreeRootLoadingDialogActivity"
+            android:excludeFromRecents="true"
+            android:screenOrientation="portrait"
+            android:noHistory="true"/>
+        <activity
+            android:name="com.elfin.ad.activity.FullScreenTwoAdActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="com.elfin.ad.activity.FullScreenTwoAdActivity"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:name="com.anythink.china.activity.TransparentActivity"
+            android:exported="false"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:name="com.anythink.china.activity.ApkConfirmDialogActivity"
+            android:exported="false"/>
+        <provider
+            android:name="com.anythink.china.common.ApkFileProvider"
+            android:exported="false"
+            android:authorities="com.ac.anythink.fileProvider"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/anythink_file_paths"/>
+        </provider>
+        <receiver
+            android:name="com.anythink.china.common.NotificationBroadcaseReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="anythink_action_notification_click"/>
+                <action android:name="anythink_action_notification_cancel"/>
+            </intent-filter>
+        </receiver>
+        <service
+            android:name="com.anythink.china.common.service.ApkDownloadService"
+            android:exported="false"/>
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.anythink.core.activity.AnyThinkGdprAuthActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:configChanges="screenSize|orientation|keyboardHidden"/>
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.anythink.basead.ui.ATLandscapeActivity"
+            android:exported="false"
+            android:launchMode="standard"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"/>
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.anythink.basead.ui.ATPortraitActivity"
+            android:exported="false"
+            android:launchMode="standard"
+            android:screenOrientation="sensorPortrait"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"/>
+        <activity
+            android:theme="@style/anythink_myoffer_half_screen"
+            android:name="com.anythink.basead.ui.ATLandscapeTranslucentActivity"
+            android:exported="false"
+            android:launchMode="standard"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"/>
+        <activity
+            android:theme="@style/anythink_myoffer_half_screen"
+            android:name="com.anythink.basead.ui.ATPortraitTranslucentActivity"
+            android:exported="false"
+            android:launchMode="standard"
+            android:screenOrientation="sensorPortrait"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"/>
+        <activity
+            android:theme="@android:style/Theme.Light.NoTitleBar"
+            android:name="com.anythink.core.basead.ui.web.WebLandPageActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:name="com.anythink.basead.ui.RewardExitConfirmDialogActivity"
+            android:exported="false"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:name="com.anythink.expressad.reward.player.ATRewardVideoActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="standard"
+            android:configChanges="screenSize|screenLayout|orientation|keyboardHidden"/>
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:name="cn.haorui.sdk.activity.HRNativeInterstitialActivity"
+            android:exported="false"/>
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:name="cn.haorui.sdk.activity.HRDownloadDetailActivity"
+            android:exported="false"/>
+        <activity
+            android:theme="@style/adsail_FullScreen"
+            android:name="cn.haorui.sdk.activity.HRRewardVideoPlayerActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind"
+            android:configChanges="screenSize|orientation"/>
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:name="cn.haorui.sdk.activity.HRWebviewActivity"
+            android:exported="false"/>
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:name="cn.haorui.sdk.core.webview.TaskCenterWebActivity"
+            android:exported="false"/>
+        <activity
+            android:theme="@style/adsail_MyTranslucentTheme"
+            android:name="cn.haorui.sdk.adsail_ad.view.DownLoadDialogActivity"
+            android:exported="false"
+            android:configChanges="screenSize|orientation|keyboardHidden"/>
+        <activity
+            android:theme="@style/adsail_DownloadDialog"
+            android:name="cn.haorui.sdk.activity.HRAlertDialogActivity"
+            android:exported="false"/>
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:name="cn.haorui.sdk.activity.HRDetailActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:configChanges="screenSize|orientation"/>
+        <activity
+            android:theme="@style/OctopusDialogStyle"
+            android:name="com.octopus.ad.AdActivity"
+            android:configChanges="smallestScreenSize|screenSize|uiMode|screenLayout|orientation|keyboardHidden|keyboard"
+            android:hardwareAccelerated="true"/>
+        <service
+            android:name="com.octopus.ad.DownloadService"
+            android:exported="false"/>
+        <provider
+            android:name="com.octopus.ad.OctopusProvider"
+            android:exported="false"
+            android:authorities="com.ac.fileprovider"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/octopus_file_path"/>
+        </provider>
+        <provider
+            android:name="mobi.oneway.common.provider.OwCommonFileProvider"
+            android:exported="false"
+            android:authorities="@string/one_way_file_provider"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/ow_same_file_path"/>
+        </provider>
+        <provider
+            android:name="mobi.oneway.common.provider.OwBFileProvider"
+            android:exported="false"
+            android:authorities="@string/one_way_bd_provider"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/ow_b_file_paths"/>
+        </provider>
+        <activity
+            android:name="com.didi.virtualapk.delegate.StubActivity"
+            android:exported="false"
+            android:launchMode="standard"/>
+        <activity
+            android:name="com.didi.virtualapk.core.A$1"
+            android:exported="false"
+            android:launchMode="standard"/>
+        <activity
+            android:theme="@android:style/Theme.Translucent"
+            android:name="com.didi.virtualapk.core.A$2"
+            android:exported="false"
+            android:launchMode="standard"/>
+        <activity
+            android:name="com.didi.virtualapk.core.B$1"
+            android:exported="false"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.didi.virtualapk.core.B$2"
+            android:exported="false"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.didi.virtualapk.core.B$3"
+            android:exported="false"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.didi.virtualapk.core.B$4"
+            android:exported="false"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.didi.virtualapk.core.B$5"
+            android:exported="false"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.didi.virtualapk.core.B$6"
+            android:exported="false"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.didi.virtualapk.core.B$7"
+            android:exported="false"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.didi.virtualapk.core.B$8"
+            android:exported="false"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name="com.didi.virtualapk.core.C$1"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.didi.virtualapk.core.C$2"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.didi.virtualapk.core.C$3"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.didi.virtualapk.core.C$4"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.didi.virtualapk.core.C$5"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.didi.virtualapk.core.C$6"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.didi.virtualapk.core.C$7"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.didi.virtualapk.core.C$8"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.didi.virtualapk.core.D$1"
+            android:exported="false"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name="com.didi.virtualapk.core.D$2"
+            android:exported="false"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name="com.didi.virtualapk.core.D$3"
+            android:exported="false"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name="com.didi.virtualapk.core.D$4"
+            android:exported="false"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name="com.didi.virtualapk.core.D$5"
+            android:exported="false"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name="com.didi.virtualapk.core.D$6"
+            android:exported="false"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name="com.didi.virtualapk.core.D$7"
+            android:exported="false"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name="com.didi.virtualapk.core.D$8"
+            android:exported="false"
+            android:launchMode="singleInstance"/>
+        <service
+            android:name="com.didi.virtualapk.delegate.LocalService"
+            android:exported="false"/>
+        <service
+            android:name="com.didi.virtualapk.delegate.RemoteService"
+            android:exported="false"
+            android:process=":daemon">
+            <intent-filter>
+                <action android:name="com.cyjh.elfin.intent.ACTION_DAEMON_SERVICE"/>
+            </intent-filter>
+        </service>
+        <provider
+            android:name="com.didi.virtualapk.delegate.RemoteContentProvider"
+            android:exported="false"
+            android:process=":daemon"
+            android:authorities="@string/one_way_virtual_apk_provider"/>
+        <provider
+            android:name="com.tramini.plugin.api.TraminiContentProvider"
+            android:exported="false"
+            android:authorities="com.ac.initprovider"
+            android:initOrder="100"/>
+        <service
+            android:name="com.cyjh.mq.service.IpcService"
+            android:process=":enginfloat"/>
+        <service
+            android:label="@string/inputkb"
+            android:name="com.ime.input.InputKb"
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:process=":enginfloat">
+            <intent-filter>
+                <action android:name="android.view.InputMethod"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method"/>
+        </service>
+        <provider
+            android:name="com.core.util.share.SharedPreferenceProvider"
+            android:exported="true"
+            android:process=":remote"
+            android:authorities="com.ac.preference"/>
+        <service android:name="com.hlzn.socketclient.service.SocketService"/>
+        <provider
+            android:name="razerdp.basepopup.BasePopupRuntimeTrojanProvider"
+            android:exported="false"
+            android:multiprocess="false"
+            android:authorities="com.ac.basepopup-trojan"/>
+        <activity
+            android:theme="@android:style/Theme.Dialog"
+            android:name="com.cyjh.mobileanjian.screencap.ForScreenShotActivity"
+            android:launchMode="singleTop"/>
+    </application>
+</manifest>

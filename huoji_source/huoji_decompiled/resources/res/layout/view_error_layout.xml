@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/vel_error_img"
+        android:src="@drawable/bg_none_net"
+        style="@style/whauto"/>
+    <TextView
+        android:textColor="@color/black"
+        android:id="@+id/vel_error_tips"
+        android:layout_marginTop="10dp"
+        android:text="@string/no_net_text"
+        style="@style/whauto"/>
+    <TextView
+        android:id="@+id/vel_error_btn"
+        android:clickable="true"
+        android:text="@string/btn_refresh"
+        style="@style/btn_refresh"/>
+</LinearLayout>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.anythink.basead.ui.CloseFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/anythink_myoffer_splash_skip_area"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true">
+    <TextView
+        android:textSize="12dp"
+        android:textColor="#ffffffff"
+        android:gravity="center"
+        android:id="@+id/anythink_myoffer_splash_skip"
+        android:background="@drawable/anythink_myoffer_splash_bg_skip"
+        android:paddingLeft="14dp"
+        android:paddingRight="11dp"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="16dp"
+        android:minWidth="68dp"
+        android:minHeight="24dp"
+        android:text="skip"
+        android:includeFontPadding="false"/>
+</com.anythink.basead.ui.CloseFrameLayout>

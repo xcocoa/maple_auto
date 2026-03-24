@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout style="@style/studio_page"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.cyjh.elfin.ui.view.customview.TitleView android:id="@id/titleView" style="@style/titleview" />
+    <TextView android:text="@string/studio_bind_h" style="@style/studio_bind_h" />
+    <EditText android:id="@id/et_studio_project_key" android:hint="输入项目秘钥" style="@style/studio_bind_edit" />
+    <TextView android:id="@id/tv_studio_bind" android:text="@string/studio_bind_btn" style="@style/studio_bind_btn" />
+</LinearLayout>

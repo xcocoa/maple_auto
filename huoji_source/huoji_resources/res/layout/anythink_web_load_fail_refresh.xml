@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:layout_width="80.0dp" android:layout_height="70.0dp" android:src="@drawable/anythink_core_warn_icon" android:scaleType="fitCenter" />
+    <TextView android:textSize="16.0dp" android:textColor="#000000" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20.0dp" android:text="@string/anythink_web_load_fail_hint" />
+    <TextView android:textSize="12.0dp" android:textColor="#4275ce" android:id="@id/anythink_web_load_fail_refresh" android:background="@drawable/anythink_core_blue_corner_button_bg" android:paddingLeft="16.0dp" android:paddingTop="7.0dp" android:paddingRight="16.0dp" android:paddingBottom="8.0dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8.0dp" android:text="@string/anythink_web_load_fail_refresh" />
+</merge>

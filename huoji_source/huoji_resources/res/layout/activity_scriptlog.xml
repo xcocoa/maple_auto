@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/gray1" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.cyjh.elfin.ui.view.customview.TitleView android:id="@id/titleview_scriptlog" style="@style/titleview" />
+    <ListView android:id="@id/listview_scriptlog" android:padding="7.0dp" android:layout_width="match_parent" android:layout_height="0.0dp" android:listSelector="@drawable/bg_listitem" android:divider="@android:color/transparent" android:dividerHeight="5.0dp" android:layout_weight="1.0" />
+    <LinearLayout android:orientation="horizontal" android:paddingLeft="15.0dp" android:paddingTop="10.0dp" android:paddingRight="15.0dp" android:paddingBottom="10.0dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <Button android:textColor="@android:color/white" android:id="@id/btn_scriptlog_removeall" android:background="@drawable/btn_red" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="40.0dp" android:text="@string/scriptlog_removeall" android:layout_weight="4.0" />
+        <Button android:textColor="@android:color/white" android:id="@id/btn_scriptlog_selectall" android:background="@drawable/btn_gray" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="40.0dp" android:layout_marginLeft="5.0dp" android:text="@string/scriptlog_selectall" android:layout_weight="1.0" />
+    </LinearLayout>
+</LinearLayout>

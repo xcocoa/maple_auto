@@ -1,0 +1,82 @@
+.class public Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;
+.super Ljava/lang/Object;
+.source ""
+
+# interfaces
+.implements Lcom/anythink/core/api/MediationInitCallback;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter;->startBiddingRequest(Landroid/content/Context;Ljava/util/Map;Ljava/util/Map;Lcom/anythink/core/api/ATBiddingListener;)Z
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field public final synthetic this$0:Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter;
+
+.field public final synthetic val$biddingListener:Lcom/anythink/core/api/ATBiddingListener;
+
+.field public final synthetic val$context:Landroid/content/Context;
+
+.field public final synthetic val$serverExtra:Ljava/util/Map;
+
+
+# direct methods
+.method public constructor <init>(Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter;Landroid/content/Context;Ljava/util/Map;Lcom/anythink/core/api/ATBiddingListener;)V
+    .locals 0
+
+    iput-object p1, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->this$0:Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter;
+
+    iput-object p2, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->val$context:Landroid/content/Context;
+
+    iput-object p3, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->val$serverExtra:Ljava/util/Map;
+
+    iput-object p4, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->val$biddingListener:Lcom/anythink/core/api/ATBiddingListener;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public onFail(Ljava/lang/String;)V
+    .locals 2
+
+    iget-object v0, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->val$biddingListener:Lcom/anythink/core/api/ATBiddingListener;
+
+    if-eqz v0, :cond_0
+
+    invoke-static {p1}, Lcom/anythink/core/api/ATBiddingResult;->fail(Ljava/lang/String;)Lcom/anythink/core/api/ATBiddingResult;
+
+    move-result-object p1
+
+    const/4 v1, 0x0
+
+    invoke-interface {v0, p1, v1}, Lcom/anythink/core/api/ATBiddingListener;->onC2SBiddingResultWithCache(Lcom/anythink/core/api/ATBiddingResult;Lcom/anythink/core/api/BaseAd;)V
+
+    :cond_0
+    return-void
+.end method
+
+.method public onSuccess()V
+    .locals 4
+
+    iget-object v0, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->this$0:Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter;
+
+    iget-object v1, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->val$context:Landroid/content/Context;
+
+    iget-object v2, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->val$serverExtra:Ljava/util/Map;
+
+    iget-object v3, p0, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter$2;->val$biddingListener:Lcom/anythink/core/api/ATBiddingListener;
+
+    invoke-static {v0, v1, v2, v3}, Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter;->access$000(Lcn/haorui/sdk/platform/topon/intertitial/HRIntertitialAdapter;Landroid/content/Context;Ljava/util/Map;Lcom/anythink/core/api/ATBiddingListener;)V
+
+    return-void
+.end method

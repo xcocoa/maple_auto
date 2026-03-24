@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:clipChildren="false" android:clipToPadding="false" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <View android:id="@id/view_main" android:visibility="invisible" android:layout_width="90.0dp" android:layout_height="42.0dp" android:layout_centerInParent="true" />
+    <com.anythink.basead.ui.WrapRoundImageView android:id="@id/anythink_iv_left_top" android:layout_width="147.0dp" android:layout_height="83.0dp" android:layout_marginRight="66.0dp" android:layout_marginBottom="63.0dp" android:layout_above="@id/view_main" android:layout_alignRight="@id/view_main" />
+    <com.anythink.basead.ui.WrapRoundImageView android:id="@id/anythink_iv_left_bottom" android:layout_width="240.0dp" android:layout_height="136.0dp" android:layout_marginTop="81.0dp" android:layout_marginRight="1.0dp" android:layout_toLeftOf="@id/view_main" android:layout_below="@id/view_main" />
+    <com.anythink.basead.ui.WrapRoundImageView android:id="@id/anythink_iv_right_top" android:layout_width="140.0dp" android:layout_height="79.0dp" android:layout_marginLeft="98.0dp" android:layout_marginBottom="34.0dp" android:layout_toRightOf="@id/view_main" android:layout_above="@id/view_main" />
+    <com.anythink.basead.ui.WrapRoundImageView android:id="@id/anythink_iv_right_bottom" android:layout_width="147.0dp" android:layout_height="83.0dp" android:layout_marginLeft="53.0dp" android:layout_marginTop="1.0dp" android:layout_toRightOf="@id/view_main" android:layout_below="@id/view_main" />
+</RelativeLayout>

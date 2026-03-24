@@ -1,0 +1,109 @@
+package io.reactivex.internal.subscribers;
+
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
+import z2.yc0;
+import z2.zc0;
+
+/* JADX INFO: loaded from: classes2.dex */
+public abstract class BasicFuseableSubscriber<T, R> implements FlowableSubscriber<T>, QueueSubscription<R> {
+    public boolean done;
+    public final yc0<? super R> downstream;
+    public QueueSubscription<T> qs;
+    public int sourceMode;
+    public zc0 upstream;
+
+    public BasicFuseableSubscriber(yc0<? super R> yc0Var) {
+        this.downstream = yc0Var;
+    }
+
+    public void afterDownstream() {
+    }
+
+    public boolean beforeDownstream() {
+        return true;
+    }
+
+    @Override // z2.zc0
+    public void cancel() {
+        this.upstream.cancel();
+    }
+
+    public void clear() {
+        this.qs.clear();
+    }
+
+    public final void fail(Throwable th) {
+        Exceptions.throwIfFatal(th);
+        this.upstream.cancel();
+        onError(th);
+    }
+
+    @Override // io.reactivex.internal.fuseable.SimpleQueue
+    public boolean isEmpty() {
+        return this.qs.isEmpty();
+    }
+
+    @Override // io.reactivex.internal.fuseable.SimpleQueue
+    public final boolean offer(R r) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+
+    @Override // io.reactivex.internal.fuseable.SimpleQueue
+    public final boolean offer(R r, R r2) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+
+    @Override // z2.yc0
+    public void onComplete() {
+        if (this.done) {
+            return;
+        }
+        this.done = true;
+        this.downstream.onComplete();
+    }
+
+    @Override // z2.yc0
+    public void onError(Throwable th) {
+        if (this.done) {
+            RxJavaPlugins.onError(th);
+        } else {
+            this.done = true;
+            this.downstream.onError(th);
+        }
+    }
+
+    @Override // io.reactivex.FlowableSubscriber, z2.yc0
+    public final void onSubscribe(zc0 zc0Var) {
+        if (SubscriptionHelper.validate(this.upstream, zc0Var)) {
+            this.upstream = zc0Var;
+            if (zc0Var instanceof QueueSubscription) {
+                this.qs = (QueueSubscription) zc0Var;
+            }
+            if (beforeDownstream()) {
+                this.downstream.onSubscribe(this);
+                afterDownstream();
+            }
+        }
+    }
+
+    @Override // z2.zc0
+    public void request(long j) {
+        this.upstream.request(j);
+    }
+
+    public final int transitiveBoundaryFusion(int i) {
+        QueueSubscription<T> queueSubscription = this.qs;
+        if (queueSubscription == null || (i & 4) != 0) {
+            return 0;
+        }
+        int iRequestFusion = queueSubscription.requestFusion(i);
+        if (iRequestFusion != 0) {
+            this.sourceMode = iRequestFusion;
+        }
+        return iRequestFusion;
+    }
+}

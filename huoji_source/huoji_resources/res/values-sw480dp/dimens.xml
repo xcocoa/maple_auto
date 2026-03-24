@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="anythink_confirm_dialog_btn_height">45.0dp</dimen>
+    <dimen name="anythink_confirm_dialog_text_size_large">22.0sp</dimen>
+    <dimen name="anythink_confirm_dialog_text_size_normal">18.0sp</dimen>
+    <dimen name="anythink_myoffer_half_screen_icon_size">58.0dp</dimen>
+</resources>

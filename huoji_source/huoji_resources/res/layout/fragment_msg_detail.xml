@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:background="@color/white" android:padding="16.0dp" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textAppearance="?android:textAppearanceMedium" android:gravity="center" android:id="@id/id_tv_msg_title" android:layout_width="match_parent" android:layout_height="wrap_content" />
+    <TextView android:textAppearance="?android:textAppearanceSmall" android:gravity="center" android:id="@id/id_tv_msg_time" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5.0dp" android:layout_marginBottom="10.0dp" android:layout_below="@id/id_tv_msg_title" />
+    <WebView android:id="@id/id_msg_web_view" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="10.0dp" android:layout_below="@id/id_tv_msg_time" />
+    <include android:id="@id/incl_loading" android:layout_width="match_parent" android:layout_height="match_parent" layout="@layout/load_loading_view" />
+</RelativeLayout>

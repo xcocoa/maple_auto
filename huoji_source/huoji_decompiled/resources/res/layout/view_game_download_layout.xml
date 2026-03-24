@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/vgdl_update_btn_rl"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ProgressBar
+        android:id="@+id/vgdl_progress_pb"
+        android:layout_width="match_parent"
+        android:layout_height="21dp"
+        android:max="100"
+        android:indeterminate="false"
+        style="@style/Game_Downlaod_Progress"/>
+    <TextView
+        android:gravity="center"
+        android:id="@+id/vgdl_update_btn"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="21dp"
+        android:text="@string/download"
+        style="@style/btn_play"/>
+</RelativeLayout>

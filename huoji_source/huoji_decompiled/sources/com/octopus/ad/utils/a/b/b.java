@@ -1,0 +1,52 @@
+package com.octopus.ad.utils.a.b;
+
+import android.app.Application;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.os.IBinder;
+import android.os.RemoteException;
+import com.octopus.ad.utils.a.a.a.d.a.a;
+import com.octopus.ad.utils.a.b.m;
+
+/* JADX INFO: loaded from: classes2.dex */
+public class b implements com.octopus.ad.utils.a.d {
+    private final Context a;
+
+    public b(Context context) {
+        this.a = context instanceof Application ? context : context.getApplicationContext();
+    }
+
+    @Override // com.octopus.ad.utils.a.d
+    public void a(com.octopus.ad.utils.a.c cVar) {
+        if (this.a == null || cVar == null) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("com.coolpad.deviceidsupport", "com.coolpad.deviceidsupport.DeviceIdService"));
+        m.a(this.a, intent, cVar, new m.a() { // from class: com.octopus.ad.utils.a.b.b.1
+            @Override // com.octopus.ad.utils.a.b.m.a
+            public String a(IBinder iBinder) throws com.octopus.ad.utils.a.e, RemoteException {
+                com.octopus.ad.utils.a.a.a.d.a.a aVarA = a.AbstractBinderC0210a.a(iBinder);
+                if (aVarA != null) {
+                    return aVarA.b(b.this.a.getPackageName());
+                }
+                throw new com.octopus.ad.utils.a.e("IDeviceIdManager is null");
+            }
+        });
+    }
+
+    @Override // com.octopus.ad.utils.a.d
+    public boolean a() {
+        Context context = this.a;
+        if (context == null) {
+            return false;
+        }
+        try {
+            return context.getPackageManager().getPackageInfo("com.coolpad.deviceidsupport", 0) != null;
+        } catch (Exception e) {
+            com.octopus.ad.utils.a.f.a(e);
+            return false;
+        }
+    }
+}

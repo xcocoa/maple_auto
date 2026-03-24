@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.cyjh.elfin.ui.view.customview.TitleView
+        android:id="@+id/title_view"
+        style="@style/titleview"/>
+    <FrameLayout
+        android:id="@+id/fl_abnormal_game"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/title_view"/>
+</RelativeLayout>

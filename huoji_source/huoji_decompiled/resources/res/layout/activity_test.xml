@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/gray1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+        <TextView
+            android:id="@+id/tv_start_service"
+            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开启Socket服务"/>
+        <TextView
+            android:id="@+id/tv_stop_service"
+            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_12"
+            android:text="停止Socket服务"/>
+        <TextView
+            android:id="@+id/tv_login"
+            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_12"
+            android:text="登陆"/>
+    </LinearLayout>
+</RelativeLayout>

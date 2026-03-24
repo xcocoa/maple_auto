@@ -1,0 +1,136 @@
+.class public Lcom/octopus/ad/internal/view/AdViewImpl$b$4;
+.super Ljava/lang/Object;
+.source ""
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lcom/octopus/ad/internal/view/AdViewImpl$b;->b()V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# instance fields
+.field public final synthetic a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+
+# direct methods
+.method public constructor <init>(Lcom/octopus/ad/internal/view/AdViewImpl$b;)V
+    .locals 0
+
+    iput-object p1, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public run()V
+    .locals 2
+
+    iget-object v0, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl$b;->a:Lcom/octopus/ad/internal/view/AdViewImpl;
+
+    iget-boolean v1, v0, Lcom/octopus/ad/internal/view/AdViewImpl;->j:Z
+
+    if-nez v1, :cond_2
+
+    invoke-static {v0}, Lcom/octopus/ad/internal/view/AdViewImpl;->v(Lcom/octopus/ad/internal/view/AdViewImpl;)Lcom/octopus/ad/SplashAdListener;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_0
+
+    iget-object v0, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl$b;->a:Lcom/octopus/ad/internal/view/AdViewImpl;
+
+    invoke-static {v0}, Lcom/octopus/ad/internal/view/AdViewImpl;->v(Lcom/octopus/ad/internal/view/AdViewImpl;)Lcom/octopus/ad/SplashAdListener;
+
+    move-result-object v0
+
+    invoke-interface {v0}, Lcom/octopus/ad/SplashAdListener;->onAdClosed()V
+
+    :cond_0
+    iget-object v0, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl$b;->a:Lcom/octopus/ad/internal/view/AdViewImpl;
+
+    invoke-static {v0}, Lcom/octopus/ad/internal/view/AdViewImpl;->o(Lcom/octopus/ad/internal/view/AdViewImpl;)Lcom/octopus/ad/InterstitialAdListener;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_1
+
+    iget-object v0, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl$b;->a:Lcom/octopus/ad/internal/view/AdViewImpl;
+
+    invoke-static {v0}, Lcom/octopus/ad/internal/view/AdViewImpl;->o(Lcom/octopus/ad/internal/view/AdViewImpl;)Lcom/octopus/ad/InterstitialAdListener;
+
+    move-result-object v0
+
+    invoke-interface {v0}, Lcom/octopus/ad/InterstitialAdListener;->onAdClosed()V
+
+    :cond_1
+    iget-object v0, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl$b;->a:Lcom/octopus/ad/internal/view/AdViewImpl;
+
+    invoke-static {v0}, Lcom/octopus/ad/internal/view/AdViewImpl;->t(Lcom/octopus/ad/internal/view/AdViewImpl;)Lcom/octopus/ad/BannerAdListener;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_3
+
+    iget-object v0, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl$b;->a:Lcom/octopus/ad/internal/view/AdViewImpl;
+
+    invoke-static {v0}, Lcom/octopus/ad/internal/view/AdViewImpl;->t(Lcom/octopus/ad/internal/view/AdViewImpl;)Lcom/octopus/ad/BannerAdListener;
+
+    move-result-object v0
+
+    invoke-interface {v0}, Lcom/octopus/ad/BannerAdListener;->onAdClosed()V
+
+    goto :goto_0
+
+    :cond_2
+    invoke-static {v0}, Lcom/octopus/ad/internal/view/AdViewImpl;->p(Lcom/octopus/ad/internal/view/AdViewImpl;)Lcom/octopus/ad/RewardVideoAdListener;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_3
+
+    iget-object v0, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl$b;->a:Lcom/octopus/ad/internal/view/AdViewImpl;
+
+    invoke-static {v0}, Lcom/octopus/ad/internal/view/AdViewImpl;->p(Lcom/octopus/ad/internal/view/AdViewImpl;)Lcom/octopus/ad/RewardVideoAdListener;
+
+    move-result-object v0
+
+    invoke-interface {v0}, Lcom/octopus/ad/RewardVideoAdListener;->onRewardVideoAdClosed()V
+
+    :cond_3
+    :goto_0
+    iget-object v0, p0, Lcom/octopus/ad/internal/view/AdViewImpl$b$4;->a:Lcom/octopus/ad/internal/view/AdViewImpl$b;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl$b;->a:Lcom/octopus/ad/internal/view/AdViewImpl;
+
+    iget-object v0, v0, Lcom/octopus/ad/internal/view/AdViewImpl;->b:Lcom/octopus/ad/internal/view/AdViewImpl$a;
+
+    invoke-virtual {v0}, Lcom/octopus/ad/internal/view/AdViewImpl$a;->b()V
+
+    return-void
+.end method

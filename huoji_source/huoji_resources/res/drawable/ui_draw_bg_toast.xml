@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape android:shape="rectangle"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/ui_show_toast_background" />
+    <corners android:radius="20.0dp" />
+    <padding android:left="16.0dp" android:top="8.0dp" android:right="16.0dp" android:bottom="8.0dp" />
+</shape>

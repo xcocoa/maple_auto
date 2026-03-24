@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/anythink_more_offer_ll_item" android:layout_width="wrap_content" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.anythink.expressad.videocommon.view.RoundImageView android:id="@id/anythink_reward_end_card_item_iv" android:layout_width="60.0dp" android:layout_height="60.0dp" android:layout_marginLeft="5.0dp" android:layout_marginRight="5.0dp" />
+    <TextView android:textSize="9.0sp" android:textColor="@android:color/black" android:ellipsize="end" android:gravity="center" android:id="@id/anythink_reward_end_card_item_title_tv" android:padding="2.0dp" android:layout_width="60.0dp" android:layout_height="15.0dp" android:layout_marginLeft="5.0dp" android:layout_marginRight="5.0dp" android:maxLines="1" />
+</LinearLayout>

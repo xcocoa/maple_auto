@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:orientation="vertical" android:background="@drawable/bg_white_translucent" android:padding="10.0dp" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <Button android:textSize="@dimen/sp_10" android:textColor="@color/white" android:gravity="center" android:id="@id/scriptui_button_savesetting" android:background="@drawable/btn_blue" android:layout_width="60.0dp" android:layout_height="20.0dp" android:text="@string/scriptui_savesetting" />
+        <TextView android:textAppearance="?android:textAppearanceLarge" android:gravity="center" android:id="@id/textView1" android:layout_width="0.0dp" android:layout_height="wrap_content" android:text="@string/scriptui_uisetting" android:layout_weight="1.0" />
+        <ImageView android:id="@id/scriptui_imageview_setting" android:layout_width="60.0dp" android:layout_height="wrap_content" android:src="@drawable/scriptui_setting" />
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:id="@id/ll_dialog_ui_parent" android:padding="10.0dp" android:layout_width="match_parent" android:layout_height="0.0dp" android:layout_weight="1.0">
+        <TextView android:textSize="@dimen/dp_26" android:gravity="center" android:id="@id/tv_tip_load" android:visibility="gone" android:layout_width="match_parent" android:layout_height="match_parent" android:text="加载中..." />
+        <ScrollView android:id="@id/scriptui_scrollview" android:layout_width="match_parent" android:layout_height="match_parent">
+            <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/scriptui_linearlayout_ui" android:layout_width="match_parent" android:layout_height="wrap_content" />
+        </ScrollView>
+    </LinearLayout>
+</LinearLayout>

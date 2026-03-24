@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout android:background="@drawable/anythink_myoffer_g2c_fullori_corner_bg" android:layout_width="120.0dp" android:layout_height="120.0dp" android:layout_marginBottom="140.0dp" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true">
+        <ImageView android:layout_width="72.0dp" android:layout_height="72.0dp" android:layout_marginTop="18.0dp" android:src="@drawable/anythink_myoffer_g2c_fullori_bg" android:layout_centerHorizontal="true" />
+        <ImageView android:id="@id/anythink_myoffer_g2c_fullori_finger" android:layout_width="38.0dp" android:layout_height="38.0dp" android:layout_marginTop="34.0dp" android:src="@drawable/anythink_myoffer_g2c_fullori_finger" android:layout_centerHorizontal="true" />
+        <TextView android:textSize="12.0dp" android:textColor="#ffffff" android:ellipsize="end" android:gravity="center" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="90.0dp" android:text="@string/anythink_myoffer_g2c_fuu_ori_hint" android:maxLines="1" android:lineSpacingMultiplier="1.0" />
+    </RelativeLayout>
+</merge>

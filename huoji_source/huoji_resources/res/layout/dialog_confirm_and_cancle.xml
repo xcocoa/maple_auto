@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" style="@style/float_mini"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textColor="@color/black" android:id="@id/dcacf_title" style="@style/float_save" />
+    <TextView android:id="@id/dcacf_conten" android:text="@string/tips" style="@style/float_tips" />
+    <LinearLayout android:orientation="horizontal" style="@style/hauto">
+        <TextView android:textColor="@color/black" android:id="@id/dcacf_left_btn" android:clickable="true" android:text="@string/btn_cancle" style="@style/btn_cancle" />
+        <TextView android:textColor="@color/black" android:id="@id/dcacf_right_btn" android:clickable="true" android:text="@string/btn_ok" style="@style/btn_sure" />" </LinearLayout>
+</LinearLayout>

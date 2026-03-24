@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:background="@color/anythink_color_cc000000" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:layout_gravity="right" android:id="@id/anythink_vec_iv_close" android:layout_width="30.0dp" android:layout_height="30.0dp" android:layout_margin="10.0dp" android:src="@drawable/anythink_reward_close_ec" />
+    <RelativeLayout android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <ImageView android:id="@id/anythink_vec_iv_icon" android:layout_width="65.0dp" android:layout_height="65.0dp" android:layout_centerHorizontal="true" />
+        <TextView android:textSize="18.0sp" android:textColor="@android:color/white" android:ellipsize="end" android:id="@id/anythink_vec_tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="54.0dp" android:layout_marginTop="12.0dp" android:layout_marginRight="54.0dp" android:singleLine="true" android:layout_below="@id/anythink_vec_iv_icon" android:layout_centerHorizontal="true" />
+        <TextView android:textSize="14.0sp" android:textColor="@color/anythink_cm_color_999999" android:ellipsize="end" android:id="@id/anythink_vec_tv_desc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="54.0dp" android:layout_marginTop="2.0dp" android:layout_marginRight="54.0dp" android:singleLine="true" android:layout_below="@id/anythink_vec_tv_title" android:layout_centerHorizontal="true" />
+        <TextView android:textSize="14.0sp" android:textColor="@android:color/white" android:gravity="center" android:id="@id/anythink_vec_btn" android:background="@drawable/anythink_reward_shape_videoend_buttonbg" android:layout_width="200.0dp" android:layout_height="36.0dp" android:layout_margin="28.0dp" android:layout_below="@id/anythink_vec_tv_desc" android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+</FrameLayout>

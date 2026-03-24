@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@id/anythink_myoffer_letter_top" android:background="@drawable/anythink_myoffer_letter_top" android:layout_width="match_parent" android:layout_height="111.0dp"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textSize="18.0dp" android:textColor="#ffffff" android:gravity="center" android:id="@id/anythink_myoffer_btn_banner_cta" android:background="@drawable/anythink_myoffer_splash_bg_rectangle_btn_cta_asseblem" android:paddingLeft="5.0dp" android:paddingRight="5.0dp" android:layout_width="match_parent" android:layout_height="42.0dp" android:layout_marginLeft="30.0dp" android:layout_marginRight="30.0dp" android:layout_alignParentBottom="true" style="@style/anythink_myoffer_single_line" />
+    <ImageView android:id="@id/anythink_myoffer_letter_icon" android:visibility="gone" android:layout_width="66.0dp" android:layout_height="66.0dp" android:layout_marginLeft="30.0dp" android:layout_marginRight="30.0dp" android:src="@drawable/anythink_myoffer_letter_tip" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" style="@style/anythink_myoffer_single_line" />
+    <include android:layout_width="match_parent" android:layout_height="22.0dp" android:layout_alignParentBottom="true" layout="@layout/anythink_myoffer_include_4_element" />
+</RelativeLayout>

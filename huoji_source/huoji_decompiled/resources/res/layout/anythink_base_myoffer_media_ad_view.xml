@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/anythink_myoffer_media_ad_container"
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <FrameLayout
+        android:id="@+id/anythink_base_media_view_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"/>
+    <FrameLayout
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true">
+        <com.anythink.basead.ui.CloseImageView
+            android:layout_gravity="top|right"
+            android:id="@+id/anythink_base_media_ad_close"
+            android:background="@drawable/anythink_myoffer_base_close_icon"
+            android:layout_width="@dimen/anythink_myoffer_half_screen_button_size"
+            android:layout_height="@dimen/anythink_myoffer_half_screen_button_size"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="12dp"/>
+    </FrameLayout>
+</RelativeLayout>

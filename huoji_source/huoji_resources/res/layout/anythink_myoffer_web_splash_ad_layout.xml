@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout android:id="@id/anythink_myoffer_splash_web" android:layout_width="match_parent" android:layout_height="match_parent" />
+    <include android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="44.0dp" android:layout_alignParentBottom="true" layout="@layout/anythink_myoffer_include_invalid_button" />
+    <include layout="@layout/anythink_myoffer_include_guide2click_mask" />
+    <include layout="@layout/anythink_myoffer_include_guide2click_container" />
+    <include layout="@layout/anythink_myoffer_include_splash_ad_layout_skip_area" />
+</merge>

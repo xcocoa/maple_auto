@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@id/anythink_myoffer_fl_invalid_btn" android:layout_width="match_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:layout_gravity="center" android:id="@id/anythink_myoffer_invalid_btn" android:background="@drawable/anythink_myoffer_invalid_button_shape" android:paddingLeft="17.0dp" android:paddingTop="5.0dp" android:paddingRight="19.0dp" android:paddingBottom="5.0dp" android:layout_width="wrap_content" android:layout_height="30.0dp" android:src="@drawable/anythink_myoffer_left_white_arrow" />
+</FrameLayout>

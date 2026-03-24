@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:id="@id/layoutDisplay" android:background="@drawable/ui_show_homepage_bg" android:layout_width="match_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textSize="16.0sp" android:textColor="@color/ui_show_primary_background" android:gravity="center" android:id="@id/title" android:background="@drawable/ui_show_title_blue" android:padding="4.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Title" />
+    <ScrollView android:id="@id/scrollView" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:id="@id/layout_user" android:background="@android:color/white" android:layout_width="match_parent" android:layout_height="wrap_content" />
+    </ScrollView>
+    <LinearLayout android:orientation="vertical" android:id="@id/control_bar" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <View android:background="@color/ui_show_grey" android:layout_width="match_parent" android:layout_height="1.0dp" />
+        <LinearLayout android:paddingLeft="20.0dp" android:paddingTop="10.0dp" android:paddingRight="20.0dp" android:paddingBottom="10.0dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <Button android:textSize="14.0sp" android:textColor="@color/ui_show_primary_text_color" android:id="@id/exit" android:background="@drawable/bg_exit_button" android:layout_width="wrap_content" android:layout_height="48.0dp" android:layout_marginRight="-1.0dp" android:text="@string/ui_show_negative_button_label" android:layout_weight="1.0" />
+            <Button android:textSize="14.0sp" android:textColor="@color/ui_show_primary_text_color" android:id="@id/next" android:background="@drawable/bg_continue_button" android:layout_width="wrap_content" android:layout_height="48.0dp" android:text="@string/ui_show_positive_button_label" android:layout_weight="1.0" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

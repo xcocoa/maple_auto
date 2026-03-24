@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:textSize="18dp"
+        android:textColor="#ffffff"
+        android:id="@+id/anythink_myoffer_g2c_hint_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="42dp"
+        android:layout_marginRight="42dp"
+        android:text="@string/anythink_myoffer_g2c_hint_text"/>
+    <TextView
+        android:textSize="14dp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:id="@+id/anythink_myoffer_g2c_click_text"
+        android:background="@drawable/anythink_myoffer_bg_button_round_border_white"
+        android:layout_width="100dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="42dp"
+        android:text="@string/anythink_myoffer_next_step"
+        android:layout_below="@+id/anythink_myoffer_g2c_hint_text"
+        android:layout_alignParentRight="true"/>
+</merge>

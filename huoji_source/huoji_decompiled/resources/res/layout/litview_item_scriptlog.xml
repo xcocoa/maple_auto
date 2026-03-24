@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:background="@drawable/bg_listitem"
+    android:padding="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp">
+    <TextView
+        android:textSize="12sp"
+        android:textColor="@android:color/white"
+        android:gravity="bottom|center_horizontal"
+        android:id="@+id/tv_listviewitem_scriptlog_size"
+        android:background="@drawable/ic_scriptlog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:textSize="18sp"
+        android:textColor="@color/gray2"
+        android:id="@+id/tv_listviewitem_scriptlog_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_weight="1"/>
+    <CheckBox
+        android:id="@+id/cb_listviewitem_scriptlog_select"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <ImageView
+        android:id="@+id/img_listviewitem_scriptlog_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_right"/>
+</LinearLayout>

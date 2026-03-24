@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:orientation="vertical" android:background="@drawable/bg_white_translucent" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textAppearance="?android:textAppearanceLargeInverse" android:textColor="@android:color/black" android:id="@id/scriptrtd_textview_title" android:padding="10.0dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/scriptrtd_instructions" />
+    <TextView android:textSize="@dimen/text_sp16" android:gravity="center" android:id="@id/scriptrtd_textview_nortd" android:padding="10.0dp" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/scriptrtd_nortd" android:layout_weight="1.0" />
+    <WebView android:id="@id/scriptrtd_webview" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginBottom="10.0dp" android:layout_weight="1.0" />
+</LinearLayout>

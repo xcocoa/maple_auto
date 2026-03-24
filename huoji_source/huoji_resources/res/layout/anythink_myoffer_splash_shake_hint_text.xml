@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center" android:orientation="horizontal" android:background="@drawable/anythink_myoffer_splash_bg_shake_hint_text" android:paddingLeft="20.0dp" android:paddingRight="20.0dp" android:layout_width="wrap_content" android:layout_height="37.0dp" android:layout_marginTop="23.0dp">
+        <ImageView android:id="@id/anythink_tv_splash_shake_hint_icon" android:visibility="gone" android:layout_width="24.0dp" android:layout_height="24.0dp" android:layout_marginRight="8.0dp" />
+        <TextView android:textSize="16.0dp" android:textColor="#ffffff" android:id="@id/anythink_tv_splash_shake_hint_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxWidth="260.0dp" android:maxLines="1" android:includeFontPadding="false" android:lineSpacingMultiplier="1.0" />
+        <ImageView android:layout_width="12.0dp" android:layout_height="12.0dp" android:layout_marginLeft="6.0dp" android:src="@drawable/anythink_myoffer_right_arrow" android:scaleType="center" />
+    </LinearLayout>
+</FrameLayout>
