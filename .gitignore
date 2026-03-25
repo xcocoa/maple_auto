@@ -33,30 +33,15 @@ wheels/
 logs/
 *.log
 
-# 截图和调试文件（这些是临时文件）
+# 截图和调试文件（临时文件）
 *.png
 *.jpg
 *.jpeg
-screen*.png
-current_screen.png
-live_screen.png
-game_current.png
-roguelike_screen.png
-test_screen.png
-direct_screen.png
-exec_screen.png
-
-# 调试输出
-debug_*.png
-debug_*.jpg
 
 # 临时文件
 temp/
 tmp/
 *.tmp
-
-# 配置文件（可选，如果需要保留隐私）
-# config/*.yaml
 
 # 数据库
 *.db
@@ -69,9 +54,8 @@ Thumbs.db
 # 虚拟环境
 .venv/
 
-# Android 构建产物
-newApp/app/build/
-newApp/.gradle/
+# Android / Gradle
 *.class
 *.dex
 *.jar
+.gradle/

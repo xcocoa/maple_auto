@@ -1,0 +1,8 @@
+{
+  "name": "冒险岛肉鸽自动化",
+  "version": "1.0.0",
+  "description": "基于火鸡脚本引擎优化的完整肉鸽自动化系统，支持自动搜索、战斗、NPC交互、传送门进入",
+  "main": "main.py",
+  "config": "config.json",
+  "author": "maple_auto"
+}

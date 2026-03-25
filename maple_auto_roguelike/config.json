@@ -1,0 +1,692 @@
+{
+  "tabs": [
+    {
+      "title": "小地图设置",
+      "items": [
+        {
+          "type": "label",
+          "label": "小地图区域坐标"
+        },
+        {
+          "key": "minimap_x1",
+          "type": "edittext",
+          "label": "左上角 X",
+          "default": 900,
+          "inputType": "number"
+        },
+        {
+          "key": "minimap_y1",
+          "type": "edittext",
+          "label": "左上角 Y",
+          "default": 20,
+          "inputType": "number"
+        },
+        {
+          "key": "minimap_x2",
+          "type": "edittext",
+          "label": "右下角 X",
+          "default": 1260,
+          "inputType": "number"
+        },
+        {
+          "key": "minimap_y2",
+          "type": "edittext",
+          "label": "右下角 Y",
+          "default": 180,
+          "inputType": "number"
+        },
+        {
+          "type": "label",
+          "label": "检测面积阈值"
+        },
+        {
+          "key": "player_min_area",
+          "type": "edittext",
+          "label": "玩家最小面积",
+          "default": 20,
+          "inputType": "number"
+        },
+        {
+          "key": "player_max_area",
+          "type": "edittext",
+          "label": "玩家最大面积",
+          "default": 500,
+          "inputType": "number"
+        },
+        {
+          "key": "monster_min_area",
+          "type": "edittext",
+          "label": "怪物最小面积",
+          "default": 15,
+          "inputType": "number"
+        },
+        {
+          "key": "monster_max_area",
+          "type": "edittext",
+          "label": "怪物最大面积",
+          "default": 1000,
+          "inputType": "number"
+        },
+        {
+          "key": "npc_min_area",
+          "type": "edittext",
+          "label": "NPC最小面积",
+          "default": 15,
+          "inputType": "number"
+        },
+        {
+          "key": "npc_max_area",
+          "type": "edittext",
+          "label": "NPC最大面积",
+          "default": 500,
+          "inputType": "number"
+        },
+        {
+          "key": "portal_min_area",
+          "type": "edittext",
+          "label": "传送门最小面积",
+          "default": 20,
+          "inputType": "number"
+        },
+        {
+          "key": "portal_max_area",
+          "type": "edittext",
+          "label": "传送门最大面积",
+          "default": 800,
+          "inputType": "number"
+        }
+      ]
+    },
+    {
+      "title": "颜色配置",
+      "items": [
+        {
+          "type": "label",
+          "label": "玩家颜色 (HSV)"
+        },
+        {
+          "key": "player_color_h_low",
+          "type": "slider",
+          "label": "玩家 H 下限",
+          "default": 20,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "player_color_h_high",
+          "type": "slider",
+          "label": "玩家 H 上限",
+          "default": 35,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "player_color_s_low",
+          "type": "slider",
+          "label": "玩家 S 下限",
+          "default": 150,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "player_color_s_high",
+          "type": "slider",
+          "label": "玩家 S 上限",
+          "default": 255,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "player_color_v_low",
+          "type": "slider",
+          "label": "玩家 V 下限",
+          "default": 150,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "player_color_v_high",
+          "type": "slider",
+          "label": "玩家 V 上限",
+          "default": 255,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "type": "label",
+          "label": "怪物颜色 (HSV, 红色范围1)"
+        },
+        {
+          "key": "monster_color_h_low1",
+          "type": "slider",
+          "label": "怪物 H 下限1",
+          "default": 0,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "monster_color_h_high1",
+          "type": "slider",
+          "label": "怪物 H 上限1",
+          "default": 15,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "type": "label",
+          "label": "怪物颜色 (HSV, 红色范围2)"
+        },
+        {
+          "key": "monster_color_h_low2",
+          "type": "slider",
+          "label": "怪物 H 下限2",
+          "default": 160,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "monster_color_h_high2",
+          "type": "slider",
+          "label": "怪物 H 上限2",
+          "default": 180,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "monster_color_s_low",
+          "type": "slider",
+          "label": "怪物 S 下限",
+          "default": 150,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "monster_color_s_high",
+          "type": "slider",
+          "label": "怪物 S 上限",
+          "default": 255,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "monster_color_v_low",
+          "type": "slider",
+          "label": "怪物 V 下限",
+          "default": 150,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "monster_color_v_high",
+          "type": "slider",
+          "label": "怪物 V 上限",
+          "default": 255,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "type": "label",
+          "label": "NPC颜色 (HSV)"
+        },
+        {
+          "key": "npc_color_h_low",
+          "type": "slider",
+          "label": "NPC H 下限",
+          "default": 50,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "npc_color_h_high",
+          "type": "slider",
+          "label": "NPC H 上限",
+          "default": 70,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "npc_color_s_low",
+          "type": "slider",
+          "label": "NPC S 下限",
+          "default": 150,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "npc_color_s_high",
+          "type": "slider",
+          "label": "NPC S 上限",
+          "default": 255,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "npc_color_v_low",
+          "type": "slider",
+          "label": "NPC V 下限",
+          "default": 150,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "npc_color_v_high",
+          "type": "slider",
+          "label": "NPC V 上限",
+          "default": 255,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "type": "label",
+          "label": "传送门颜色 (HSV)"
+        },
+        {
+          "key": "portal_color_h_low",
+          "type": "slider",
+          "label": "传送门 H 下限",
+          "default": 100,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "portal_color_h_high",
+          "type": "slider",
+          "label": "传送门 H 上限",
+          "default": 130,
+          "min": 0,
+          "max": 180
+        },
+        {
+          "key": "portal_color_s_low",
+          "type": "slider",
+          "label": "传送门 S 下限",
+          "default": 150,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "portal_color_s_high",
+          "type": "slider",
+          "label": "传送门 S 上限",
+          "default": 255,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "portal_color_v_low",
+          "type": "slider",
+          "label": "传送门 V 下限",
+          "default": 150,
+          "min": 0,
+          "max": 255
+        },
+        {
+          "key": "portal_color_v_high",
+          "type": "slider",
+          "label": "传送门 V 上限",
+          "default": 255,
+          "min": 0,
+          "max": 255
+        }
+      ]
+    },
+    {
+      "title": "技能配置",
+      "items": [
+        {
+          "key": "skill_count",
+          "type": "spinner",
+          "label": "技能数量",
+          "default": "6",
+          "options": ["1", "2", "3", "4", "5", "6"]
+        },
+        {
+          "type": "label",
+          "label": "技能按钮坐标"
+        },
+        {
+          "key": "skill1_x",
+          "type": "edittext",
+          "label": "技能1 X",
+          "default": 950,
+          "inputType": "number"
+        },
+        {
+          "key": "skill1_y",
+          "type": "edittext",
+          "label": "技能1 Y",
+          "default": 550,
+          "inputType": "number"
+        },
+        {
+          "key": "skill2_x",
+          "type": "edittext",
+          "label": "技能2 X",
+          "default": 1050,
+          "inputType": "number"
+        },
+        {
+          "key": "skill2_y",
+          "type": "edittext",
+          "label": "技能2 Y",
+          "default": 550,
+          "inputType": "number"
+        },
+        {
+          "key": "skill3_x",
+          "type": "edittext",
+          "label": "技能3 X",
+          "default": 1150,
+          "inputType": "number"
+        },
+        {
+          "key": "skill3_y",
+          "type": "edittext",
+          "label": "技能3 Y",
+          "default": 550,
+          "inputType": "number"
+        },
+        {
+          "key": "skill4_x",
+          "type": "edittext",
+          "label": "技能4 X",
+          "default": 950,
+          "inputType": "number"
+        },
+        {
+          "key": "skill4_y",
+          "type": "edittext",
+          "label": "技能4 Y",
+          "default": 650,
+          "inputType": "number"
+        },
+        {
+          "key": "skill5_x",
+          "type": "edittext",
+          "label": "技能5 X",
+          "default": 1050,
+          "inputType": "number"
+        },
+        {
+          "key": "skill5_y",
+          "type": "edittext",
+          "label": "技能5 Y",
+          "default": 650,
+          "inputType": "number"
+        },
+        {
+          "key": "skill6_x",
+          "type": "edittext",
+          "label": "技能6 X",
+          "default": 1150,
+          "inputType": "number"
+        },
+        {
+          "key": "skill6_y",
+          "type": "edittext",
+          "label": "技能6 Y",
+          "default": 650,
+          "inputType": "number"
+        },
+        {
+          "type": "label",
+          "label": "技能按钮检测"
+        },
+        {
+          "key": "skill_button_radius",
+          "type": "edittext",
+          "label": "按钮半径(像素)",
+          "default": 50,
+          "inputType": "number"
+        },
+        {
+          "key": "skill_color_threshold",
+          "type": "edittext",
+          "label": "颜色阈值(低于此值为灰色)",
+          "default": 0.15,
+          "inputType": "number"
+        }
+      ]
+    },
+    {
+      "title": "战斗配置",
+      "items": [
+        {
+          "key": "attack_interval",
+          "type": "edittext",
+          "label": "攻击间隔(秒)",
+          "default": 0.3,
+          "inputType": "number"
+        },
+        {
+          "key": "move_interval",
+          "type": "edittext",
+          "label": "移动间隔(秒)",
+          "default": 0.1,
+          "inputType": "number"
+        },
+        {
+          "key": "jump_cooldown",
+          "type": "edittext",
+          "label": "跳跃冷却(秒)",
+          "default": 0.6,
+          "inputType": "number"
+        },
+        {
+          "key": "dodge_threshold",
+          "type": "edittext",
+          "label": "躲避血量阈值",
+          "default": 0.3,
+          "inputType": "number"
+        },
+        {
+          "type": "label",
+          "label": "虚拟摇杆位置"
+        },
+        {
+          "key": "joystick_x",
+          "type": "edittext",
+          "label": "摇杆 X",
+          "default": 200,
+          "inputType": "number"
+        },
+        {
+          "key": "joystick_y",
+          "type": "edittext",
+          "label": "摇杆 Y",
+          "default": 550,
+          "inputType": "number"
+        },
+        {
+          "type": "label",
+          "label": "跳跃按钮位置"
+        },
+        {
+          "key": "jump_pos_x",
+          "type": "edittext",
+          "label": "跳跃 X",
+          "default": 1200,
+          "inputType": "number"
+        },
+        {
+          "key": "jump_pos_y",
+          "type": "edittext",
+          "label": "跳跃 Y",
+          "default": 630,
+          "inputType": "number"
+        },
+        {
+          "key": "attack_range",
+          "type": "edittext",
+          "label": "攻击范围(像素)",
+          "default": 100,
+          "inputType": "number"
+        },
+        {
+          "key": "npc_interact_range",
+          "type": "edittext",
+          "label": "NPC交互范围(像素)",
+          "default": 50,
+          "inputType": "number"
+        }
+      ]
+    },
+    {
+      "title": "导航配置",
+      "items": [
+        {
+          "key": "nav_move_interval",
+          "type": "edittext",
+          "label": "移动间隔(秒)",
+          "default": 0.1,
+          "inputType": "number"
+        },
+        {
+          "key": "explore_duration",
+          "type": "edittext",
+          "label": "探索持续时间(秒)",
+          "default": 2.0,
+          "inputType": "number"
+        },
+        {
+          "key": "stuck_threshold",
+          "type": "slider",
+          "label": "卡死判定次数",
+          "default": 5,
+          "min": 1,
+          "max": 20
+        },
+        {
+          "type": "label",
+          "label": "导航摇杆位置"
+        },
+        {
+          "key": "nav_joystick_x",
+          "type": "edittext",
+          "label": "摇杆 X",
+          "default": 200,
+          "inputType": "number"
+        },
+        {
+          "key": "nav_joystick_y",
+          "type": "edittext",
+          "label": "摇杆 Y",
+          "default": 550,
+          "inputType": "number"
+        },
+        {
+          "type": "label",
+          "label": "导航跳跃按钮位置"
+        },
+        {
+          "key": "nav_jump_x",
+          "type": "edittext",
+          "label": "跳跃 X",
+          "default": 1200,
+          "inputType": "number"
+        },
+        {
+          "key": "nav_jump_y",
+          "type": "edittext",
+          "label": "跳跃 Y",
+          "default": 630,
+          "inputType": "number"
+        }
+      ]
+    },
+    {
+      "title": "游戏逻辑",
+      "items": [
+        {
+          "key": "arrive_threshold",
+          "type": "edittext",
+          "label": "到达目标阈值(像素)",
+          "default": 20.0,
+          "inputType": "number"
+        },
+        {
+          "key": "portal_arrive_threshold",
+          "type": "edittext",
+          "label": "到达传送门阈值(像素)",
+          "default": 30.0,
+          "inputType": "number"
+        },
+        {
+          "type": "label",
+          "label": "方向键位置(进入传送门)"
+        },
+        {
+          "key": "up_key_x",
+          "type": "edittext",
+          "label": "上键 X",
+          "default": 540,
+          "inputType": "number"
+        },
+        {
+          "key": "up_key_y",
+          "type": "edittext",
+          "label": "上键 Y",
+          "default": 400,
+          "inputType": "number"
+        },
+        {
+          "type": "label",
+          "label": "超时设置(秒)"
+        },
+        {
+          "key": "npc_find_timeout",
+          "type": "edittext",
+          "label": "寻找NPC超时",
+          "default": 10.0,
+          "inputType": "number"
+        },
+        {
+          "key": "max_combat_duration",
+          "type": "edittext",
+          "label": "最大战斗时长",
+          "default": 30.0,
+          "inputType": "number"
+        },
+        {
+          "key": "idle_timeout",
+          "type": "edittext",
+          "label": "空闲状态超时",
+          "default": 5.0,
+          "inputType": "number"
+        },
+        {
+          "key": "portal_timeout",
+          "type": "edittext",
+          "label": "寻找传送门超时",
+          "default": 15.0,
+          "inputType": "number"
+        },
+        {
+          "key": "screenshot_interval",
+          "type": "edittext",
+          "label": "截图间隔",
+          "default": 0.1,
+          "inputType": "number"
+        }
+      ]
+    },
+    {
+      "title": "调试",
+      "items": [
+        {
+          "key": "debug_mode",
+          "type": "switch",
+          "label": "调试模式",
+          "default": false
+        },
+        {
+          "key": "log_level",
+          "type": "spinner",
+          "label": "日志级别",
+          "default": "INFO",
+          "options": ["DEBUG", "INFO", "WARNING", "ERROR"]
+        }
+      ]
+    }
+  ]
+}

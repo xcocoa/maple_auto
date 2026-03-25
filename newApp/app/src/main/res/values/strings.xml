@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">MapleAuto</string>
-    <string name="accessibility_description">MapleAuto 自动化辅助服务，用于游戏自动化操作</string>
-    <string name="input_method_name">MapleAuto 输入法</string>
-</resources>
