@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MapleAuto</string>
+
+    <!-- MainActivity -->
+    <string name="permission_title">权限设置</string>
+    <string name="accessibility_label">无障碍服务</string>
+    <string name="accessibility_desc">用于模拟点击和滑动操作</string>
+    <string name="overlay_label">悬浮窗权限</string>
+    <string name="overlay_desc">用于显示操作面板</string>
+    <string name="capture_label">截图权限</string>
+    <string name="capture_desc">用于识别游戏画面</string>
+    <string name="btn_grant">去开启</string>
+    <string name="btn_granted">已开启</string>
+    <string name="btn_start">启动</string>
+    <string name="btn_stop">停止</string>
+
+    <!-- 浮窗 -->
+    <string name="floating_panel_title">MapleAuto</string>
+    <string name="floating_notification_title">MapleAuto 运行中</string>
+    <string name="floating_notification_text">点击返回应用</string>
+    <string name="capture_notification_title">截图服务运行中</string>
+    <string name="capture_notification_text">正在捕获游戏画面</string>
+
+    <!-- 无障碍服务 -->
+    <string name="gesture_service_description">MapleAuto 手势注入服务，用于在游戏中模拟点击和滑动操作。</string>
+
+    <!-- 状态 -->
+    <string name="state_idle">空闲</string>
+    <string name="state_running">运行中</string>
+    <string name="state_paused">已暂停</string>
+    <string name="state_error">出错</string>
+</resources>

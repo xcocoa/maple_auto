@@ -58,4 +58,12 @@ Thumbs.db
 *.class
 *.dex
 *.jar
+*.apk
+*.ap_
 .gradle/
+local.properties
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
