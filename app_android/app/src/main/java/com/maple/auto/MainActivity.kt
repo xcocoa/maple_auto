@@ -4,7 +4,6 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -22,33 +21,36 @@ import com.maple.auto.diagnostics.DiagnosticTool
 import com.maple.auto.engine.GameEngineManager
 import com.maple.auto.service.FloatingWindowService
 import com.maple.auto.service.GestureService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * 主界面：权限引导 + 启动控制
  *
- * 引导用户开启三项权限：
- * 1. 无障碍服务（手势注入）
- * 2. 悬浮窗权限（操作面板）
- * 3. 截图权限（画面识别）
+ * 优化体验：
+ * - 已授权权限自动隐藏
+ * - 自动请求截图权限
+ * - 全部授权后可一键启动
  */
 class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
+        private const val REQUEST_CAPTURE = 1001
     }
 
-    private lateinit var accessibilityStatusView: TextView
-    private lateinit var accessibilityBtn: Button
-    private lateinit var overlayStatusView: TextView
-    private lateinit var overlayBtn: Button
-    private lateinit var captureStatusView: TextView
+    private lateinit var permissionContainer: LinearLayout
+    private lateinit var accessibilityCard: LinearLayout
+    private lateinit var overlayCard: LinearLayout
+    private lateinit var captureCard: LinearLayout
     private lateinit var captureBtn: Button
     private lateinit var startBtn: Button
     private lateinit var stopBtn: Button
     private lateinit var engineStatusView: TextView
     private var diagnosticTextView: TextView? = null
 
-    private val engineManager = GameEngineManager()
     private lateinit var diagnosticTool: DiagnosticTool
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,12 +58,11 @@ class MainActivity : AppCompatActivity() {
         diagnosticTool = DiagnosticTool(this)
         buildUI()
 
-        // 输出诊断信息到 Logcat
         diagnosticTool.printReport()
     }
 
     override fun onDestroy() {
-        engineManager.destroy()
+        // 引擎现在由单例管理，Activity 销毁时不需要处理
         super.onDestroy()
     }
 
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * 代码构建 UI（避免 layout XML 依赖，简化骨架阶段）
+     * 代码构建 UI
      */
     private fun buildUI() {
         val density = resources.displayMetrics.density
@@ -103,35 +104,39 @@ class MainActivity : AppCompatActivity() {
             setPadding(0, 0, 0, dp(24))
         })
 
-        // 权限卡片：无障碍
-        container.addView(createPermissionCard(
+        // 权限容器（动态显示/隐藏）
+        permissionContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        container.addView(permissionContainer)
+
+        // 无障碍权限卡片
+        accessibilityCard = createPermissionCard(
             getString(R.string.accessibility_label),
             getString(R.string.accessibility_desc)
-        ) { views ->
-            accessibilityStatusView = views.first
-            accessibilityBtn = views.second
-            accessibilityBtn.setOnClickListener { openAccessibilitySettings() }
-        })
+        ) { button ->
+            button.setOnClickListener { openAccessibilitySettings() }
+        }
+        permissionContainer.addView(accessibilityCard)
 
-        // 权限卡片：悬浮窗
-        container.addView(createPermissionCard(
+        // 悬浮窗权限卡片
+        overlayCard = createPermissionCard(
             getString(R.string.overlay_label),
             getString(R.string.overlay_desc)
-        ) { views ->
-            overlayStatusView = views.first
-            overlayBtn = views.second
-            overlayBtn.setOnClickListener { openOverlaySettings() }
-        })
+        ) { button ->
+            button.setOnClickListener { openOverlaySettings() }
+        }
+        permissionContainer.addView(overlayCard)
 
-        // 权限卡片：截图
-        container.addView(createPermissionCard(
+        // 截图权限卡片
+        captureCard = createPermissionCard(
             getString(R.string.capture_label),
             getString(R.string.capture_desc)
-        ) { views ->
-            captureStatusView = views.first
-            captureBtn = views.second
-            captureBtn.setOnClickListener { requestCapturePermission() }
-        })
+        ) { button ->
+            captureBtn = button
+            button.setOnClickListener { requestCapturePermission() }
+        }
+        permissionContainer.addView(captureCard)
 
         // 分隔
         container.addView(View(this).apply {
@@ -179,7 +184,7 @@ class MainActivity : AppCompatActivity() {
         }
         container.addView(stopBtn)
 
-        // 测试手势按钮
+        // 测试按钮
         container.addView(Button(this).apply {
             text = "Test Gesture"
             setBackgroundColor(0xFF2196F3.toInt())
@@ -191,15 +196,13 @@ class MainActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = dp(8) }
             setOnClickListener {
-                Log.d(TAG, "Test Gesture clicked")
-                engineManager.testGesture { results ->
-                    Log.d(TAG, "Gesture test results: $results")
-                    engineStatusView.text = "Gesture: $results"
+                Log.d(TAG, "Test Gesture button clicked")
+                GameEngineManager.testGesture { results ->
+                    runOnUiThread { engineStatusView.text = "Gesture: $results" }
                 }
             }
         })
 
-        // 测试截图按钮
         container.addView(Button(this).apply {
             text = "Test Screenshot"
             setBackgroundColor(0xFFFF9800.toInt())
@@ -211,10 +214,9 @@ class MainActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = dp(8) }
             setOnClickListener {
-                Log.d(TAG, "Test Screenshot clicked")
-                engineManager.testScreenshot { results ->
-                    Log.d(TAG, "Screenshot test results: $results")
-                    engineStatusView.text = "Screenshot: $results"
+                Log.d(TAG, "Test Screenshot button clicked")
+                GameEngineManager.testScreenshot { results ->
+                    runOnUiThread { engineStatusView.text = "Screenshot: $results" }
                 }
             }
         })
@@ -244,7 +246,7 @@ class MainActivity : AppCompatActivity() {
     private fun createPermissionCard(
         title: String,
         desc: String,
-        viewProvider: (Pair<TextView, Button>) -> Unit
+        buttonSetup: (Button) -> Unit
     ): LinearLayout {
         val density = resources.displayMetrics.density
         fun dp(v: Int) = (v * density).toInt()
@@ -278,9 +280,11 @@ class MainActivity : AppCompatActivity() {
             addView(textColumn)
 
             val statusText = TextView(this@MainActivity).apply {
-                setTextColor(0xFFFF6B35.toInt())
+                text = getString(R.string.btn_granted)
+                setTextColor(0xFF4CAF50.toInt())
                 textSize = 12f
                 setPadding(dp(8), 0, dp(8), 0)
+                visibility = View.GONE
             }
             addView(statusText)
 
@@ -292,10 +296,10 @@ class MainActivity : AppCompatActivity() {
                 setPadding(dp(12), dp(4), dp(12), dp(4))
                 minWidth = 0
                 minimumWidth = 0
+                tag = statusText  // 保存statusText引用以便更新
             }
             addView(button)
-
-            viewProvider(Pair(statusText, button))
+            buttonSetup(button)
         }
     }
 
@@ -306,24 +310,38 @@ class MainActivity : AppCompatActivity() {
         val overlay = Settings.canDrawOverlays(this)
         val capture = ScreenCaptureService.instance != null
 
-        updatePermissionUI(accessibilityStatusView, accessibilityBtn, accessibility)
-        updatePermissionUI(overlayStatusView, overlayBtn, overlay)
-        updatePermissionUI(captureStatusView, captureBtn, capture)
+        Log.d(TAG, "Permission status: accessibility=$accessibility, overlay=$overlay, capture=$capture")
+
+        // 更新权限卡片显示状态
+        updateCardVisibility(accessibilityCard, accessibility)
+        updateCardVisibility(overlayCard, overlay)
+        updateCardVisibility(captureCard, capture)
 
         // 所有权限就绪时才允许启动
         val allReady = accessibility && overlay && capture
+        Log.d(TAG, "Start button enabled: $allReady")
         startBtn.isEnabled = allReady
         startBtn.alpha = if (allReady) 1f else 0.5f
+
+        // 自动请求截图权限（如果其他权限已就绪）
+        if (accessibility && overlay && !capture) {
+            Log.d(TAG, "Auto-requesting capture permission")
+            requestCapturePermission()
+        }
     }
 
-    private fun updatePermissionUI(statusView: TextView, button: Button, granted: Boolean) {
-        if (granted) {
-            statusView.text = getString(R.string.btn_granted)
-            statusView.setTextColor(0xFF4CAF50.toInt())
-            button.visibility = View.GONE
-        } else {
-            statusView.text = ""
-            button.visibility = View.VISIBLE
+    private fun updateCardVisibility(card: LinearLayout, granted: Boolean) {
+        // card 结构: [textColumn, statusText, button]
+        if (card.childCount >= 3) {
+            val statusText = card.getChildAt(1) as? TextView
+            val button = card.getChildAt(2) as? Button
+            if (granted) {
+                button?.visibility = View.GONE
+                statusText?.visibility = View.VISIBLE
+            } else {
+                button?.visibility = View.VISIBLE
+                statusText?.visibility = View.GONE
+            }
         }
     }
 
@@ -351,35 +369,60 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestCapturePermission() {
-        startActivity(ScreenCaptureRequestActivity.createIntent(this))
+        startActivityForResult(ScreenCaptureRequestActivity.createIntent(this), REQUEST_CAPTURE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CAPTURE) {
+            refreshPermissionStatus()
+        }
     }
 
     // === 控制逻辑 ===
 
     private fun onStartClicked() {
-        Log.d(TAG, "Start clicked")
+        Log.d(TAG, "onStartClicked called")
+        Log.d(TAG, "Start button text: ${startBtn.text}")
 
-        // 启动浮窗服务
         FloatingWindowService.start(this)
 
-        // 启动游戏引擎
-        engineManager.onError = { error ->
+        GameEngineManager.onError = { error ->
             runOnUiThread {
                 engineStatusView.text = getString(R.string.state_error)
                 engineStatusView.setTextColor(0xFFF44336.toInt())
                 Log.e(TAG, "Engine error: $error")
             }
         }
-        engineManager.start()
+        GameEngineManager.start()
 
-        // 连接浮窗按钮回调
-        FloatingWindowService.instance?.let { fw ->
-            fw.onStartClicked = { engineManager.resume() }
-            fw.onPauseClicked = { engineManager.pause() }
-            fw.onStopClicked = { onStopClicked() }
+        // 延迟设置回调，等待服务创建完成
+        // 使用轮询方式等待服务实例创建
+        GlobalScope.launch(Dispatchers.Main) {
+            var retries = 0
+            while (retries < 20 && FloatingWindowService.instance == null) {
+                delay(100)
+                retries++
+            }
+            FloatingWindowService.instance?.let { fw ->
+                fw.onStartClicked = {
+                    Log.d(TAG, "Floating window play button clicked")
+                    GameEngineManager.resume()
+                }
+                fw.onPauseClicked = {
+                    Log.d(TAG, "Floating window pause button clicked")
+                    GameEngineManager.pause()
+                }
+                fw.onStopClicked = {
+                    Log.d(TAG, "Floating window stop button clicked")
+                    onStopClicked()
+                }
+                Log.d(TAG, "Floating window callbacks set successfully")
+            } ?: run {
+                Log.e(TAG, "FloatingWindowService.instance is still null after ${retries * 100}ms")
+            }
         }
 
-        // 更新 UI
         startBtn.isEnabled = false
         startBtn.alpha = 0.5f
         stopBtn.isEnabled = true
@@ -391,10 +434,7 @@ class MainActivity : AppCompatActivity() {
     private fun onStopClicked() {
         Log.d(TAG, "Stop clicked")
 
-        // 停止游戏引擎
-        engineManager.stop()
-
-        // 停止浮窗
+        GameEngineManager.stop()
         FloatingWindowService.stop(this)
 
         startBtn.isEnabled = true

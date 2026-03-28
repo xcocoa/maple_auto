@@ -139,37 +139,46 @@ def screenshot() -> np.ndarray:
 def _bitmap_to_numpy(bitmap) -> np.ndarray:
     """
     将 Android Bitmap 转为 numpy ndarray (BGR)
-    
+
     Args:
         bitmap: Android Bitmap 对象 (ARGB_8888)
-        
+
     Returns:
         numpy.ndarray: (height, width, 3), BGR, uint8
+
+    注：自动检测并旋转为横屏格式（宽度 > 高度）
     """
     try:
         from java import jarray, jint
-        
+
         # 获取 Bitmap 宽高
         width = bitmap.getWidth()
         height = bitmap.getHeight()
-        
+
         # 分配 Java int[] 并获取像素
         pixels = jarray(jint)(width * height)
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-        
+
         # Java int[] → numpy
         pixel_array = np.array(pixels, dtype=np.int32).view(np.uint32)
         pixel_array = pixel_array.reshape((height, width))
-        
+
         # ARGB 分离，转为 BGR（OpenCV 格式）
         r = ((pixel_array >> 16) & 0xFF).astype(np.uint8)
         g = ((pixel_array >> 8) & 0xFF).astype(np.uint8)
         b = (pixel_array & 0xFF).astype(np.uint8)
-        
+
         bgr = np.stack([b, g, r], axis=2)
-        
+
+        # 自动旋转为横屏格式（游戏通常在横屏运行）
+        # 如果截图是竖屏（高度 > 宽度），旋转 90 度
+        if height > width:
+            # 逆时针旋转 90 度：竖屏 → 横屏
+            bgr = np.rot90(bgr, k=1)  # k=1 = 逆时针 90 度
+            logger.debug(f"Rotated portrait screenshot {width}x{height} to landscape {bgr.shape[1]}x{bgr.shape[0]}")
+
         return bgr
-        
+
     except Exception as e:
         logger.error(f"_bitmap_to_numpy() failed: {e}")
         raise
@@ -303,24 +312,30 @@ def press_home() -> bool:
 # ============================================================================
 
 def get_screen_width() -> int:
-    """获取屏幕宽度（像素）"""
+    """获取屏幕宽度（像素）- 始终返回横屏格式的宽度"""
     try:
         _init_jni_services()
         if _screen_capture_service is None:
             raise RuntimeError("ScreenCaptureService not available")
-        return _screen_capture_service.getScreenWidth()
+        w = _screen_capture_service.getScreenWidth()
+        h = _screen_capture_service.getScreenHeight()
+        # 确保返回横屏尺寸（宽度 >= 高度）
+        return max(w, h)
     except Exception as e:
         logger.error(f"get_screen_width() failed: {e}")
         return 0
 
 
 def get_screen_height() -> int:
-    """获取屏幕高度（像素）"""
+    """获取屏幕高度（像素）- 始终返回横屏格式的高度"""
     try:
         _init_jni_services()
         if _screen_capture_service is None:
             raise RuntimeError("ScreenCaptureService not available")
-        return _screen_capture_service.getScreenHeight()
+        w = _screen_capture_service.getScreenWidth()
+        h = _screen_capture_service.getScreenHeight()
+        # 确保返回横屏尺寸（宽度 >= 高度）
+        return min(w, h)
     except Exception as e:
         logger.error(f"get_screen_height() failed: {e}")
         return 0

@@ -405,9 +405,11 @@ class GameEngine:
         else:
             npc = self._minimap.find_npc(screenshot)
             if npc:
+                logger.info(f"Found NPC at ({npc.x}, {npc.y})")
                 self._change_state(GameState.FIND_NPC, "Detected NPC")
             else:
-                # 探索模式
+                # 探索模式 - 添加调试日志
+                logger.debug(f"SEARCH: No monsters or NPC found, exploring... (screenshot shape={screenshot.shape if screenshot is not None else 'None'})")
                 self._navigator.explore()
 
     def _handle_fight(self, screenshot):
@@ -624,6 +626,12 @@ def get_engine() -> GameEngine:
 
 def start_engine():
     """启动引擎（Kotlin 调用入口）"""
+    # 初始化日志记录，确保输出到 Android logcat
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(levelname)s [%(name)s] %(message)s'
+    )
+    logger.info("=== Game Engine Starting ===")
     get_engine().start()
 
 
