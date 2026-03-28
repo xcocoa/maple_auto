@@ -20,12 +20,12 @@ BASE_WIDTH = 1280
 BASE_HEIGHT = 720
 
 # 默认配置（从 PC 版 config/roguelike.yaml 转换）
-# 所有坐标基于 1280x720 基准分辨率
+# 所有坐标基于 1280x720 横屏分辨率
 DEFAULT_CONFIG = {
     "minimap": {
-        "x1": 900,
-        "y1": 20,
-        "x2": 1260,
+        "x1": 960,
+        "y1": 0,
+        "x2": 1280,
         "y2": 180,
         "colors": {
             "player": {
@@ -165,6 +165,11 @@ class Config:
             logger.warning(f"Invalid screen size {width}x{height}, using base resolution")
             return
 
+        # 确保是横屏格式（宽度 >= 高度）
+        if width < height:
+            logger.warning(f"Received portrait dimensions {width}x{height}, swapping to landscape")
+            width, height = height, width
+
         self._screen_width = width
         self._screen_height = height
         self._scale_x = width / BASE_WIDTH
@@ -175,8 +180,9 @@ class Config:
         self._apply_scaling()
 
         logger.info(
-            f"Screen initialized: {width}x{height}, "
-            f"scale=({self._scale_x:.3f}, {self._scale_y:.3f})"
+            f"Screen initialized: {width}x{height} (landscape), "
+            f"scale=({self._scale_x:.3f}, {self._scale_y:.3f}), "
+            f"base=({BASE_WIDTH}, {BASE_HEIGHT})"
         )
 
     def _apply_scaling(self) -> None:
@@ -186,6 +192,12 @@ class Config:
         self._config['minimap']['y1'] = self.scale_y(DEFAULT_CONFIG['minimap']['y1'])
         self._config['minimap']['x2'] = self.scale_x(DEFAULT_CONFIG['minimap']['x2'])
         self._config['minimap']['y2'] = self.scale_y(DEFAULT_CONFIG['minimap']['y2'])
+        logger.debug(
+            f"Minimap scaled: ({DEFAULT_CONFIG['minimap']['x1']},{DEFAULT_CONFIG['minimap']['y1']})-"
+            f"({DEFAULT_CONFIG['minimap']['x2']},{DEFAULT_CONFIG['minimap']['y2']}) → "
+            f"({self._config['minimap']['x1']},{self._config['minimap']['y1']})-"
+            f"({self._config['minimap']['x2']},{self._config['minimap']['y2']})"
+        )
 
         # 小地图面积阈值也需要按面积比缩放
         area_scale = self._scale_x * self._scale_y
@@ -206,6 +218,15 @@ class Config:
             self.scale_pos(pos)
             for pos in DEFAULT_CONFIG['combat']['skill_positions']
         ]
+        logger.debug(
+            f"Joystick scaled: {DEFAULT_CONFIG['combat']['joystick']} → {self._config['combat']['joystick']}"
+        )
+        logger.debug(
+            f"Jump scaled: {DEFAULT_CONFIG['combat']['jump_pos']} → {self._config['combat']['jump_pos']}"
+        )
+        logger.debug(
+            f"Skills scaled: {DEFAULT_CONFIG['combat']['skill_positions']} → {self._config['combat']['skill_positions']}"
+        )
 
         # 导航坐标
         self._config['navigation']['joystick'] = self.scale_pos(

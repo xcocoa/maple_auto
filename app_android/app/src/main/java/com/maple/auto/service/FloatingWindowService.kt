@@ -87,6 +87,11 @@ class FloatingWindowService : Service() {
     var onPauseClicked: (() -> Unit)? = null
     var onStopClicked: (() -> Unit)? = null
 
+    // 按钮视觉反馈
+    private var playButton: TextView? = null
+    private var pauseButton: TextView? = null
+    private var stopButton: TextView? = null
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -289,15 +294,24 @@ class FloatingWindowService : Service() {
                 gravity = Gravity.CENTER
 
                 // 运行按钮
-                addView(createButton("▶", 0xFF4CAF50.toInt()) { onStartClicked?.invoke() })
+                addView(createButton("▶", 0xFF4CAF50.toInt()) {
+                    Log.d(TAG, "Play button clicked, onStartClicked=${onStartClicked != null}")
+                    onStartClicked?.invoke()
+                })
 
                 // 暂停按钮
-                addView(createButton("⏸", 0xFFFFC107.toInt()) { onPauseClicked?.invoke() }.apply {
+                addView(createButton("⏸", 0xFFFFC107.toInt()) {
+                    Log.d(TAG, "Pause button clicked, onPauseClicked=${onPauseClicked != null}")
+                    onPauseClicked?.invoke()
+                }.apply {
                     (layoutParams as LinearLayout.LayoutParams).leftMargin = dp(8)
                 })
 
                 // 停止按钮
-                addView(createButton("⏹", 0xFFF44336.toInt()) { onStopClicked?.invoke() }.apply {
+                addView(createButton("⏹", 0xFFF44336.toInt()) {
+                    Log.d(TAG, "Stop button clicked, onStopClicked=${onStopClicked != null}")
+                    onStopClicked?.invoke()
+                }.apply {
                     (layoutParams as LinearLayout.LayoutParams).leftMargin = dp(8)
                 })
             })
@@ -327,12 +341,14 @@ class FloatingWindowService : Service() {
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             windowType,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.TOP or Gravity.START
+            // 使用 BOTTOM|END 将悬浮窗放在右下角，避免与游戏控制区域冲突
+            // 游戏控制区域（摇杆、跳跃、技能）在左下和右下，我们放在右上角的屏幕外边缘
+            gravity = Gravity.TOP or Gravity.END
             x = dp(16)
-            y = dp(100)
+            y = dp(16)
         }
 
         // 添加拖动
@@ -348,9 +364,9 @@ class FloatingWindowService : Service() {
             layoutParams!!.flags,
             layoutParams!!.format
         ).apply {
-            gravity = layoutParams!!.gravity
-            x = layoutParams!!.x
-            y = layoutParams!!.y
+            gravity = Gravity.TOP or Gravity.END
+            x = dp(16)
+            y = dp(16)
         }
         windowManager.addView(miniView, miniParams)
     }
@@ -367,7 +383,19 @@ class FloatingWindowService : Service() {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            setOnClickListener { onClick() }
+            setOnClickListener { v ->
+                // 视觉反馈：改变颜色和文字
+                val originalColor = color
+                val originalText = text.toString()
+                setBackgroundColor(0xFF888888.toInt())
+                setText("✓")
+                // 200ms 后恢复
+                postDelayed({
+                    setBackgroundColor(originalColor)
+                    setText(originalText)
+                }, 200)
+                onClick()
+            }
         }
     }
 
