@@ -113,6 +113,47 @@ DEFAULT_CONFIG = {
         "screen_center_x": 640,
         "screen_center_y": 360,
         "up_key_pos": [540, 400]
+    },
+    "ui_detection": {
+        "template_threshold": 0.8,
+        "color_threshold": 0.7,
+        "ui_regions": {
+            "skill_select": [400, 200, 880, 520],
+            "shop": [200, 150, 1080, 570],
+            "hp_bar": [50, 50, 200, 70],
+            "mp_bar": [50, 75, 200, 95],
+            "dialog": [300, 400, 980, 600],
+            "message": [400, 100, 880, 200]
+        }
+    },
+    "skill_priority": {
+        "attack_boost": 100,
+        "damage_increase": 95,
+        "critical_boost": 90,
+        "attack_speed": 85,
+        "heal": 80,
+        "lifesteal": 75,
+        "regeneration": 70,
+        "defense_boost": 65,
+        "damage_reduction": 60,
+        "shield": 55,
+        "speed_boost": 50,
+        "cooldown_reduction": 45,
+        "mana_regen": 40
+    },
+    "template_matcher": {
+        "default_threshold": 0.8,
+        "scales": [0.8, 0.9, 1.0, 1.1, 1.2],
+        "cache_size": 50
+    },
+    "route_priority": {
+        "boss": 100,
+        "elite": 80,
+        "shop": 70,
+        "treasure": 60,
+        "event": 50,
+        "rest": 40,
+        "normal": 30
     }
 }
 

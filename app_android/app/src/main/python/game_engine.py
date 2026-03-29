@@ -23,6 +23,8 @@ from modules.minimap import MinimapDetector, MapObject
 from modules.combat import CombatController
 from modules.navigation import Navigator
 from modules.skill import SkillDetector, Skill
+from modules.ui_detector import UIDetector, UIState
+from modules.skill_selector import SkillSelector
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +36,15 @@ logger = logging.getLogger(__name__)
 class GameState(Enum):
     """游戏状态枚举"""
     IDLE = "idle"
+    MAIN_MENU = "main_menu"           # 主菜单
     SEARCH = "search"
     FIGHT = "fight"
     FIND_NPC = "find_npc"
     INTERACT_NPC = "interact_npc"
     FIND_PORTAL = "find_portal"
     ENTER_PORTAL = "enter_portal"
+    SELECT_SKILL = "select_skill"     # 技能选择
+    SHOP = "shop"                     # 商店
     DEAD = "dead"
     DISCONNECT = "disconnect"
     STUCK_RECOVERY = "stuck_recovery"
@@ -59,6 +64,8 @@ STATE_TIMEOUT_CONFIG = {
     GameState.INTERACT_NPC: ('game.idle_timeout', 8.0, TimeoutLevel.WARNING),
     GameState.FIND_PORTAL: ('game.portal_timeout', 15.0, TimeoutLevel.WARNING),
     GameState.ENTER_PORTAL: ('game.portal_timeout', 15.0, TimeoutLevel.WARNING),
+    GameState.SELECT_SKILL: ('game.idle_timeout', 10.0, TimeoutLevel.WARNING),
+    GameState.SHOP: ('game.idle_timeout', 15.0, TimeoutLevel.WARNING),
     GameState.DEAD: ('game.idle_timeout', 10.0, TimeoutLevel.CRITICAL),
     GameState.DISCONNECT: ('game.idle_timeout', 30.0, TimeoutLevel.CRITICAL),
     GameState.STUCK_RECOVERY: ('game.idle_timeout', 10.0, TimeoutLevel.WARNING),
@@ -139,6 +146,10 @@ class GameEngine:
         self._navigator = Navigator(self._config.get_section('navigation'))
         self._skill_detector = SkillDetector(self._config.get_section('skill'))
 
+        # 新增模块
+        self._ui_detector = UIDetector(self._config.get_section('ui_detection'))
+        self._skill_selector = SkillSelector(self._config.get_section('skill_priority'))
+
         # 性能
         self._perf = PerformanceMonitor()
 
@@ -171,6 +182,7 @@ class GameEngine:
             'stages_cleared': 0,
             'deaths': 0,
             'stuck_recoveries': 0,
+            'skills_selected': 0,
         }
 
         # 回调（由 Kotlin GameEngineManager 设置）
@@ -205,6 +217,11 @@ class GameEngine:
             )
             self._navigator = Navigator(self._config.get_section('navigation'))
             self._skill_detector = SkillDetector(self._config.get_section('skill'))
+
+            # 重新初始化新增模块
+            self._ui_detector = UIDetector(self._config.get_section('ui_detection'))
+            self._skill_selector = SkillSelector(self._config.get_section('skill_priority'))
+
             logger.info(f"Modules reinitialized for {width}x{height}")
         else:
             logger.warning("Could not get screen size, using base 1280x720 coordinates")
@@ -326,12 +343,15 @@ class GameEngine:
 
         # 状态处理器映射
         handlers = {
+            GameState.MAIN_MENU: self._handle_main_menu,
             GameState.SEARCH: self._handle_search,
             GameState.FIGHT: self._handle_fight,
             GameState.FIND_NPC: self._handle_find_npc,
             GameState.INTERACT_NPC: self._handle_interact_npc,
             GameState.FIND_PORTAL: self._handle_find_portal,
             GameState.ENTER_PORTAL: self._handle_enter_portal,
+            GameState.SELECT_SKILL: self._handle_select_skill,
+            GameState.SHOP: self._handle_shop,
             GameState.DEAD: self._handle_dead,
             GameState.STUCK_RECOVERY: self._handle_stuck_recovery,
             GameState.ERROR: self._handle_error,
@@ -607,6 +627,77 @@ class GameEngine:
             self._change_state(GameState.SEARCH, "Recovered from error")
         else:
             time.sleep(1.0)
+
+    def _handle_main_menu(self, screenshot):
+        """主菜单处理：点击开始游戏"""
+        # 检测 UI 状态
+        ui_result = self._ui_detector.detect_state(screenshot)
+
+        if ui_result.state == UIState.MAIN_MENU:
+            # 点击屏幕中心开始游戏
+            cx = self._config.get('game.screen_center_x', 640)
+            cy = self._config.get('game.screen_center_y', 360)
+            platform_bridge.tap(cx, cy)
+            time.sleep(1.0)
+
+            # 检查是否进入游戏
+            verify = platform_bridge.screenshot()
+            if verify is not None:
+                player = self._minimap.find_player(verify)
+                if player is not None:
+                    self._change_state(GameState.SEARCH, "Game started from main menu")
+        else:
+            # 可能已经在游戏中
+            player = self._minimap.find_player(screenshot)
+            if player is not None:
+                self._change_state(GameState.SEARCH, "Already in game")
+
+    def _handle_select_skill(self, screenshot):
+        """技能选择处理：选择最优技能"""
+        result = self._skill_selector.select_best(screenshot)
+
+        if result:
+            # 点击选中的技能
+            pos = result.selected.position
+            platform_bridge.tap(pos[0], pos[1])
+            logger.info(f"Selected skill: {result.selected.skill_name or 'unknown'} at ({pos[0]}, {pos[1]})")
+            self.stats['skills_selected'] += 1
+            time.sleep(0.5)
+
+            # 确认选择（点击确认按钮或再次点击）
+            cx = self._config.get('game.screen_center_x', 640)
+            cy = self._config.get('game.screen_center_y', 360)
+            platform_bridge.tap(cx, cy)
+            time.sleep(1.0)
+
+            # 检查是否进入下一关
+            verify = platform_bridge.screenshot()
+            if verify is not None:
+                monsters = self._minimap.find_monsters(verify)
+                if monsters:
+                    self._change_state(GameState.FIGHT, "Entered next stage with monsters")
+                else:
+                    self._change_state(GameState.SEARCH, "Skill selection done")
+        else:
+            # 未检测到技能选项，可能不是技能选择界面
+            logger.warning("No skill options detected, returning to search")
+            self._change_state(GameState.SEARCH, "No skill options found")
+
+    def _handle_shop(self, screenshot):
+        """商店处理：购买物品或离开"""
+        # 简化处理：点击关闭按钮
+        close_x = self._config.get('game.screen_center_x', 640) + 300
+        close_y = self._config.get('game.screen_center_y', 360) - 200
+
+        platform_bridge.tap(close_x, close_y)
+        time.sleep(0.5)
+
+        # 检查是否关闭
+        verify = platform_bridge.screenshot()
+        if verify is not None:
+            player = self._minimap.find_player(verify)
+            if player is not None:
+                self._change_state(GameState.SEARCH, "Left shop")
 
 
 # ============================================================================
