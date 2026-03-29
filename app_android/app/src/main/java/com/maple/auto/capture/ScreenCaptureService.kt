@@ -102,19 +102,27 @@ class ScreenCaptureService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIFICATION_ID, createNotification())
 
-        if (intent != null && mediaProjection == null) {
-            val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
-            val resultData = intent.getParcelableExtra<Intent>(EXTRA_RESULT_DATA)
+        if (mediaProjection == null) {
+            // 优先从 Intent 获取授权数据
+            var resultCode = intent?.getIntExtra(EXTRA_RESULT_CODE, 0) ?: 0
+            var resultData = intent?.getParcelableExtra<Intent>(EXTRA_RESULT_DATA)
 
-            if (resultData != null) {
+            // 如果 Intent 中没有，尝试从持久化存储恢复
+            if (resultData == null && MediaProjectionStore.hasToken()) {
+                resultCode = MediaProjectionStore.loadResultCode()
+                resultData = MediaProjectionStore.loadResultData()
+                Log.d(TAG, "Restored projection token from store")
+            }
+
+            if (resultData != null && resultCode != 0) {
                 initProjection(resultCode, resultData)
             } else {
-                Log.e(TAG, "Missing result data, stopping")
+                Log.e(TAG, "No valid projection token, stopping")
                 stopSelf()
             }
         }
 
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -192,6 +200,11 @@ class ScreenCaptureService : Service() {
             )
 
             Log.d(TAG, "MediaProjection initialized successfully with AUTO_MIRROR")
+        } catch (e: SecurityException) {
+            Log.e(TAG, "SecurityException - token may be invalid, clearing store", e)
+            MediaProjectionStore.clear()
+            cleanup()
+            stopSelf()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize projection", e)
             cleanup()

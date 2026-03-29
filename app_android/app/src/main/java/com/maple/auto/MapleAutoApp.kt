@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.Log
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.maple.auto.capture.MediaProjectionStore
 import com.maple.auto.config.ConfigManager
 
 class MapleAutoApp : Application() {
@@ -26,6 +27,7 @@ class MapleAutoApp : Application() {
         instance = this
         initPython()
         createNotificationChannels()
+        MediaProjectionStore.init(this)
         ConfigManager.init(this)
     }
 

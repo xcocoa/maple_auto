@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -15,6 +16,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.maple.auto.capture.MediaProjectionStore
 import com.maple.auto.capture.ScreenCaptureRequestActivity
 import com.maple.auto.capture.ScreenCaptureService
 import com.maple.auto.diagnostics.DiagnosticTool
@@ -308,7 +310,8 @@ class MainActivity : AppCompatActivity() {
     private fun refreshPermissionStatus() {
         val accessibility = isAccessibilityEnabled()
         val overlay = Settings.canDrawOverlays(this)
-        val capture = ScreenCaptureService.instance != null
+        // 检查截图服务是否运行，或者是否有保存的授权 token
+        val capture = ScreenCaptureService.instance != null || MediaProjectionStore.hasToken()
 
         Log.d(TAG, "Permission status: accessibility=$accessibility, overlay=$overlay, capture=$capture")
 
@@ -383,7 +386,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun onStartClicked() {
         Log.d(TAG, "onStartClicked called")
-        Log.d(TAG, "Start button text: ${startBtn.text}")
+
+        // 先确保截图服务运行
+        if (ScreenCaptureService.instance == null) {
+            if (MediaProjectionStore.hasToken()) {
+                // 有保存的 token，直接启动截图服务
+                Log.d(TAG, "Starting capture service with stored token")
+                val serviceIntent = Intent(this, ScreenCaptureService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent)
+                } else {
+                    startService(serviceIntent)
+                }
+            } else {
+                Log.w(TAG, "No capture token, should request permission first")
+            }
+        }
 
         FloatingWindowService.start(this)
 

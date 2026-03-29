@@ -50,6 +50,9 @@ class ScreenCaptureRequestActivity : Activity() {
             if (resultCode == RESULT_OK && data != null) {
                 Log.d(TAG, "Screen capture permission granted")
 
+                // 持久化保存授权 token
+                MediaProjectionStore.save(resultCode, data)
+
                 // 启动截图服务
                 val serviceIntent = Intent(this, ScreenCaptureService::class.java).apply {
                     putExtra(ScreenCaptureService.EXTRA_RESULT_CODE, resultCode)
