@@ -37,6 +37,10 @@ logs/
 *.png
 *.jpg
 *.jpeg
+# 但保留模板资源（用于自动化匹配）
+!screenshots/templates/
+!screenshots/templates/*.png
+!screenshots/templates/*.jpg
 
 # 临时文件
 temp/
