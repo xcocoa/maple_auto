@@ -42,49 +42,53 @@ screenshots/
 | time_area.png, wave_info.png | 时间/波次信息 |
 | top_right.png, top_right_full.png | 右上角 UI |
 
-### 从录屏提取的精选模板 (templates/selected/)
+### 精选模板 (templates/selected/) - 2026-03-29 更新
 
-| 文件名 | 尺寸 | 用途 | 状态 |
-|--------|------|------|------|
-| main_menu.png | 854x480 | 游戏主菜单 | ✅ 新增 |
-| main_menu_buttons.png | 854x240 | 主菜单按钮区域 | ✅ 新增 |
-| route_select.png | 854x480 | 关卡/路线选择 | ✅ 新增 |
-| route_select_top.png | 854x240 | 路线上半部分 | ✅ 新增 |
-| skill_select_full.png | 569x288 | 技能选择完整界面 | ✅ |
-| skill_card_1/2/3.png | 95x288 | 单个技能卡片 | ✅ |
-| minimap_game.png | 214x120 | 游戏中小地图 | ✅ |
-| hp_mp_bar.png | 230x80 | 血条/蓝条区域 | ✅ |
-| skill_buttons.png | 427x120 | 技能按钮区域 | ✅ |
-| dialog_bottom.png | 427x160 | 底部对话框 | ✅ |
+| 文件名 | 用途 | 状态 |
+|--------|------|------|
+| main_menu.png | 游戏主菜单 | ✅ |
+| main_menu_buttons.png | 主菜单按钮区域 | ✅ |
+| route_select.png | 关卡/路线选择 | ✅ |
+| route_select_top.png | 路线上半部分 | ✅ |
+| skill_select_full.png | 技能选择完整界面 | ✅ |
+| skill_select_new.png | 技能选择新版 | ✅ |
+| skill_card_1/2/3.png | 单个技能卡片 | ✅ |
+| minimap_game.png | 游戏中小地图 | ✅ |
+| hp_mp_bar.png | 血条/蓝条区域 | ✅ |
+| skill_buttons.png | 技能按钮区域 | ✅ |
+| dialog_bottom.png | 底部对话框 | ✅ |
+| **game_complete.png** | **游戏完成界面** | ✅ 新增 |
+| **button_start_v2.png** | **开始按钮** | ✅ 已裁剪 (285x70) |
+| **button_attack.png** | **攻击按钮** | ✅ 已裁剪 (80x40) |
+| **button_confirm.png** | **确认按钮** | ✅ 已裁剪 (200x45) |
+| skill_buttons_area.png | 技能按钮区域 | ✅ |
+| game_full_full_sample_000.png | 完整游戏界面样本 | ✅ |
+| minimap_corner_full_sample_000.png | 小地图角落样本 | ✅ |
+| bottom_controls_full_sample_000.png | 底部控制区样本 | ✅ |
+| top_status_full_sample_000.png | 顶部状态区样本 | ✅ |
 
-## 仍缺少的模板
+## 模板状态总结 (2026-03-29)
 
-### ⚠️ 需要补充
+### ✅ 已完成的核心模板
 
-| 模板名称 | 用途 | 状态 |
-|----------|------|------|
-| shop.png | 商店界面 | ❌ 缺少 |
-| game_over.png | 死亡/结束界面 | ❌ 缺少 |
-| route_boss.png | Boss 路线图标 | ❌ 缺少 |
-| route_elite.png | 精英怪路线图标 | ❌ 缺少 |
-| route_shop.png | 商店路线图标 | ❌ 缺少 |
+| 界面类型 | 模板文件 | 覆盖场景 |
+|----------|----------|----------|
+| 主菜单 | main_menu.png, button_start_v2.png | 游戏启动/返回 |
+| 路线选择 | route_select.png | 关卡选择 |
+| 技能选择 | skill_select_full.png, skill_card_*.png | 技能升级选择 |
+| 游戏战斗 | minimap_game.png, skill_buttons.png, button_attack.png | 战斗中检测 |
+| 游戏完成 | game_complete.png, button_confirm.png | 结算界面 |
+| 对话框 | dialog_bottom.png | NPC对话 |
 
-### 按钮模板（可从现有截图裁剪）
+**模板匹配测试：** 所有按钮模板匹配度均为 1.0（完美匹配）
 
-| 模板名称 | 用途 | 状态 |
-|----------|------|------|
-| button_start.png | 开始游戏按钮 | ⚠️ 可从 main_menu 裁剪 |
-| button_confirm.png | 确认按钮 | ⚠️ 可从 dialog 裁剪 |
-| button_attack.png | 攻击按钮 | ⚠️ 可从 skill_buttons 裁剪 |
-| button_skill_*.png | 技能按钮 | ⚠️ 可从 skill_buttons 裁剪 |
+### ⏳ 暂不处理
 
-### 技能图标（需识别具体技能）
-
-| 模板名称 | 用途 | 状态 |
-|----------|------|------|
-| skill_attack_boost.png | 攻击提升图标 | ⚠️ 需从技能卡片中识别 |
-| skill_heal.png | 治疗图标 | ⚠️ 需从技能卡片中识别 |
-| skill_defense.png | 防御图标 | ⚠️ 需从技能卡片中识别 |
+| 模板名称 | 说明 |
+|----------|------|
+| skill_shop.png | 技能商店界面（用户说先不考虑）|
+| game_over.png | 无死亡界面（用户确认不存在）|
+| route_boss/elite/shop.png | 路线图标（可从 route_select 裁剪）|
 
 ## 模板使用示例
 
@@ -114,9 +118,9 @@ if result:
 
 ## 下一步建议
 
-1. **裁剪按钮模板** - 从 main_menu_buttons 和 skill_buttons 中裁剪
+1. ✅ **裁剪按钮模板** - 已完成
 2. **识别技能图标** - 从 skill_card 中识别具体技能类型
-3. **补充商店/死亡界面** - 需要新的录屏或截图
+3. **集成到 Android App** - 将模板打包到 app_android 资源中
 
 ## 模板制作规范
 

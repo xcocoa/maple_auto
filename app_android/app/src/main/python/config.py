@@ -49,13 +49,13 @@ DEFAULT_CONFIG = {
         },
         "thresholds": {
             "player_min": 20,
-            "player_max": 500,
-            "monster_min": 15,
-            "monster_max": 1000,
+            "player_max": 2000,
+            "monster_min": 10,
+            "monster_max": 50000,
             "npc_min": 15,
-            "npc_max": 500,
+            "npc_max": 2000,
             "portal_min": 20,
-            "portal_max": 800
+            "portal_max": 2000
         }
     },
     "combat": {
@@ -124,6 +124,23 @@ DEFAULT_CONFIG = {
             "mp_bar": [50, 75, 200, 95],
             "dialog": [300, 400, 980, 600],
             "message": [400, 100, 880, 200]
+        },
+        "templates": {
+            "main_menu": "templates/main_menu.png",
+            "skill_select": "templates/skill_select_new_cards.png",
+            "skill_select_full": "templates/skill_select_full.png",
+            "game_complete": "templates/game_complete.png",
+            "route_select": "templates/route_select.png",
+            "dialog": "templates/dialog_bottom.png",
+            "minimap": "templates/minimap_game.png",
+            "skill_buttons": "templates/skill_buttons.png",
+            "hp_mp_bar": "templates/hp_mp_bar.png",
+            "button_start": "templates/button_start_v2.png",
+            "button_attack": "templates/button_attack.png",
+            "button_confirm": "templates/button_confirm.png",
+            "skill_card_1": "templates/skill_card_1.png",
+            "skill_card_2": "templates/skill_card_2.png",
+            "skill_card_3": "templates/skill_card_3.png"
         }
     },
     "skill_priority": {
