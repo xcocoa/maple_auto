@@ -269,6 +269,11 @@ class ScreenCaptureService : Service() {
     fun getScreenHeight(): Int = screenHeight
 
     /**
+     * MediaProjection 是否已初始化
+     */
+    fun isProjectionReady(): Boolean = mediaProjection != null
+
+    /**
      * 清理所有资源
      */
     private fun cleanup() {

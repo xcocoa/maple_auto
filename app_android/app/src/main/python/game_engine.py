@@ -169,9 +169,9 @@ class GameEngine:
         self._stuck_recovery_attempts = 0
         self._max_stuck_recovery = 3
         self._screenshot_fail_count = 0
-        self._max_screenshot_fails = 5
+        self._max_screenshot_fails = 30  # 允许更多截图失败（等待截图服务初始化）
         self._player_not_found_count = 0
-        self._player_not_found_threshold = 10
+        self._player_not_found_threshold = 30
 
         # 统计
         self._start_time = 0.0

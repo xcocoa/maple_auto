@@ -310,8 +310,8 @@ class MainActivity : AppCompatActivity() {
     private fun refreshPermissionStatus() {
         val accessibility = isAccessibilityEnabled()
         val overlay = Settings.canDrawOverlays(this)
-        // 检查截图服务是否运行，或者是否有保存的授权 token
-        val capture = ScreenCaptureService.instance != null || MediaProjectionStore.hasToken()
+        // 检查截图服务是否运行且 MediaProjection 已初始化
+        val capture = ScreenCaptureService.instance?.isProjectionReady() == true
 
         Log.d(TAG, "Permission status: accessibility=$accessibility, overlay=$overlay, capture=$capture")
 
@@ -387,20 +387,14 @@ class MainActivity : AppCompatActivity() {
     private fun onStartClicked() {
         Log.d(TAG, "onStartClicked called")
 
-        // 先确保截图服务运行
-        if (ScreenCaptureService.instance == null) {
-            if (MediaProjectionStore.hasToken()) {
-                // 有保存的 token，直接启动截图服务
-                Log.d(TAG, "Starting capture service with stored token")
-                val serviceIntent = Intent(this, ScreenCaptureService::class.java)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(serviceIntent)
-                } else {
-                    startService(serviceIntent)
-                }
-            } else {
-                Log.w(TAG, "No capture token, should request permission first")
-            }
+        // 先确保截图服务运行且 MediaProjection 已初始化
+        val captureReady = ScreenCaptureService.instance?.isProjectionReady() == true
+        if (!captureReady) {
+            // 清除可能失效的旧 token，重新请求授权
+            Log.d(TAG, "Capture not ready, requesting fresh permission")
+            MediaProjectionStore.clear()
+            requestCapturePermission()
+            return
         }
 
         FloatingWindowService.start(this)
@@ -412,6 +406,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, "Engine error: $error")
             }
         }
+
         GameEngineManager.start()
 
         // 延迟设置回调，等待服务创建完成

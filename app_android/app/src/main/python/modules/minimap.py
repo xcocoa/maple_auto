@@ -11,6 +11,7 @@
 """
 
 import cv2
+import os
 import time
 import numpy as np
 import logging
@@ -95,6 +96,9 @@ class MinimapDetector:
     # 置信度阈值
     MIN_CONFIDENCE = 0.6
 
+    # 调试模式开关（可通过环境变量控制）
+    DEBUG_MODE = os.environ.get('MAPLE_DEBUG', '0') == '1'
+
     def __init__(self, config: Dict[str, Any]):
         """
         初始化小地图检测器
@@ -123,9 +127,33 @@ class MinimapDetector:
         self.colors = config.get('colors', {})
         self._init_color_ranges()
 
-        # 调试：扫描整个截图找到最可能的 UI 区域
-        self._scan_done = False
-        self._scan_count = 0
+        # 调试计数器
+        self._frame_count = 0
+        self._debug_interval = 100  # 每 100 帧输出一次详细调试
+
+    def _save_debug_image(self, image: np.ndarray, name: str, screenshot: np.ndarray = None):
+        """保存调试图像到应用私有目录"""
+        try:
+            debug_dir = os.path.join(
+                os.environ.get('HOME', '/data/data/com.maple.auto'),
+                'files', 'debug'
+            )
+            os.makedirs(debug_dir, exist_ok=True)
+
+            # 保存图像
+            cv2.imwrite(os.path.join(debug_dir, f'{name}.png'), image)
+            logger.warning(f"[DEBUG] Saved {name}.png to {debug_dir}")
+
+            # 同时保存完整截图（可选）
+            if screenshot is not None and self._frame_count % 200 == 0:
+                cv2.imwrite(os.path.join(debug_dir, f'full_frame_{self._frame_count}.png'), screenshot)
+        except Exception as e:
+            logger.warning(f"[DEBUG] Failed to save image: {e}")
+
+    def _should_debug(self) -> bool:
+        """判断当前帧是否需要输出调试信息"""
+        # 前 5 帧强制调试，之后每 100 帧调试一次
+        return self._frame_count <= 5 or self._frame_count % self._debug_interval == 0
 
     def _init_color_ranges(self):
         """初始化自适应颜色范围"""
@@ -176,65 +204,66 @@ class MinimapDetector:
         """提取小地图区域"""
         if screenshot is None:
             return None
+
+        self._frame_count += 1
         h, w = screenshot.shape[:2]
 
-        # 调试：扫描整个截图的亮度分布（只在前 10 帧）
-        if self._scan_count < 10:
-            self._scan_count += 1
-            if self._scan_count == 1:
-                # 将截图分成网格，检查每个区域的亮度
-                grid_size = 4
-                cell_w = w // grid_size
-                cell_h = h // grid_size
-                logger.warning("DEBUG: Scanning screenshot brightness...")
-                for row in range(grid_size):
-                    for col in range(grid_size):
-                        x1, y1 = col * cell_w, row * cell_h
-                        x2, y2 = x1 + cell_w, y1 + cell_h
-                        region = screenshot[y1:y2, x1:x2]
-                        mean = np.mean(region)
-                        std = np.std(region)
-                        logger.warning(f"  Grid[{row},{col}]: ({x1},{y1})-({x2},{y2}), mean={mean:.1f}, std={std:.1f}")
-
-                # 尝试找到小地图：寻找高 std 的区域（色彩变化大）
-                logger.warning("DEBUG: Looking for minimap region...")
-                # 检查顶部区域（小地图通常在顶部）
-                for x_start in range(0, w, 100):
-                    for width in [150, 200, 250, 300]:
-                        if x_start + width > w:
-                            continue
-                        region = screenshot[0:150, x_start:x_start+width]
-                        mean = np.mean(region)
-                        std = np.std(region)
-                        # 小地图通常有中等亮度和高色彩变化
-                        if 80 < mean < 200 and std > 50:
-                            logger.warning(f"  Potential minimap: ({x_start},0)-({x_start+width},150), mean={mean:.1f}, std={std:.1f}")
+        # 调试模式：第一帧输出截图分析信息
+        if self.DEBUG_MODE and self._frame_count == 1:
+            self._analyze_first_frame(screenshot)
 
         # 边界检查
         x1 = max(0, min(self.x1, w - 1))
         y1 = max(0, min(self.y1, h - 1))
         x2 = max(x1 + 1, min(self.x2, w))
         y2 = max(y1 + 1, min(self.y2, h))
-        logger.debug(f"_extract_minimap: screenshot={w}x{h}, region=({self.x1},{self.y1})-({self.x2},{self.y2}) -> ({x1},{y1})-({x2},{y2})")
+
+        if self._should_debug():
+            logger.warning(f"[Minimap] Frame {self._frame_count}: screenshot={w}x{h}, region=({self.x1},{self.y1})-({self.x2},{self.y2})")
 
         minimap = screenshot[y1:y2, x1:x2]
 
-        # 调试：输出小地图区域的像素统计
-        if minimap.size > 0:
-            mean_color = np.mean(minimap, axis=(0, 1))
-            min_color = np.min(minimap, axis=(0, 1))
-            max_color = np.max(minimap, axis=(0, 1))
-            logger.debug(f"_extract_minimap: mean_BGR={mean_color}, min={min_color}, max={max_color}, shape={minimap.shape}")
+        # 检查小地图有效性
+        if minimap.size == 0:
+            logger.warning(f"[Minimap] Empty minimap region!")
+            return None
 
-            # 如果平均值为 0，保存调试截图
-            if mean_color.sum() == 0:
-                try:
-                    cv2.imwrite('/sdcard/minimap_debug.png', minimap)
-                    logger.warning("Minimap is all black! Saved debug image to /sdcard/minimap_debug.png")
-                except Exception as e:
-                    logger.warning(f"Could not save debug image: {e}")
+        mean_color = np.mean(minimap, axis=(0, 1))
+
+        # 如果全黑，可能是截图服务未初始化
+        if mean_color.sum() == 0:
+            if self._should_debug():
+                logger.warning(f"[Minimap] All black! MediaProjection may not be ready")
+                self._save_debug_image(minimap, f'minimap_black_{self._frame_count}', screenshot)
+            return minimap  # 仍然返回，让后续检测处理
 
         return minimap
+
+    def _analyze_first_frame(self, screenshot: np.ndarray):
+        """分析第一帧截图，帮助定位小地图区域"""
+        h, w = screenshot.shape[:2]
+        logger.warning(f"=== First Frame Analysis ===")
+        logger.warning(f"  Screenshot size: {w}x{h}")
+        logger.warning(f"  Expected minimap: ({self.x1},{self.y1})-({self.x2},{self.y2})")
+
+        # 网格分析亮度分布
+        grid_size = 4
+        cell_w = w // grid_size
+        cell_h = h // grid_size
+
+        for row in range(grid_size):
+            for col in range(grid_size):
+                x1 = col * cell_w
+                y1 = row * cell_h
+                x2 = x1 + cell_w
+                y2 = y1 + cell_h
+                region = screenshot[y1:y2, x1:x2]
+                mean = np.mean(region)
+                std = np.std(region)
+                logger.warning(f"  Grid[{row},{col}]: ({x1},{y1})-({x2},{y2}), mean={mean:.1f}, std={std:.1f}")
+
+        # 保存第一帧
+        self._save_debug_image(screenshot, 'first_frame')
 
     def _morphology_pipeline(self, mask: np.ndarray) -> np.ndarray:
         """形态学处理管道：闭运算 → 开运算 → 高斯模糊 → 二值化"""
@@ -322,10 +351,24 @@ class MinimapDetector:
 
     def find_monsters(self, screenshot: np.ndarray) -> List[MapObject]:
         """查找怪物位置（红色三角，双范围）"""
+        verbose = self._should_debug()
+
         minimap = self._extract_minimap(screenshot)
         if minimap is None or minimap.size == 0:
-            logger.debug("find_monsters: minimap extraction failed")
+            if verbose:
+                logger.warning(f"[Monster] Frame {self._frame_count}: minimap extraction FAILED")
             return []
+
+        if verbose:
+            logger.warning(f"=== [Monster] DEBUG (frame {self._frame_count}) ===")
+            logger.warning(f"  minimap: shape={minimap.shape}, mean={np.mean(minimap):.1f}")
+            logger.warning(f"  color1 (red): {self.monster_color1.lower} - {self.monster_color1.upper}")
+            logger.warning(f"  color2 (red-wrap): {self.monster_color2.lower} - {self.monster_color2.upper}")
+            logger.warning(f"  area range: {self.monster_min_area} - {self.monster_max_area}")
+
+            # 前 5 帧保存调试图像
+            if self._frame_count <= 5:
+                self._save_debug_image(minimap, f'minimap_{self._frame_count}', screenshot)
 
         hsv = cv2.cvtColor(minimap, cv2.COLOR_BGR2HSV)
 
@@ -334,28 +377,32 @@ class MinimapDetector:
         mask2 = cv2.inRange(hsv, self.monster_color2.lower, self.monster_color2.upper)
         mask = cv2.bitwise_or(mask1, mask2)
 
-        # 调试：HSV 值统计
         mask1_count = cv2.countNonZero(mask1)
         mask2_count = cv2.countNonZero(mask2)
-        logger.debug(f"find_monsters: minimap shape={minimap.shape}, mask1={mask1_count}, mask2={mask2_count}")
 
-        # 调试：如果两个掩码都没有检测到，尝试输出一些 HSV 统计
+        if verbose:
+            logger.warning(f"  mask pixels: red={mask1_count}, red-wrap={mask2_count}, total={mask1_count+mask2_count}")
+
+        # 如果没有检测到红色，分析 HSV 分布
         if mask1_count == 0 and mask2_count == 0:
             hsv_mean = np.mean(hsv, axis=(0, 1))
-            hsv_std = np.std(hsv, axis=(0, 1))
-            logger.warning(f"find_monsters: No red detected! HSV mean={hsv_mean}, std={hsv_std}")
-            # 尝试放宽阈值调试
-            debug_mask = cv2.inRange(hsv, np.array([0, 50, 50]), np.array([15, 255, 255]))
-            debug_count = cv2.countNonZero(debug_mask)
-            logger.warning(f"find_monsters: Debug mask (0-15, 50-255, 50-255) count={debug_count}")
+            logger.warning(f"[Monster] No red detected! HSV mean={hsv_mean}")
+
+            # 尝试放宽阈值
+            for s_low in [30, 50, 80, 100]:
+                debug_mask = cv2.inRange(hsv, np.array([0, s_low, s_low]), np.array([15, 255, 255]))
+                count = cv2.countNonZero(debug_mask)
+                if count > 0:
+                    logger.warning(f"  relaxed (H:0-15, S:{s_low}+, V:{s_low}+): {count}px")
 
         processed = self._morphology_pipeline(mask)
         contours, _ = cv2.findContours(processed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # 调试：输出轮廓面积分布
-        if mask1_count > 0 or mask2_count > 0:
-            areas = [cv2.contourArea(c) for c in contours]
-            logger.debug(f"find_monsters: Found {len(contours)} contours, areas={sorted(areas, reverse=True)[:10]}, thresholds=({self.monster_min_area}, {self.monster_max_area})")
+        areas = [cv2.contourArea(c) for c in contours]
+        if verbose:
+            logger.warning(f"  contours: {len(contours)}, top areas={sorted(areas, reverse=True)[:5]}")
+            in_range = [a for a in areas if self.monster_min_area < a < self.monster_max_area]
+            logger.warning(f"  in-range: {len(in_range)} contours")
 
         monsters = []
         detected_hsv_values = []
@@ -370,9 +417,7 @@ class MinimapDetector:
                     screen_x = self.x1 + local_x
                     screen_y = self.y1 + local_y
 
-                    confidence = self._compute_confidence(
-                        area, self.monster_min_area, self.monster_max_area
-                    )
+                    confidence = self._compute_confidence(area, self.monster_min_area, self.monster_max_area)
                     if confidence >= self.MIN_CONFIDENCE:
                         monsters.append(MapObject(
                             x=screen_x, y=screen_y,
@@ -381,12 +426,12 @@ class MinimapDetector:
                         if 0 <= local_y < hsv.shape[0] and 0 <= local_x < hsv.shape[1]:
                             detected_hsv_values.append(hsv[local_y, local_x].astype(np.float32))
 
-        # 更新自适应
+        # 自适应更新
         if detected_hsv_values:
             self.monster_color1.record(detected_hsv_values)
             self.monster_color1.calibrate()
 
-        # 按综合排序：60% 距离 + 40% 置信度
+        # 按距离和置信度排序
         center_x = self.x1 + self.map_w // 2
         center_y = self.y1 + self.map_h // 2
         max_dist = self.map_w + self.map_h
@@ -395,10 +440,8 @@ class MinimapDetector:
             + (1.0 - m.confidence) * 0.4
         ))
 
-        if monsters:
-            logger.debug(f"find_monsters: Found {len(monsters)} monsters, first at ({monsters[0].x}, {monsters[0].y})")
-        else:
-            logger.debug(f"find_monsters: No monsters found (minimap shape={minimap.shape}, mask1={mask1_count}, mask2={mask2_count})")
+        if verbose:
+            logger.warning(f"  result: {len(monsters)} monsters detected")
 
         return monsters
 
