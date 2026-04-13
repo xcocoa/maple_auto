@@ -723,6 +723,21 @@ def start_engine():
         format='%(levelname)s [%(name)s] %(message)s'
     )
     logger.info("=== Game Engine Starting ===")
+    
+    # 首次启动时运行小地图调试
+    import os
+    debug_flag = "/tmp/minimap_debug_done"
+    if not os.path.exists(debug_flag):
+        logger.info("Running minimap debug on first start...")
+        try:
+            result = debug_minimap_detection()
+            logger.info(f"Debug result: {result}")
+            os.makedirs("/tmp", exist_ok=True)
+            with open(debug_flag, "w") as f:
+                f.write("done")
+        except Exception as e:
+            logger.error(f"Debug failed: {e}", exc_info=True)
+    
     get_engine().start()
 
 
@@ -790,6 +805,97 @@ def test_gesture():
         results['error'] = str(e)
 
     log.info(f"=== Gesture Test Results: {results} ===")
+    return results
+
+
+def debug_minimap_detection():
+    """调试小地图检测（Kotlin 调用入口）"""
+    import logging
+    import cv2
+    import numpy as np
+    
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger("minimap_debug")
+    logger.info("=== Minimap Debug Start ===")
+    results = {}
+    
+    try:
+        platform_bridge.initialize()
+        
+        # 初始化配置
+        config = Config()
+        width = platform_bridge.get_screen_width()
+        height = platform_bridge.get_screen_height()
+        config.init_screen_size(width, height)
+        results['screen_size'] = f"{width}x{height}"
+        results['scale_factor'] = list(config.scale_factor)
+        logger.info(f"Screen: {width}x{height}, scale={config.scale_factor}")
+        
+        # 截图
+        screenshot = platform_bridge.screenshot()
+        if screenshot is None:
+            results['error'] = "screenshot() returned None"
+            logger.error(results['error'])
+            return results
+        
+        results['screenshot_shape'] = list(screenshot.shape)
+        logger.info(f"Screenshot: {screenshot.shape}")
+        
+        # 小地图配置
+        minimap_cfg = config.get_section('minimap')
+        x1 = minimap_cfg.get('x1', 900)
+        y1 = minimap_cfg.get('y1', 20)
+        x2 = minimap_cfg.get('x2', 1260)
+        y2 = minimap_cfg.get('y2', 180)
+        
+        results['minimap_region'] = {'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2}
+        logger.info(f"Minimap region: ({x1}, {y1}) - ({x2}, {y2})")
+        
+        # 检查边界
+        h_img, w_img = screenshot.shape[:2]
+        results['image_bounds'] = {'width': w_img, 'height': h_img}
+        
+        in_bounds = (x2 <= w_img) and (y2 <= h_img)
+        results['in_bounds'] = in_bounds
+        logger.info(f"In bounds: {in_bounds} (x2={x2} vs width={w_img}, y2={y2} vs height={h_img})")
+        
+        if not in_bounds:
+            results['warning'] = "Minimap region out of bounds!"
+            logger.warning("Minimap region exceeds image dimensions!")
+        
+        # 提取小地图
+        minimap = screenshot[y1:y2, x1:x2]
+        logger.info(f"Minimap extracted: {minimap.shape}")
+        
+        if minimap.size > 0:
+            # 分析内容
+            mean_bgr = np.mean(minimap, axis=(0, 1))
+            mean_hsv = np.mean(cv2.cvtColor(minimap, cv2.COLOR_BGR2HSV), axis=(0, 1))
+            results['minimap_mean_bgr'] = [float(v) for v in mean_bgr]
+            results['minimap_mean_hsv'] = [float(v) for v in mean_hsv]
+            logger.info(f"Minimap BGR mean: {mean_bgr}, HSV mean: {mean_hsv}")
+        
+        # 测试怪物检测
+        minimap_detector = MinimapDetector(minimap_cfg)
+        monsters = minimap_detector.find_monsters(screenshot)
+        results['monsters_found'] = len(monsters)
+        logger.info(f"Monsters found: {len(monsters)}")
+        for i, m in enumerate(monsters):
+            logger.info(f"  {i}: ({m.x}, {m.y}), area={m.area:.1f}, conf={m.confidence:.3f}")
+        
+        # 测试玩家检测
+        player = minimap_detector.find_player(screenshot)
+        results['player_found'] = player is not None
+        if player:
+            logger.info(f"Player: ({player.x}, {player.y}), area={player.area:.1f}")
+        
+        results['success'] = True
+        
+    except Exception as e:
+        logger.error(f"Debug failed: {e}", exc_info=True)
+        results['error'] = str(e)
+    
+    logger.info(f"=== Minimap Debug Results: {results} ===")
     return results
 
 

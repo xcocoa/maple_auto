@@ -23,35 +23,35 @@ BASE_HEIGHT = 720
 # 所有坐标基于 1280x720 横屏分辨率
 DEFAULT_CONFIG = {
     "minimap": {
-        "x1": 960,
+        "x1": 415,
         "y1": 0,
-        "x2": 1280,
-        "y2": 180,
+        "x2": 732,
+        "y2": 177,
         "colors": {
             "player": {
-                "lower": [15, 50, 100],
+                "lower": [15, 100, 150],
                 "upper": [40, 255, 255]
             },
             "monster": {
-                "lower1": [0, 50, 100],
-                "upper1": [15, 255, 255],
-                "lower2": [160, 50, 100],
+                "lower1": [0, 80, 150],
+                "upper1": [10, 255, 255],
+                "lower2": [170, 80, 150],
                 "upper2": [180, 255, 255]
             },
             "npc": {
-                "lower": [40, 50, 100],
+                "lower": [40, 100, 100],
                 "upper": [80, 255, 255]
             },
             "portal": {
-                "lower": [90, 50, 100],
+                "lower": [90, 100, 100],
                 "upper": [135, 255, 255]
             }
         },
         "thresholds": {
-            "player_min": 20,
-            "player_max": 2000,
-            "monster_min": 10,
-            "monster_max": 50000,
+            "player_min": 10,
+            "player_max": 3000,
+            "monster_min": 3,
+            "monster_max": 500,
             "npc_min": 15,
             "npc_max": 2000,
             "portal_min": 20,

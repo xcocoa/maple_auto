@@ -62,6 +62,7 @@ class ScreenCaptureService : Service() {
     private var screenWidth = 0
     private var screenHeight = 0
     private var screenDensity = 0
+    private var frameCount = 0L
 
     @Volatile
     private var latestBitmap: Bitmap? = null
@@ -70,25 +71,24 @@ class ScreenCaptureService : Service() {
         super.onCreate()
         instance = this
 
-        // 获取屏幕参数（考虑当前屏幕方向）
+        // 获取屏幕物理分辨率（不依赖当前旋转方向）
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val metrics = DisplayMetrics()
         @Suppress("DEPRECATION")
         wm.defaultDisplay.getRealMetrics(metrics)
 
-        // 获取当前屏幕旋转角度，确保返回正确的宽高
-        val rotation = wm.defaultDisplay.rotation
-        val isLandscape = rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270
-
-        if (isLandscape) {
-            // 横屏模式：交换宽高以匹配实际显示
-            screenWidth = maxOf(metrics.widthPixels, metrics.heightPixels)
-            screenHeight = minOf(metrics.widthPixels, metrics.heightPixels)
-        } else {
-            screenWidth = metrics.widthPixels
-            screenHeight = metrics.heightPixels
-        }
+        // 使用横屏尺寸（较大值=宽，较小值=高）
+        // 游戏始终在横屏运行，ImageReader 使用横屏尺寸确保完整捕获
+        // 如果服务在竖屏时启动，初始帧可能会有旋转问题
+        // 但 ImageReader callback 会使用 image.width/height 动态适配
+        val physWidth = metrics.widthPixels
+        val physHeight = metrics.heightPixels
+        screenWidth = maxOf(physWidth, physHeight)   // 横屏宽 = 2712
+        screenHeight = minOf(physWidth, physHeight)   // 横屏高 = 1220
         screenDensity = metrics.densityDpi
+
+        Log.d(TAG, "Physical screen: ${physWidth}x${physHeight}")
+        Log.d(TAG, "Using landscape dims for capture: ${screenWidth}x${screenHeight}, dpi: $screenDensity")
 
         // 创建后台线程
         handlerThread = HandlerThread("imageReaderHandler").also {
@@ -96,7 +96,7 @@ class ScreenCaptureService : Service() {
             handler = Handler(it.looper)
         }
 
-        Log.d(TAG, "ScreenCaptureService created, screen: ${screenWidth}x${screenHeight}, dpi: $screenDensity")
+        Log.d(TAG, "ScreenCaptureService created")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -149,31 +149,43 @@ class ScreenCaptureService : Service() {
                 }
             }, handler)
 
-            // 创建 ImageReader - 持续捕获模式
+            // 创建 ImageReader - 使用横屏尺寸
+            // 游戏在横屏运行，确保 ImageReader 尺寸匹配
             imageReader = ImageReader.newInstance(
                 screenWidth, screenHeight,
-                PixelFormat.RGBA_8888, 3  // 增加缓冲区大小
+                PixelFormat.RGBA_8888, 3
             ).also { reader ->
                 reader.setOnImageAvailableListener({ ir ->
                     val image = ir.acquireLatestImage() ?: return@setOnImageAvailableListener
                     try {
-                        // 持续捕获最新帧
                         val planes = image.planes
                         val buffer = planes[0].buffer
                         val pixelStride = planes[0].pixelStride
                         val rowStride = planes[0].rowStride
-                        val rowPadding = rowStride - pixelStride * screenWidth
+
+                        // 使用 Image 的实际宽高（会随设备旋转变化）
+                        val imgWidth = image.width
+                        val imgHeight = image.height
+                        val rowPadding = rowStride - pixelStride * imgWidth
+
+                        frameCount++
+                        // 前10帧和每100帧记录一次，方便诊断
+                        if (frameCount <= 10 || frameCount % 100 == 0L) {
+                            Log.d(TAG, "Frame $frameCount: image=${imgWidth}x${imgHeight}, " +
+                                    "rowStride=$rowStride, pixelStride=$pixelStride, " +
+                                    "rowPadding=$rowPadding, bufferSize=${buffer.remaining()}")
+                        }
 
                         val bitmap = Bitmap.createBitmap(
-                            screenWidth + rowPadding / pixelStride,
-                            screenHeight,
+                            imgWidth + rowPadding / pixelStride,
+                            imgHeight,
                             Bitmap.Config.ARGB_8888
                         )
                         bitmap.copyPixelsFromBuffer(buffer)
 
                         // 如果有 padding，裁剪到实际尺寸
                         val finalBitmap = if (rowPadding > 0) {
-                            Bitmap.createBitmap(bitmap, 0, 0, screenWidth, screenHeight).also {
+                            Bitmap.createBitmap(bitmap, 0, 0, imgWidth, imgHeight).also {
                                 bitmap.recycle()
                             }
                         } else {
@@ -184,6 +196,9 @@ class ScreenCaptureService : Service() {
                         synchronized(this@ScreenCaptureService) {
                             latestBitmap?.recycle()
                             latestBitmap = finalBitmap
+                            // 更新实际屏幕尺寸（跟随旋转）
+                            screenWidth = imgWidth
+                            screenHeight = imgHeight
                         }
                     } finally {
                         image.close()
@@ -191,7 +206,7 @@ class ScreenCaptureService : Service() {
                 }, handler)
             }
 
-            // 创建 VirtualDisplay - 使用 AUTO_MIRROR 镜像主屏幕
+            // 创建 VirtualDisplay - 横屏尺寸 + AUTO_MIRROR
             virtualDisplay = mediaProjection?.createVirtualDisplay(
                 VIRTUAL_DISPLAY_NAME,
                 screenWidth, screenHeight, screenDensity,

@@ -1,0 +1,185 @@
+# 冒险岛日常自动化配置
+# 说明：所有坐标基于 1280x720 基准分辨率
+
+# ==================== 设备配置 ====================
+device:
+  id: "ZY22LJC9ST"
+  adb_path: "adb"
+  screenshot_interval: 0.1
+  base_width: 1280
+  base_height: 720
+
+# ==================== 场景回放配置 ====================
+# 全自动模式生成的场景配置文件路径
+# 使用 python tools/video_extract_templates.py --auto 生成
+scene_config: "config/daily_scenes.yaml"
+
+# ==================== 任务配置 ====================
+tasks:
+  # 启用的任务列表（按执行顺序）
+  enabled:
+    - daily_sign_in
+    - collect_mail
+    - daily_quest
+    - shop_buy
+    - auto_farm
+
+  # 每日签到
+  daily_sign_in:
+    template: "sign_in_btn.png"           # 签到按钮模板
+    reward_template: "sign_in_reward.png" # 签到奖励弹窗模板
+    timeout: 15
+
+  # 邮件领取
+  collect_mail:
+    template: "mail_btn.png"              # 邮箱按钮模板
+    collect_all_template: "collect_all.png"  # 一键领取按钮模板
+    empty_template: "mail_empty.png"      # 邮箱为空模板
+    timeout: 20
+
+  # 每日任务
+  daily_quest:
+    template: "quest_btn.png"             # 任务按钮模板
+    daily_tab_template: "daily_tab.png"   # 每日标签模板
+    quest_go_template: "quest_go.png"     # 前往按钮模板
+    quest_complete_template: "quest_complete.png"  # 任务完成模板
+    quest_reward_template: "quest_reward.png"      # 领取奖励模板
+    timeout: 300
+
+  # 商店购买
+  shop_buy:
+    template: "shop_btn.png"              # 商店按钮模板
+    buy_template: "buy_btn.png"           # 购买按钮模板
+    confirm_template: "buy_confirm.png"   # 确认购买模板
+    buy_list:
+      - name: "体力药水"
+        template: "item_stamina.png"
+        max_count: 3
+    timeout: 30
+
+  # 挂机打怪
+  auto_farm:
+    duration: 600                         # 挂机时长（秒）
+    use_auto_battle: true                 # 是否使用游戏内自动战斗按钮
+    auto_battle_template: "auto_battle.png"  # 自动战斗按钮模板
+    check_interval: 30                    # 状态检查间隔（秒）
+    death_check: true                     # 是否检测死亡
+    timeout: 660                          # 总超时（比 duration 略长）
+
+# ==================== UI 检测配置 ====================
+ui:
+  templates_dir: "templates/daily"        # 模板图片目录
+  match_threshold: 0.8                    # 默认模板匹配阈值
+  multi_scale: false                      # 是否启用多尺度匹配（更慢但更准）
+  scales: [0.9, 1.0, 1.1]                # 多尺度匹配的缩放比例
+
+  # 通用 UI 元素模板
+  common_templates:
+    close_btn: "close_btn.png"            # 关闭按钮
+    confirm_btn: "confirm_btn.png"        # 确认按钮
+    cancel_btn: "cancel_btn.png"          # 取消按钮
+    back_btn: "back_btn.png"              # 返回按钮
+    home_btn: "home_btn.png"              # 主界面按钮
+
+  # 通用 UI 元素备用坐标（模板匹配失败时使用）
+  fallback_positions:
+    close_btn: [1230, 50]
+    confirm_btn: [640, 500]
+    cancel_btn: [440, 500]
+    back_btn: [50, 50]
+    home_btn: [640, 680]
+
+  # 红点检测（未领取奖励提示）
+  red_dot:
+    color_lower: [0, 150, 150]            # HSV 下界
+    color_upper: [10, 255, 255]           # HSV 上界
+    min_area: 30                          # 最小面积
+
+  # 对话框检测
+  dialog:
+    # 对话框通常有半透明黑色背景
+    overlay_color_lower: [0, 0, 0]
+    overlay_color_upper: [180, 50, 80]
+    overlay_min_ratio: 0.15               # 暗色区域占比超过此值认为有对话框
+
+# ==================== 超时配置 ====================
+timeouts:
+  navigate_ui: 10                         # UI 导航超时
+  execute_task: 60                        # 任务执行超时
+  collect_reward: 15                      # 奖励领取超时
+  task_transition: 5                      # 任务切换等待
+  default: 30                             # 默认超时
+
+# ==================== 挂机打怪复用配置 ====================
+# 以下配置在 auto_farm 任务中复用现有战斗模块
+
+minimap:
+  x1: 900
+  y1: 20
+  x2: 1260
+  y2: 180
+  colors:
+    player:
+      lower: [20, 150, 150]
+      upper: [35, 255, 255]
+    monster:
+      lower1: [0, 150, 150]
+      upper1: [15, 255, 255]
+      lower2: [160, 150, 150]
+      upper2: [180, 255, 255]
+    npc:
+      lower: [50, 150, 150]
+      upper: [70, 255, 255]
+    portal:
+      lower: [100, 150, 150]
+      upper: [130, 255, 255]
+  thresholds:
+    player_min: 20
+    player_max: 500
+    monster_min: 15
+    monster_max: 1000
+    npc_min: 15
+    npc_max: 500
+    portal_min: 20
+    portal_max: 800
+
+skill:
+  positions:
+    - [950, 550]
+    - [1050, 550]
+    - [1150, 550]
+    - [950, 650]
+    - [1050, 650]
+    - [1150, 650]
+  jump: [1200, 630]
+  button_radius: 50
+  color_threshold: 0.15
+
+combat:
+  attack_interval: 0.3
+  move_interval: 0.1
+  jump_cooldown: 0.6
+  dodge_threshold: 0.3
+  joystick: [200, 550]
+  jump_pos: [1200, 630]
+  skill_positions:
+    - [950, 550]
+    - [1050, 550]
+    - [1150, 550]
+    - [950, 650]
+    - [1050, 650]
+    - [1150, 650]
+
+navigation:
+  move_interval: 0.1
+  explore_duration: 2.0
+  stuck_threshold: 5
+  joystick: [200, 550]
+  jump: [1200, 630]
+
+# ==================== 游戏通用配置 ====================
+game:
+  screen_center_x: 640
+  screen_center_y: 360
+  arrive_threshold: 20.0
+  attack_range: 100

@@ -6,5 +6,11 @@ from .minimap import MinimapDetector
 from .combat import CombatController
 from .navigation import Navigator
 from .skill import SkillDetector
+from .ui_detector import UIDetector
+from .task_scheduler import TaskScheduler
+from .scene_player import ScenePlayer
 
-__all__ = ['MinimapDetector', 'CombatController', 'Navigator', 'SkillDetector']
+__all__ = [
+    'MinimapDetector', 'CombatController', 'Navigator', 'SkillDetector',
+    'UIDetector', 'TaskScheduler', 'ScenePlayer',
+]

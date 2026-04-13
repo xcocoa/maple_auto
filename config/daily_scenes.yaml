@@ -1,0 +1,402 @@
+global:
+  scenes_dir: templates/daily/scenes
+  match_threshold: 0.7
+  default_wait: 1.0
+flows:
+  daily_sign_in:
+    description: 从视频自动生成的流程 (19 步)
+    loop: false
+    max_loops: 1
+    actions:
+    - scene_id: daily_sign_in_step_0
+      scene_template: scene_daily_sign_in_001.png
+      tap_x: 818
+      tap_y: 379
+      description: '步骤1: 差异质心(差异29.5%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_1
+      scene_template: scene_daily_sign_in_002.png
+      tap_x: 766
+      tap_y: 343
+      description: '步骤2: 整个界面切换(差异73%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_2
+      scene_template: scene_daily_sign_in_004.png
+      tap_x: 399
+      tap_y: 572
+      description: '步骤3: 整个界面切换(差异81%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_3
+      scene_template: scene_daily_sign_in_007.png
+      tap_x: 644
+      tap_y: 369
+      description: '步骤4: 差异质心(差异42.9%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_4
+      scene_template: scene_daily_sign_in_011.png
+      tap_x: 844
+      tap_y: 547
+      description: '步骤5: 整个界面切换(差异76%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_5
+      scene_template: scene_daily_sign_in_012.png
+      tap_x: 640
+      tap_y: 639
+      description: '步骤6: 整个界面切换(差异75%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_6
+      scene_template: scene_daily_sign_in_013.png
+      tap_x: 181
+      tap_y: 310
+      description: '步骤7: 整个界面切换(差异75%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_7
+      scene_template: scene_daily_sign_in_014.png
+      tap_x: 761
+      tap_y: 532
+      description: '步骤8: 整个界面切换(差异79%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_8
+      scene_template: scene_daily_sign_in_015.png
+      tap_x: 640
+      tap_y: 432
+      description: '步骤9: 整个界面切换(差异77%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_9
+      scene_template: scene_daily_sign_in_016.png
+      tap_x: 353
+      tap_y: 682
+      description: '步骤10: 整个界面切换(差异74%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_10
+      scene_template: scene_daily_sign_in_017.png
+      tap_x: 435
+      tap_y: 558
+      description: '步骤11: 整个界面切换(差异82%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_11
+      scene_template: scene_daily_sign_in_018.png
+      tap_x: 329
+      tap_y: 437
+      description: '步骤12: 整个界面切换(差异81%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_12
+      scene_template: scene_daily_sign_in_019.png
+      tap_x: 636
+      tap_y: 394
+      description: '步骤13: 差异质心(差异25.0%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_13
+      scene_template: scene_daily_sign_in_020.png
+      tap_x: 257
+      tap_y: 439
+      description: '步骤14: 整个界面切换(差异61%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_14
+      scene_template: scene_daily_sign_in_022.png
+      tap_x: 640
+      tap_y: 432
+      description: '步骤15: 整个界面切换(差异71%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_15
+      scene_template: scene_daily_sign_in_024.png
+      tap_x: 626
+      tap_y: 499
+      description: '步骤16: 整个界面切换(差异62%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_16
+      scene_template: scene_daily_sign_in_026.png
+      tap_x: 755
+      tap_y: 378
+      description: '步骤17: 差异质心(差异11.8%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_17
+      scene_template: scene_daily_sign_in_027.png
+      tap_x: 745
+      tap_y: 403
+      description: '步骤18: 差异质心(差异8.3%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_sign_in_step_18
+      scene_template: scene_daily_sign_in_028.png
+      tap_x: 1085
+      tap_y: 664
+      description: '步骤19: 整个界面切换(差异70%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+  collect_mail:
+    description: 收取邮件流程
+    actions: []
+  daily_quest:
+    description: 每日任务流程
+    actions: []
+  shop_buy:
+    description: 商店购买流程
+    actions: []
+  daily_test:
+    description: 从视频自动生成的流程 (23 步)
+    loop: false
+    max_loops: 1
+    actions:
+    - scene_id: daily_test_step_0
+      scene_template: scene_daily_test_000.png
+      tap_x: 637
+      tap_y: 382
+      description: '步骤1: 差异质心(差异45.3%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_1
+      scene_template: scene_daily_test_001.png
+      tap_x: 640
+      tap_y: 379
+      description: '步骤2: 差异质心(差异23.8%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_2
+      scene_template: scene_daily_test_002.png
+      tap_x: 640
+      tap_y: 360
+      description: '步骤3: 无明显差异，使用屏幕中心'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: true
+    - scene_id: daily_test_step_3
+      scene_template: scene_daily_test_003.png
+      tap_x: 998
+      tap_y: 419
+      description: '步骤4: 整个界面切换(差异93%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_4
+      scene_template: scene_daily_test_004.png
+      tap_x: 688
+      tap_y: 341
+      description: '步骤5: 差异质心(差异9.9%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_5
+      scene_template: scene_daily_test_005.png
+      tap_x: 1111
+      tap_y: 602
+      description: '步骤6: 整个界面切换(差异94%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_6
+      scene_template: scene_daily_test_006.png
+      tap_x: 1206
+      tap_y: 424
+      description: '步骤7: 整个界面切换(差异95%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_7
+      scene_template: scene_daily_test_007.png
+      tap_x: 640
+      tap_y: 432
+      description: '步骤8: 整个界面切换(差异93%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_8
+      scene_template: scene_daily_test_008.png
+      tap_x: 613
+      tap_y: 388
+      description: '步骤9: 差异质心(差异39.8%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_9
+      scene_template: scene_daily_test_009.png
+      tap_x: 522
+      tap_y: 587
+      description: '步骤10: 整个界面切换(差异70%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_10
+      scene_template: scene_daily_test_010.png
+      tap_x: 629
+      tap_y: 609
+      description: '步骤11: 整个界面切换(差异60%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_11
+      scene_template: scene_daily_test_011.png
+      tap_x: 1040
+      tap_y: 304
+      description: '步骤12: 整个界面切换(差异77%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_12
+      scene_template: scene_daily_test_012.png
+      tap_x: 214
+      tap_y: 275
+      description: '步骤13: 整个界面切换(差异70%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_13
+      scene_template: scene_daily_test_013.png
+      tap_x: 172
+      tap_y: 444
+      description: '步骤14: 整个界面切换(差异79%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_14
+      scene_template: scene_daily_test_014.png
+      tap_x: 662
+      tap_y: 269
+      description: '步骤15: 整个界面切换(差异68%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_15
+      scene_template: scene_daily_test_015.png
+      tap_x: 209
+      tap_y: 417
+      description: '步骤16: 差异质心(差异2.3%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_16
+      scene_template: scene_daily_test_016.png
+      tap_x: 212
+      tap_y: 275
+      description: '步骤17: 整个界面切换(差异79%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_17
+      scene_template: scene_daily_test_017.png
+      tap_x: 989
+      tap_y: 278
+      description: '步骤18: 整个界面切换(差异79%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_18
+      scene_template: scene_daily_test_018.png
+      tap_x: 153
+      tap_y: 676
+      description: '步骤19: 整个界面切换(差异79%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_19
+      scene_template: scene_daily_test_019.png
+      tap_x: 987
+      tap_y: 275
+      description: '步骤20: 整个界面切换(差异81%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_20
+      scene_template: scene_daily_test_020.png
+      tap_x: 670
+      tap_y: 379
+      description: '步骤21: 差异质心(差异8.5%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_21
+      scene_template: scene_daily_test_021.png
+      tap_x: 693
+      tap_y: 363
+      description: '步骤22: 差异质心(差异6.8%)'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: daily_test_step_22
+      scene_template: scene_daily_test_022.png
+      tap_x: 64
+      tap_y: 615
+      description: '步骤23: 整个界面切换(差异80%)，启发式推断'
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false

@@ -230,6 +230,18 @@ class MinimapDetector:
 
         mean_color = np.mean(minimap, axis=(0, 1))
 
+        # 每 50 帧或前 5 帧输出详细信息
+        if self._frame_count <= 5 or self._frame_count % 50 == 0:
+            logger.warning(f"[Minimap] Frame {self._frame_count}: crop ({x1},{y1})-({x2},{y2}), shape={minimap.shape}, BGR_mean={mean_color}")
+            # 分析全图四个 100x100 角落
+            sh, sw = screenshot.shape[:2]
+            for name, r in [('TL', screenshot[0:100, 0:100]),
+                            ('TR', screenshot[0:100, sw-100:sw]),
+                            ('BL', screenshot[sh-100:sh, 0:100]),
+                            ('BR', screenshot[sh-100:sh, sw-100:sw])]:
+                rm = np.mean(r, axis=(0,1))
+                logger.warning(f"  Corner {name}: BGR_mean=[{rm[0]:.0f},{rm[1]:.0f},{rm[2]:.0f}]")
+
         # 如果全黑，可能是截图服务未初始化
         if mean_color.sum() == 0:
             if self._should_debug():
@@ -278,14 +290,20 @@ class MinimapDetector:
         return result
 
     def _compute_confidence(self, area: float, min_area: float, max_area: float) -> float:
-        """计算检测置信度（基于面积分布，高斯形状）"""
+        """计算检测置信度（面积越接近范围中部越高，线性衰减）"""
         if area <= min_area or area >= max_area:
             return 0.0
-        # 面积中值处置信度最高
-        mid_area = (min_area + max_area) / 2.0
-        range_half = (max_area - min_area) / 2.0
-        dist = abs(area - mid_area) / range_half
-        return max(0.0, 1.0 - dist * dist)
+        # 使用对数空间计算，避免大 max_area 导致小面积置信度过低
+        import math
+        log_area = math.log(area)
+        log_min = math.log(max(min_area, 1))
+        log_max = math.log(max(max_area, 2))
+        log_mid = (log_min + log_max) / 2.0
+        log_half = (log_max - log_min) / 2.0
+        if log_half <= 0:
+            return 0.5
+        dist = abs(log_area - log_mid) / log_half
+        return max(0.0, 1.0 - dist * 0.5)  # 线性衰减，边缘仍有 0.5
 
     def _process_color(
         self,

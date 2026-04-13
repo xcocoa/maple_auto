@@ -1,0 +1,142 @@
+# 冒险岛金字塔副本自动化配置
+# 说明：所有坐标基于 1280x720 基准分辨率
+
+# ==================== 设备配置 ====================
+device:
+  id: "ZY22LJC9ST"
+  adb_path: "adb"
+  screenshot_interval: 0.1
+  # 基准分辨率：所有坐标、模板均基于此分辨率
+  base_width: 1280
+  base_height: 720
+
+# ==================== 小地图配置 ====================
+minimap:
+  x1: 900
+  y1: 20
+  x2: 1260
+  y2: 180
+
+  colors:
+    player:
+      lower: [20, 150, 150]
+      upper: [35, 255, 255]
+    monster:
+      lower1: [0, 150, 150]
+      upper1: [15, 255, 255]
+      lower2: [160, 150, 150]
+      upper2: [180, 255, 255]
+    npc:
+      lower: [50, 150, 150]
+      upper: [70, 255, 255]
+    portal:
+      lower: [100, 150, 150]
+      upper: [130, 255, 255]
+
+  thresholds:
+    player_min: 20
+    player_max: 500
+    monster_min: 15
+    monster_max: 1000
+    npc_min: 15
+    npc_max: 500
+    portal_min: 20
+    portal_max: 800
+
+# ==================== 技能配置 ====================
+skill:
+  positions:
+    - [950, 550]
+    - [1050, 550]
+    - [1150, 550]
+    - [950, 650]
+    - [1050, 650]
+    - [1150, 650]
+  jump: [1200, 630]
+  button_radius: 50
+  color_threshold: 0.15
+
+# ==================== 战斗配置 ====================
+combat:
+  attack_interval: 0.3
+  move_interval: 0.1
+  jump_cooldown: 0.6
+  dodge_threshold: 0.3
+  joystick: [200, 550]
+  jump_pos: [1200, 630]
+  skill_positions:
+    - [950, 550]
+    - [1050, 550]
+    - [1150, 550]
+    - [950, 650]
+    - [1050, 650]
+    - [1150, 650]
+
+# ==================== 导航配置 ====================
+navigation:
+  move_interval: 0.1
+  explore_duration: 2.0
+  stuck_threshold: 5
+  joystick: [200, 550]
+  jump: [1200, 630]
+
+# ==================== 金字塔专属配置 ====================
+pyramid:
+  # --- 探索参数 ---
+  explore:
+    grid_cols: 4              # 水平网格列数
+    grid_rows: 3              # 垂直网格行数
+    visit_expire: 30.0        # 区域访问过期时间（秒）
+    scan_pattern: "snake"     # 扫描模式：snake（蛇形）
+
+  # --- 战斗参数 ---
+  attack_range: 80            # 攻击范围（像素，比肉鸽小）
+  chase_range: 120            # 追击范围（超出则回HUNT）
+  dodge_enemy_count: 3        # dodge触发怪物数
+  max_combat_duration: 20     # 单次战斗超时（秒）
+
+  # --- 清怪检测 ---
+  clear_confirm_frames: 15    # 连续无怪帧数确认（约1.5秒）
+  clear_prompt_region:        # "通关!!!!"文字出现区域（基于1280x720）
+    x1: 400
+    y1: 250
+    x2: 880
+    y2: 470
+  clear_template: "templates/pyramid_clear_720p.png"  # 通关文字模板（720p尺寸）
+  clear_match_threshold: 0.6  # 模板匹配阈值
+  # 通关文字特征：金黄色大字 HSV H=20-30 S>60 V>200
+  clear_text_color:
+    lower: [18, 60, 200]
+    upper: [32, 255, 255]
+  clear_text_min_ratio: 0.08  # 颜色回退检测阈值（仅模板不可用时生效）
+
+  # --- NPC交互 ---
+  npc_dialog_clicks: 5        # 对话点击次数
+  npc_dialog_interval: 0.3    # 对话点击间隔（秒）
+
+  # --- 出口 ---
+  portal_arrive_threshold: 30 # 到达出口判定距离
+
+  # --- 超时设置（秒） ---
+  timeouts:
+    explore: 60
+    hunt: 15
+    fight: 20
+    clear_check: 10
+    find_npc: 15
+    interact_npc: 10
+    find_exit: 20
+    enter_exit: 15
+
+  # --- 副本信息 ---
+  max_rooms: 5                # 预计最大房间数
+
+# ==================== 游戏通用配置 ====================
+game:
+  arrive_threshold: 20.0
+  portal_arrive_threshold: 30.0
+  up_key_position: [540, 400]
+  screen_center_x: 640
+  screen_center_y: 360
+  attack_range: 80
+  npc_interact_range: 50

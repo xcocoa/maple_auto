@@ -179,15 +179,18 @@ class MinimapDetector:
         return result
 
     def _compute_confidence(self, area: float, min_area: float, max_area: float) -> float:
-        """计算检测置信度（基于面积分布）"""
+        """计算检测置信度（基于面积范围内的线性映射）"""
         if area <= min_area or area >= max_area:
             return 0.0
-        # 面积中值处置信度最高
-        mid_area = (min_area + max_area) / 2.0
-        range_half = (max_area - min_area) / 2.0
-        # 高斯分布形状的置信度
-        dist = abs(area - mid_area) / range_half
-        return max(0.0, 1.0 - dist * dist)
+        # 线性映射：刚过 min_area 时置信度从 0.7 起步，随面积增长到 1.0 后回落
+        # 这样小目标（如玩家标记 ~50px）也能通过置信度过滤
+        ratio = (area - min_area) / (max_area - min_area)
+        # 抛物线：在 ratio=0.2 处达到峰值 1.0，两端衰减
+        # 这比中点高斯更适合小目标检测
+        if ratio < 0.3:
+            return 0.7 + ratio * 1.0  # 0.7 ~ 1.0
+        else:
+            return max(0.3, 1.0 - (ratio - 0.3) * 0.7 / 0.7)  # 1.0 ~ 0.3
 
     def _process_color(
         self,
