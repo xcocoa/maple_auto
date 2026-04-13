@@ -6,8 +6,8 @@ device:
   id: "ZY22LJC9ST"
   adb_path: "adb"
   screenshot_interval: 0.1
-  base_width: 1280
-  base_height: 720
+  base_width: 1220
+  base_height: 2712
 
 # ==================== 场景回放配置 ====================
 # 全自动模式生成的场景配置文件路径

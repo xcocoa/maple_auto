@@ -7,8 +7,8 @@ device:
   adb_path: "adb"
   screenshot_interval: 0.1
   # 基准分辨率：所有坐标、模板均基于此分辨率
-  base_width: 1280
-  base_height: 720
+  base_width: 1220
+  base_height: 2712
 
 # ==================== 小地图配置 ====================
 minimap:
