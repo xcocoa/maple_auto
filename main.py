@@ -11,6 +11,29 @@ from typing import Optional
 from core.logger import Logger
 
 
+def print_help():
+    """打印帮助信息"""
+    print("""冒险岛自动化 - 使用说明
+
+用法：
+  python3 main.py [模式] [配置文件路径]
+
+模式：
+  daily      日常任务自动化（默认）
+  roguelike  肉鸽小游戏自动化
+  pyramid    金字塔副本自动化
+
+示例：
+  python3 main.py daily                    # 运行日常模式
+  python3 main.py roguelike config/custom.yaml  # 使用自定义配置
+  python3 main.py --help                  # 显示此帮助信息
+
+配置文件：
+  默认使用 config/[模式].yaml
+  可指定自定义配置文件路径
+""")
+
+
 def main():
     """主函数"""
     logger = Logger(name="Main")
@@ -21,7 +44,10 @@ def main():
 
     args = sys.argv[1:]
     for arg in args:
-        if arg in ("daily", "roguelike", "pyramid"):
+        if arg in ("--help", "-h"):
+            print_help()
+            return
+        elif arg in ("daily", "roguelike", "pyramid"):
             mode = arg
         elif not arg.startswith("-"):
             config_path = arg
@@ -30,7 +56,7 @@ def main():
     if config_path is None:
         config_path = {
             "daily": "config/daily.yaml",
-            "roguelike": "config/roguelike.yaml",
+            "roguelike": "config/roguelike.yaml", 
             "pyramid": "config/pyramid.yaml",
         }.get(mode, "config/daily.yaml")
 
