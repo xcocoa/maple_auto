@@ -43,6 +43,10 @@ logs/
 !screenshots/templates/*.jpg
 !screenshots/templates/selected/
 !screenshots/templates/selected/*.png
+!templates/daily/scenes/
+!templates/daily/scenes/*/
+!templates/daily/scenes/**/*.png
+!templates/daily/scenes/**/*.jpg
 
 # 临时文件
 temp/

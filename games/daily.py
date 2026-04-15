@@ -581,31 +581,118 @@ class DailyGame:
     # ==================== 具体任务实现 ====================
 
     def _execute_sign_in(self, screenshot: np.ndarray, task: Task) -> bool:
-        """执行每日签到"""
-        config = task.config
-        template = config.get('template', 'sign_in_btn.png')
-
-        # 查找签到按钮
-        sign_btn = self.ui_detector.find_element(screenshot, template)
-        if sign_btn:
-            self.ui_detector.tap_element(self.adb, sign_btn, delay=1.0)
-            self.logger.info("已点击签到按钮")
-
-            # 等待奖励弹窗并关闭
-            reward_template = config.get('reward_template')
-            if reward_template:
+        """执行每日签到 - 正确的签到页面导航流程"""
+        self.logger.info("开始执行签到流程")
+        
+        # 步骤1: 点击屏幕右上角打开主菜单（基于1220x2712分辨率）
+        self.logger.info("步骤1: 点击右上角打开主菜单")
+        self.adb.tap(1150, 100)  # 右上角区域
+        time.sleep(2.0)
+        
+        # 步骤2: 截图检查是否成功打开菜单
+        menu_screenshot = self._raw_adb.screenshot(force_refresh=True)
+        if menu_screenshot is not None:
+            h, w = menu_screenshot.shape[:2]
+            if w != self._base_w or h != self._base_h:
+                menu_screenshot = cv2.resize(menu_screenshot, (self._base_w, self._base_h))
+            
+            # 检查是否有主菜单界面
+            menu_opened, debug_info = self._check_menu_opened(menu_screenshot)
+            if menu_opened:
+                self.logger.info(f"主菜单已打开 - {debug_info}")
+                
+                # 步骤3: 点击签到按钮（通常在菜单的中间或底部）
+                self.logger.info("步骤2: 点击签到按钮")
+                self.adb.tap(610, 1800)  # 菜单中间区域
+                time.sleep(3.0)
+                
+                # 步骤4: 截图检查是否进入签到页面
+                sign_in_screenshot = self._raw_adb.screenshot(force_refresh=True)
+                if sign_in_screenshot is not None:
+                    h, w = sign_in_screenshot.shape[:2]
+                    if w != self._base_w or h != self._base_h:
+                        sign_in_screenshot = cv2.resize(sign_in_screenshot, (self._base_w, self._base_h))
+                    
+                    # 步骤5: 点击签到按钮
+                    self.logger.info("步骤3: 点击签到确认按钮")
+                    self.adb.tap(610, 2200)  # 签到页面底部按钮
+                    time.sleep(2.0)
+                    
+                    # 步骤6: 关闭可能的奖励弹窗
+                    self.logger.info("步骤4: 关闭奖励弹窗")
+                    self.adb.tap(610, 2400)  # 底部关闭按钮
+                    time.sleep(1.0)
+                    
+                    # 步骤7: 返回主界面
+                    self.logger.info("步骤5: 返回主界面")
+                    self.adb.tap(50, 100)  # 左上角返回按钮
+                    time.sleep(1.0)
+                else:
+                    self.logger.warning("无法获取签到页面截图")
+            else:
+                self.logger.info(f"主菜单未打开 - {debug_info}")
+                # 备用方案：直接点击屏幕中央
+                self.adb.tap(610, 1356)
                 time.sleep(1.0)
-                reward_screenshot = self._raw_adb.screenshot(force_refresh=True)
-                if reward_screenshot is not None:
-                    reward = self.ui_detector.find_element(reward_screenshot, reward_template)
-                    if reward:
-                        self.ui_detector.tap_element(self.adb, reward)
-
-            return True
-
-        # 签到按钮未找到，可能已签到
-        self.logger.info("未找到签到按钮，可能已完成签到")
+        else:
+            self.logger.warning("无法获取菜单截图，使用简单点击")
+            # 简单点击方案
+            self.adb.tap(610, 1356)
+            time.sleep(1.0)
+        
+        self.logger.info("签到流程执行完成")
         return True
+    
+    def _check_menu_opened(self, screenshot: np.ndarray) -> tuple[bool, str]:
+        """检查是否成功打开主菜单 - 使用非常保守的检测方法"""
+        
+        # 方法1: 使用模板匹配检测主菜单（最可靠的方法）
+        main_menu_template = "selected/main_menu.png"
+        menu_buttons_template = "selected/main_menu_buttons.png"
+        
+        # 检查主菜单模板
+        menu_match = self.ui_detector.find_element(screenshot, main_menu_template)
+        menu_buttons_match = self.ui_detector.find_element(screenshot, menu_buttons_template)
+        
+        # 如果模板匹配成功，直接返回True
+        if menu_match is not None or menu_buttons_match is not None:
+            debug_info = f"模板匹配成功: 主菜单={menu_match is not None}, 按钮={menu_buttons_match is not None}"
+            return True, debug_info
+        
+        # 方法2: 非常保守的特征检测
+        h, w = screenshot.shape[:2]
+        if len(screenshot.shape) == 3:
+            gray_screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+        else:
+            gray_screenshot = screenshot
+        
+        # 检查屏幕亮度变化（菜单通常会使屏幕明显变暗）
+        avg_brightness = np.mean(gray_screenshot)
+        
+        # 检查边缘密度（菜单有更多UI元素）
+        edges = cv2.Canny(gray_screenshot, 50, 150)
+        edge_density = np.sum(edges) / (w * h)
+        
+        # 检查是否有对话框（如果有对话框，说明不是菜单）
+        has_dialog = self.ui_detector.is_dialog_open(screenshot)
+        
+        # 非常严格的判断条件
+        brightness_ok = avg_brightness < 120  # 非常暗才认为是菜单
+        edge_ok = edge_density > 0.1  # 很高的边缘密度
+        no_dialog = not has_dialog  # 不能有对话框
+        
+        # 生成调试信息
+        debug_info = (
+            f"模板匹配:失败 "
+            f"亮度:{avg_brightness:.1f}<120({brightness_ok}) "
+            f"边缘:{edge_density:.3f}>0.1({edge_ok}) "
+            f"无对话框:{no_dialog}"
+        )
+        
+        # 需要所有条件都满足才认为是菜单打开
+        result = brightness_ok and edge_ok and no_dialog
+        
+        return result, debug_info
 
     def _execute_collect_mail(self, screenshot: np.ndarray, task: Task) -> bool:
         """执行收取邮件"""

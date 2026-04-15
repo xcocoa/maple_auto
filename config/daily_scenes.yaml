@@ -1,519 +1,658 @@
+# ==================== 冒险岛每日任务场景配置 ====================
+# 
+# 任务来源：游戏内"成长" → "每日任务"
+# 所有坐标基于 1280x720 基准分辨率
+# 场景模板来自视频 daily.MP4 自动提取的关键帧
+#
+# ⚠️ 注意：当前坐标和模版均为自动提取，需要人工校验
+# 标记 [待校验] 的坐标需要手动确认
+# 标记 [待截图] 的模版需要手动重新截取
+#
+# 五个核心日常任务：
+#   1. 工会签到
+#   2. 通关宝石副本1次
+#   3. 赠送1次人气值
+#   4. 尝试1次星之力强化
+#   5. 参加天空岛领主狩猎
+# 任务完成后：领取全部日常奖励
+
 global:
-  scenes_dir: templates/daily/scenes
+  scenes_dir: templates/daily/scenes/core
   match_threshold: 0.7
-  default_wait: 1.0
+  default_wait: 1.5
+
 flows:
-  daily_sign_in:
-    description: 从视频自动生成的流程 (32 步)
+  # ==================== 总流程：串联执行全部日常任务 ====================
+  daily_all:
+    description: "每日任务总流程：依次执行5个核心任务 + 领取奖励"
     loop: false
     max_loops: 1
     actions:
-    - scene_id: daily_sign_in_step_0
-      scene_template: scene_daily_sign_in_000.png
+    # ------ 前置：从主界面进入 ------
+    - scene_id: main_screen
+      scene_template: main_screen.png
+      tap_x: 237
+      tap_y: 99
+      description: "主界面 → 点击右上角按钮，打开设置页面"
+      wait_after: 2.0
+      timeout: 15.0
+      match_threshold: 0.75
+      match_mode: region_feature
+      ui_regions:
+        - {name: "左上角-人物信息栏", x1: 0, y1: 0, x2: 350, y2: 120, min_edge_density: 0.08}
+        - {name: "右上角-工具操作栏", x1: 900, y1: 0, x2: 1280, y2: 120, min_edge_density: 0.08}
+        - {name: "左下角-虚拟摇杆", x1: 0, y1: 500, x2: 300, y2: 720, min_edge_density: 0.08}
+        - {name: "右下角-技能栏", x1: 800, y1: 500, x2: 1280, y2: 720, min_edge_density: 0.08}
+      optional: false
+
+    # ====== 任务1：工会签到 ======
+    - scene_id: guild_enter
+      scene_template: guild_enter.png
+      tap_x: 974
+      tap_y: 112
+      description: "任务1-工会签到：打开工会界面（自动签到）"
+      wait_after: 3.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+
+    # ====== 任务2：通关宝石副本1次 ======
+    - scene_id: daily_play_enter
+      scene_template: daily_play_enter.png
+      tap_x: 969
+      tap_y: 327
+      description: "任务2-宝石副本：打开日常玩法列表"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: gem_dungeon_select
+      scene_template: gem_dungeon_select.png
+      tap_x: 733
+      tap_y: 467
+      description: "任务2-宝石副本：选择宝石副本（界面可左右滑动）"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: gem_dungeon_confirm
+      scene_template: gem_dungeon_confirm.png
+      tap_x: 758
+      tap_y: 532
+      description: "任务2-宝石副本：确认进入副本"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: gem_dungeon_result
+      scene_template: gem_dungeon_result.png
+      tap_x: 599
+      tap_y: 402
+      description: "任务2-宝石副本：自动战斗结算-点击返回按钮"
+      wait_after: 2.0
+      timeout: 60.0
+      match_threshold: 0.65
+      optional: false
+
+    # ====== 任务3：赠送1次人气值 ======
+    - scene_id: social_enter
+      scene_template: social_enter.png
+      tap_x: 968
+      tap_y: 327
+      description: "任务3-赠送人气：进入社交入口（菜单需上滑展示）"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: social_page_action1
+      scene_template: social_page_action1.png
+      tap_x: 479
+      tap_y: 406
+      description: "任务3-赠送人气：点击搜索按钮，弹出搜索好友弹框"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: social_page_action2
+      scene_template: social_page_action2.png
       tap_x: 675
-      tap_y: 387
-      description: '步骤1: 差异质心(差异15.2%)'
+      tap_y: 464
+      description: "任务3-赠送人气：搜索好友弹框-点击输入框弹出键盘"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_1
-      scene_template: scene_daily_sign_in_001.png
-      tap_x: 675
-      tap_y: 391
-      description: '步骤2: 差异质心(差异23.2%)'
+    - scene_id: social_input_name
+      scene_template: social_input_name.png
+      tap_x: 760
+      tap_y: 130
+      description: "任务3-赠送人气：输入或粘贴'废都的王'"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_2
-      scene_template: scene_daily_sign_in_002.png
-      tap_x: 677
-      tap_y: 400
-      description: '步骤3: 差异质心(差异28.2%)'
+      action: input_text
+      input_text: "废都的王"
+    - scene_id: social_open
+      scene_template: social_open.png
+      tap_x: 761
+      tap_y: 130
+      description: "任务3-赠送人气：输入好友名称后点击搜索确认"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: friend_search_btn
+      scene_template: friend_search_btn.png
+      tap_x: 269
+      tap_y: 537
+      description: "任务3-赠送人气：个人信息页面-点击左下角按钮弹出人气值礼物弹框"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_3
-      scene_template: scene_daily_sign_in_003.png
-      tap_x: 641
-      tap_y: 351
-      description: '步骤4: 差异质心(差异33.2%)'
+    - scene_id: friend_search_page
+      scene_template: friend_search_page.png
+      tap_x: 618
+      tap_y: 360
+      description: "任务3-赠送人气：人气值礼物弹框-点击选中人气值"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_4
-      scene_template: scene_daily_sign_in_004.png
-      tap_x: 683
-      tap_y: 336
-      description: '步骤5: 差异质心(差异34.6%)'
+    - scene_id: friend_input_name
+      scene_template: friend_input_name.png
+      tap_x: 666
+      tap_y: 363
+      description: "任务3-赠送人气：点击确定赠送人气值"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_5
-      scene_template: scene_daily_sign_in_005.png
-      tap_x: 677
+    - scene_id: friend_search_confirm
+      scene_template: friend_search_confirm.png
+      tap_x: 1133
+      tap_y: 41
+      description: "任务3-赠送人气：点击右上角关闭按钮，关闭个人主页"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+
+    # ====== 任务4：尝试1次星之力强化 ======
+    - scene_id: starforce_enter1
+      scene_template: starforce_enter1.png
+      tap_x: 820
+      tap_y: 331
+      description: "任务4-星之力强化：设置页面-点击铁匠铺入口"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: starforce_enter2
+      scene_template: starforce_enter2.png
+      tap_x: 379
+      tap_y: 233
+      description: "任务4-星之力强化：弹出菜单中选择星之力强化"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: starforce_select_equip
+      scene_template: starforce_select_equip.png
+      tap_x: 931
+      tap_y: 389
+      description: "任务4-星之力强化：铁匠铺装备栏-选择装备（优先级：蓝色>紫色>橙色边框）"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+      action: select_equip_by_color
+      equip_area: {x1: 713, y1: 161, x2: 1150, y2: 618}
+      color_priority: ["blue", "purple", "orange"]
+    - scene_id: starforce_enhance
+      scene_template: starforce_enhance.png
+      tap_x: 640
+      tap_y: 660
+      description: "任务4-星之力强化：选中装备后点击强化按钮"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: starforce_result_confirm
+      scene_template: starforce_result_confirm.png
+      tap_x: 640
+      tap_y: 638
+      description: "任务4-星之力强化：强化结果弹窗-点击确认关闭弹框"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: starforce_close
+      scene_template: starforce_close.png
+      tap_x: 1136
+      tap_y: 40
+      description: "任务4-星之力强化：点击右上角关闭按钮，关闭铁匠铺"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+
+    # ====== 任务5：参加天空岛领主狩猎 ======
+    - scene_id: hunt_open_growth
+      scene_template: hunt_open_growth.png
+      tap_x: 820
+      tap_y: 264
+      description: "任务5-领主狩猎：设置页面-点击成长，打开成长弹窗"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: hunt_goto
+      scene_template: hunt_goto.png
+      tap_x: 494
       tap_y: 369
-      description: '步骤6: 差异质心(差异22.9%)'
-      wait_after: 1.5
+      description: "任务5-领主狩猎：成长弹窗-滑动找到领主狩猎卡片，点击立即前往"
+      wait_after: 3.0
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_6
-      scene_template: scene_daily_sign_in_006.png
-      tap_x: 660
-      tap_y: 366
-      description: '步骤7: 差异质心(差异34.2%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_7
-      scene_template: scene_daily_sign_in_007.png
-      tap_x: 661
-      tap_y: 352
-      description: '步骤8: 差异质心(差异25.7%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_8
-      scene_template: scene_daily_sign_in_008.png
-      tap_x: 673
-      tap_y: 342
-      description: '步骤9: 差异质心(差异21.3%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_9
-      scene_template: scene_daily_sign_in_009.png
-      tap_x: 646
-      tap_y: 380
-      description: '步骤10: 差异质心(差异26.0%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_10
-      scene_template: scene_daily_sign_in_010.png
-      tap_x: 604
-      tap_y: 425
-      description: '步骤11: 差异质心(差异22.9%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_11
-      scene_template: scene_daily_sign_in_011.png
-      tap_x: 658
-      tap_y: 373
-      description: '步骤12: 差异质心(差异31.5%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_12
-      scene_template: scene_daily_sign_in_012.png
-      tap_x: 609
-      tap_y: 360
-      description: '步骤13: 差异质心(差异23.4%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_13
-      scene_template: scene_daily_sign_in_013.png
-      tap_x: 607
-      tap_y: 361
-      description: '步骤14: 差异质心(差异23.5%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_14
-      scene_template: scene_daily_sign_in_014.png
-      tap_x: 594
-      tap_y: 373
-      description: '步骤15: 差异质心(差异21.5%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_15
-      scene_template: scene_daily_sign_in_015.png
-      tap_x: 602
-      tap_y: 360
-      description: '步骤16: 差异质心(差异22.6%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_16
-      scene_template: scene_daily_sign_in_016.png
-      tap_x: 572
-      tap_y: 355
-      description: '步骤17: 差异质心(差异24.3%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_17
-      scene_template: scene_daily_sign_in_017.png
-      tap_x: 591
-      tap_y: 361
-      description: '步骤18: 差异质心(差异18.9%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_18
-      scene_template: scene_daily_sign_in_018.png
-      tap_x: 607
+      action: scroll_and_find
+    - scene_id: hunt_trade_enter
+      scene_template: hunt_trade_enter.png
+      tap_x: 467
       tap_y: 357
-      description: '步骤19: 差异质心(差异19.9%)'
-      wait_after: 1.5
+      description: "任务5-领主狩猎：天空岛贸易弹窗-点击右下角入场"
+      wait_after: 3.0
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_19
-      scene_template: scene_daily_sign_in_019.png
-      tap_x: 543
-      tap_y: 366
-      description: '步骤20: 差异质心(差异27.8%)'
-      wait_after: 1.5
+    - scene_id: hunt_close_bag
+      scene_template: hunt_close_bag.png
+      tap_x: 380
+      tap_y: 75
+      description: "任务5-领主狩猎：入场后收起行囊精灵背包界面"
+      wait_after: 2.0
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_20
-      scene_template: scene_daily_sign_in_020.png
-      tap_x: 565
-      tap_y: 367
-      description: '步骤21: 差异质心(差异34.7%)'
-      wait_after: 1.5
+    - scene_id: hunt_exit_scene
+      scene_template: hunt_exit_scene.png
+      tap_x: 1124
+      tap_y: 283
+      description: "任务5-领主狩猎：点击右侧退出按钮"
+      wait_after: 2.0
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_21
-      scene_template: scene_daily_sign_in_021.png
-      tap_x: 645
-      tap_y: 334
-      description: '步骤22: 差异质心(差异22.6%)'
-      wait_after: 1.5
+    - scene_id: hunt_leave_confirm
+      scene_template: hunt_leave_confirm.png
+      tap_x: 760
+      tap_y: 531
+      description: "任务5-领主狩猎：退出太初森林弹框点击离开"
+      wait_after: 2.0
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_sign_in_step_22
-      scene_template: scene_daily_sign_in_022.png
-      tap_x: 678
-      tap_y: 348
-      description: '步骤23: 差异质心(差异29.7%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_23
-      scene_template: scene_daily_sign_in_023.png
-      tap_x: 634
-      tap_y: 356
-      description: '步骤24: 差异质心(差异33.4%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_24
-      scene_template: scene_daily_sign_in_024.png
-      tap_x: 580
-      tap_y: 366
-      description: '步骤25: 差异质心(差异29.4%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_25
-      scene_template: scene_daily_sign_in_025.png
-      tap_x: 552
-      tap_y: 382
-      description: '步骤26: 差异质心(差异25.9%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_26
-      scene_template: scene_daily_sign_in_026.png
-      tap_x: 591
-      tap_y: 344
-      description: '步骤27: 差异质心(差异35.3%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_27
-      scene_template: scene_daily_sign_in_027.png
-      tap_x: 611
-      tap_y: 355
-      description: '步骤28: 差异质心(差异33.5%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_28
-      scene_template: scene_daily_sign_in_028.png
-      tap_x: 586
-      tap_y: 379
-      description: '步骤29: 差异质心(差异25.2%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_29
-      scene_template: scene_daily_sign_in_029.png
-      tap_x: 554
-      tap_y: 404
-      description: '步骤30: 差异质心(差异27.9%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_30
-      scene_template: scene_daily_sign_in_030.png
-      tap_x: 582
-      tap_y: 373
-      description: '步骤31: 差异质心(差异26.5%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_sign_in_step_31
-      scene_template: scene_daily_sign_in_031.png
-      tap_x: 564
-      tap_y: 386
-      description: '步骤32: 差异质心(差异31.4%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-  collect_mail:
-    description: 收取邮件流程
-    actions: []
-  daily_quest:
-    description: 每日任务流程
-    actions: []
-  shop_buy:
-    description: 商店购买流程
-    actions: []
-  daily_test:
-    description: 从视频自动生成的流程 (23 步)
-    loop: false
-    max_loops: 1
-    actions:
-    - scene_id: daily_test_step_0
-      scene_template: scene_daily_test_000.png
-      tap_x: 637
-      tap_y: 382
-      description: '步骤1: 差异质心(差异45.3%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_1
-      scene_template: scene_daily_test_001.png
+    - scene_id: hunt_result_confirm
+      scene_template: hunt_result_confirm.png
       tap_x: 640
-      tap_y: 379
-      description: '步骤2: 差异质心(差异23.8%)'
-      wait_after: 1.5
+      tap_y: 571
+      description: "任务5-领主狩猎：结果页面点击确定"
+      wait_after: 2.0
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_test_step_2
-      scene_template: scene_daily_test_002.png
-      tap_x: 640
-      tap_y: 360
-      description: '步骤3: 无明显差异，使用屏幕中心'
+
+    # ====== 领取全部日常奖励 ======
+    - scene_id: reward_open_daily
+      scene_template: hunt_open_growth.png
+      tap_x: 820
+      tap_y: 264
+      description: "领取奖励：设置页面-点击成长，打开成长弹窗（复用030）"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: reward_collect1
+      scene_template: reward_collect1.png
+      tap_x: 494
+      tap_y: 370
+      description: "领取奖励：成长页面-点击右下角全部领取"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: true
-    - scene_id: daily_test_step_3
-      scene_template: scene_daily_test_003.png
-      tap_x: 998
-      tap_y: 419
-      description: '步骤4: 整个界面切换(差异93%)，启发式推断'
+    - scene_id: reward_collect2
+      scene_template: reward_collect2.png
+      tap_x: 494
+      tap_y: 370
+      description: "领取奖励：重复点击全部领取直到按钮变灰（最多5次）"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: true
+      action: repeat_tap_until_gone
+      max_repeats: 5
+
+  # ==================== 独立子流程：可单独执行 ====================
+
+  # ------ 任务1：工会签到 ------
+  guild_sign_in:
+    description: "每日任务-工会签到"
+    loop: false
+    max_loops: 1
+    actions:
+    - scene_id: guild_enter
+      scene_template: guild_enter.png
+      tap_x: 974
+      tap_y: 112
+      description: "打开工会界面（自动签到）"
+      wait_after: 3.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+
+  # ------ 任务2：通关宝石副本1次 ------
+  gem_dungeon:
+    description: "每日任务-通关宝石副本1次"
+    loop: false
+    max_loops: 1
+    actions:
+    - scene_id: daily_play_enter
+      scene_template: daily_play_enter.png
+      tap_x: 969
+      tap_y: 327
+      description: "打开日常玩法列表"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: gem_dungeon_select
+      scene_template: gem_dungeon_select.png
+      tap_x: 733
+      tap_y: 467
+      description: "选择宝石副本（界面可左右滑动）"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: gem_dungeon_confirm
+      scene_template: gem_dungeon_confirm.png
+      tap_x: 758
+      tap_y: 532
+      description: "确认进入副本"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: gem_dungeon_result
+      scene_template: gem_dungeon_result.png
+      tap_x: 599
+      tap_y: 402
+      description: "自动战斗结算-点击返回按钮"
+      wait_after: 2.0
+      timeout: 60.0
+      match_threshold: 0.65
+      optional: false
+
+  # ------ 任务3：赠送1次人气值 ------
+  send_popularity:
+    description: "每日任务-赠送1次人气值"
+    loop: false
+    max_loops: 1
+    actions:
+    - scene_id: social_enter
+      scene_template: social_enter.png
+      tap_x: 968
+      tap_y: 327
+      description: "进入社交入口（菜单需上滑展示）"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: social_page_action1
+      scene_template: social_page_action1.png
+      tap_x: 479
+      tap_y: 406
+      description: "点击搜索按钮，弹出搜索好友弹框"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_test_step_4
-      scene_template: scene_daily_test_004.png
-      tap_x: 688
-      tap_y: 341
-      description: '步骤5: 差异质心(差异9.9%)'
+    - scene_id: social_page_action2
+      scene_template: social_page_action2.png
+      tap_x: 675
+      tap_y: 464
+      description: "搜索好友弹框-点击输入框弹出键盘"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_test_step_5
-      scene_template: scene_daily_test_005.png
-      tap_x: 1111
-      tap_y: 602
-      description: '步骤6: 整个界面切换(差异94%)，启发式推断'
+    - scene_id: social_input_name
+      scene_template: social_input_name.png
+      tap_x: 760
+      tap_y: 130
+      description: "输入或粘贴'废都的王'"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_test_step_6
-      scene_template: scene_daily_test_006.png
-      tap_x: 1206
-      tap_y: 424
-      description: '步骤7: 整个界面切换(差异95%)，启发式推断'
+      action: input_text
+      input_text: "废都的王"
+    - scene_id: social_open
+      scene_template: social_open.png
+      tap_x: 761
+      tap_y: 130
+      description: "输入好友名称后点击搜索确认"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: friend_search_btn
+      scene_template: friend_search_btn.png
+      tap_x: 269
+      tap_y: 537
+      description: "个人信息页面-点击左下角按钮弹出人气值礼物弹框"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_test_step_7
-      scene_template: scene_daily_test_007.png
-      tap_x: 640
-      tap_y: 432
-      description: '步骤8: 整个界面切换(差异93%)，启发式推断'
+    - scene_id: friend_search_page
+      scene_template: friend_search_page.png
+      tap_x: 618
+      tap_y: 360
+      description: "人气值礼物弹框-点击选中人气值"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_test_step_8
-      scene_template: scene_daily_test_008.png
-      tap_x: 613
-      tap_y: 388
-      description: '步骤9: 差异质心(差异39.8%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_9
-      scene_template: scene_daily_test_009.png
-      tap_x: 522
-      tap_y: 587
-      description: '步骤10: 整个界面切换(差异70%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_10
-      scene_template: scene_daily_test_010.png
-      tap_x: 629
-      tap_y: 609
-      description: '步骤11: 整个界面切换(差异60%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_11
-      scene_template: scene_daily_test_011.png
-      tap_x: 1040
-      tap_y: 304
-      description: '步骤12: 整个界面切换(差异77%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_12
-      scene_template: scene_daily_test_012.png
-      tap_x: 214
-      tap_y: 275
-      description: '步骤13: 整个界面切换(差异70%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_13
-      scene_template: scene_daily_test_013.png
-      tap_x: 172
-      tap_y: 444
-      description: '步骤14: 整个界面切换(差异79%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_14
-      scene_template: scene_daily_test_014.png
-      tap_x: 662
-      tap_y: 269
-      description: '步骤15: 整个界面切换(差异68%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_15
-      scene_template: scene_daily_test_015.png
-      tap_x: 209
-      tap_y: 417
-      description: '步骤16: 差异质心(差异2.3%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_16
-      scene_template: scene_daily_test_016.png
-      tap_x: 212
-      tap_y: 275
-      description: '步骤17: 整个界面切换(差异79%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_17
-      scene_template: scene_daily_test_017.png
-      tap_x: 989
-      tap_y: 278
-      description: '步骤18: 整个界面切换(差异79%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_18
-      scene_template: scene_daily_test_018.png
-      tap_x: 153
-      tap_y: 676
-      description: '步骤19: 整个界面切换(差异79%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_19
-      scene_template: scene_daily_test_019.png
-      tap_x: 987
-      tap_y: 275
-      description: '步骤20: 整个界面切换(差异81%)，启发式推断'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_20
-      scene_template: scene_daily_test_020.png
-      tap_x: 670
-      tap_y: 379
-      description: '步骤21: 差异质心(差异8.5%)'
-      wait_after: 1.5
-      timeout: 10.0
-      match_threshold: 0.65
-      optional: false
-    - scene_id: daily_test_step_21
-      scene_template: scene_daily_test_021.png
-      tap_x: 693
+    - scene_id: friend_input_name
+      scene_template: friend_input_name.png
+      tap_x: 666
       tap_y: 363
-      description: '步骤22: 差异质心(差异6.8%)'
+      description: "点击确定赠送人气值"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
-    - scene_id: daily_test_step_22
-      scene_template: scene_daily_test_022.png
-      tap_x: 64
-      tap_y: 615
-      description: '步骤23: 整个界面切换(差异80%)，启发式推断'
+    - scene_id: friend_search_confirm
+      scene_template: friend_search_confirm.png
+      tap_x: 1133
+      tap_y: 41
+      description: "点击右上角关闭按钮，关闭个人主页"
       wait_after: 1.5
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+
+  # ------ 任务4：尝试1次星之力强化 ------
+  starforce_enhance:
+    description: "每日任务-尝试1次星之力强化"
+    loop: false
+    max_loops: 1
+    actions:
+    - scene_id: starforce_enter1
+      scene_template: starforce_enter1.png
+      tap_x: 820
+      tap_y: 331
+      description: "设置页面-点击铁匠铺入口"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: starforce_enter2
+      scene_template: starforce_enter2.png
+      tap_x: 379
+      tap_y: 233
+      description: "弹出菜单中选择星之力强化"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: starforce_select_equip
+      scene_template: starforce_select_equip.png
+      tap_x: 931
+      tap_y: 389
+      description: "铁匠铺装备栏-选择装备（优先级：蓝色>紫色>橙色边框）"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+      action: select_equip_by_color
+      equip_area: {x1: 713, y1: 161, x2: 1150, y2: 618}
+      color_priority: ["blue", "purple", "orange"]
+    - scene_id: starforce_enhance
+      scene_template: starforce_enhance.png
+      tap_x: 640
+      tap_y: 660
+      description: "选中装备后点击强化按钮"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: starforce_result_confirm
+      scene_template: starforce_result_confirm.png
+      tap_x: 640
+      tap_y: 638
+      description: "强化结果弹窗-点击确认关闭弹框"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: starforce_close
+      scene_template: starforce_close.png
+      tap_x: 1136
+      tap_y: 40
+      description: "点击右上角关闭按钮，关闭铁匠铺"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+
+  # ------ 任务5：参加天空岛领主狩猎 ------
+  sky_island_hunt:
+    description: "每日任务-参加天空岛领主狩猎"
+    loop: false
+    max_loops: 1
+    actions:
+    - scene_id: hunt_open_growth
+      scene_template: hunt_open_growth.png
+      tap_x: 820
+      tap_y: 264
+      description: "设置页面-点击成长，打开成长弹窗"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: hunt_goto
+      scene_template: hunt_goto.png
+      tap_x: 494
+      tap_y: 369
+      description: "成长弹窗-滑动找到领主狩猎卡片，点击立即前往"
+      wait_after: 3.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+      action: scroll_and_find
+    - scene_id: hunt_trade_enter
+      scene_template: hunt_trade_enter.png
+      tap_x: 467
+      tap_y: 357
+      description: "天空岛贸易弹窗-点击右下角入场"
+      wait_after: 3.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: hunt_close_bag
+      scene_template: hunt_close_bag.png
+      tap_x: 380
+      tap_y: 75
+      description: "入场后收起行囊精灵背包界面"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: hunt_exit_scene
+      scene_template: hunt_exit_scene.png
+      tap_x: 1124
+      tap_y: 283
+      description: "点击右侧退出按钮"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: hunt_leave_confirm
+      scene_template: hunt_leave_confirm.png
+      tap_x: 760
+      tap_y: 531
+      description: "退出太初森林弹框点击离开"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: hunt_result_confirm
+      scene_template: hunt_result_confirm.png
+      tap_x: 640
+      tap_y: 571
+      description: "结果页面点击确定"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+
+  # ------ 领取全部日常奖励 ------
+  collect_daily_rewards:
+    description: "领取全部每日任务奖励"
+    loop: false
+    max_loops: 1
+    actions:
+    - scene_id: reward_open_daily
+      scene_template: hunt_open_growth.png
+      tap_x: 820
+      tap_y: 264
+      description: "设置页面-点击成长，打开成长弹窗（复用030）"
+      wait_after: 2.0
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: false
+    - scene_id: reward_collect1
+      scene_template: reward_collect1.png
+      tap_x: 494
+      tap_y: 370
+      description: "成长页面-点击右下角全部领取"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: true
+    - scene_id: reward_collect2
+      scene_template: reward_collect2.png
+      tap_x: 494
+      tap_y: 370
+      description: "重复点击全部领取直到按钮变灰（最多5次）"
+      wait_after: 1.5
+      timeout: 10.0
+      match_threshold: 0.65
+      optional: true
+      action: repeat_tap_until_gone
+      max_repeats: 5

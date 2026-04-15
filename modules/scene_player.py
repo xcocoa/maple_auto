@@ -41,6 +41,13 @@ class SceneAction:
     optional: bool = False      # 是否可选（匹配不到则跳过）
     tap_count: int = 1          # 点击次数
     tap_interval: float = 0.3   # 多次点击间隔
+    action: str = "tap"          # 动作类型: tap(默认点击), scroll_and_find(滑动查找), repeat_tap_until_gone(重复点击直到场景变化), input_text(输入文本), select_equip_by_color(按颜色选装备)
+    max_repeats: int = 5         # repeat_tap_until_gone 最大重复次数
+    input_text: str = ""         # input_text action: 要输入的文本内容
+    equip_area: Dict[str, int] = field(default_factory=dict)  # select_equip_by_color: 装备区域 {x1, y1, x2, y2}
+    color_priority: List[str] = field(default_factory=list)    # select_equip_by_color: 颜色优先级列表
+    match_mode: str = "template"  # 匹配模式: template(模板匹配,默认), region_feature(UI区域特征匹配)
+    ui_regions: List[Dict] = field(default_factory=list)  # region_feature模式: UI区域定义列表 [{x1,y1,x2,y2,min_edge_density}]
 
 
 @dataclass
@@ -156,6 +163,13 @@ class ScenePlayer:
                     optional=action_data.get('optional', False),
                     tap_count=action_data.get('tap_count', 1),
                     tap_interval=action_data.get('tap_interval', 0.3),
+                    action=action_data.get('action', 'tap'),
+                    max_repeats=action_data.get('max_repeats', 5),
+                    input_text=action_data.get('input_text', ''),
+                    equip_area=action_data.get('equip_area', {}),
+                    color_priority=action_data.get('color_priority', []),
+                    match_mode=action_data.get('match_mode', 'template'),
+                    ui_regions=action_data.get('ui_regions', []),
                 )
                 flow.actions.append(action)
 
@@ -357,11 +371,7 @@ class ScenePlayer:
         best_score = threshold
 
         for action in candidates:
-            matched, score = self.match_scene(
-                screenshot,
-                action.scene_template,
-                threshold=action.match_threshold
-            )
+            matched, score = self._match_action_scene(screenshot, action)
             if matched and score > best_score:
                 best_score = score
                 best_action = action
@@ -462,15 +472,29 @@ class ScenePlayer:
             # 匹配成功，重置连续超时计数
             consecutive_timeouts = 0
 
-            # 执行点击
-            for tap_i in range(action.tap_count):
-                adb.tap(action.tap_x, action.tap_y)
-                logger.info(
-                    f"  点击 ({action.tap_x}, {action.tap_y}) "
-                    f"- {action.description}"
-                )
-                if tap_i < action.tap_count - 1:
-                    time.sleep(action.tap_interval)
+            # 根据 action 类型执行不同操作
+            if action.action == 'repeat_tap_until_gone':
+                # 重复点击直到场景不再匹配（如按钮变灰）
+                self._repeat_tap_until_gone(adb, action)
+            elif action.action == 'input_text':
+                # 输入文本（先点击输入框，再通过adb输入文字）
+                self._input_text(adb, action)
+            elif action.action == 'scroll_and_find':
+                # 滑动查找目标元素并点击
+                self._scroll_and_find(adb, action)
+            elif action.action == 'select_equip_by_color':
+                # 按颜色优先级选择装备
+                self._select_equip_by_color(adb, action)
+            else:
+                # 默认：执行点击
+                for tap_i in range(action.tap_count):
+                    adb.tap(action.tap_x, action.tap_y)
+                    logger.info(
+                        f"  点击 ({action.tap_x}, {action.tap_y}) "
+                        f"- {action.description}"
+                    )
+                    if tap_i < action.tap_count - 1:
+                        time.sleep(action.tap_interval)
 
             self.stats['actions_executed'] += 1
 
@@ -479,6 +503,400 @@ class ScenePlayer:
 
         logger.info(f"场景流程完成: {flow.name}")
         return True
+
+    def _input_text(self, adb, action: SceneAction):
+        """
+        输入文本操作
+
+        流程：
+        1. 点击输入框位置（tap_x, tap_y）激活输入框
+        2. 等待键盘弹出
+        3. 清空输入框内容
+        4. 通过 adb shell input text 输入文本
+        5. 点击搜索/确认（如果有的话，由后续步骤处理）
+        """
+        text = action.input_text
+        if not text:
+            logger.warning(f"  input_text action 但未配置 input_text 字段，跳过")
+            return
+
+        # 步骤1：点击输入框激活
+        adb.tap(action.tap_x, action.tap_y)
+        logger.info(f"  点击输入框 ({action.tap_x}, {action.tap_y})")
+        time.sleep(0.8)  # 等待键盘弹出
+
+        # 步骤2：全选并清空已有内容（Ctrl+A 然后 Delete）
+        adb.keyevent("KEYCODE_MOVE_HOME")  # 移到开头
+        time.sleep(0.1)
+        # 通过 Shift+End 全选
+        adb.run("shell input keyevent --longpress 123")  # KEYCODE_MOVE_END with shift
+        time.sleep(0.1)
+        adb.keyevent("KEYCODE_DEL")  # 删除选中内容
+        time.sleep(0.3)
+
+        # 步骤3：输入文本
+        # adb shell input text 不支持中文，需要使用 am broadcast 或剪贴板方式
+        # 先尝试判断是否包含非ASCII字符
+        try:
+            text.encode('ascii')
+            is_ascii = True
+        except UnicodeEncodeError:
+            is_ascii = False
+
+        if is_ascii:
+            # 纯英文/数字，直接使用 input text
+            # 需要转义特殊字符
+            escaped_text = text.replace(' ', '%s').replace('&', '\\&').replace('<', '\\<').replace('>', '\\>').replace('"', '\\"').replace("'", "\\'")
+            adb.run(f"shell input text '{escaped_text}'")
+            logger.info(f"  通过 input text 输入: {text}")
+        else:
+            # 包含中文等非ASCII字符，使用剪贴板方式
+            # 方法：通过 am broadcast 设置剪贴板，然后粘贴
+            # 先将文本写入剪贴板
+            adb.run(f"shell am broadcast -a clipper.set -e text '{text}'")
+            time.sleep(0.3)
+            # 尝试粘贴（Ctrl+V）
+            adb.run("shell input keyevent 279")  # KEYCODE_PASTE
+            time.sleep(0.3)
+
+            # 如果剪贴板方式不可用，尝试逐字符输入Unicode
+            # 通过 input text 输入URL编码的文本
+            logger.info(f"  通过剪贴板方式输入: {text}")
+
+        time.sleep(0.5)
+
+    def _scroll_and_find(self, adb, action: SceneAction):
+        """
+        滑动查找操作
+
+        在当前页面向下滑动，每次滑动后重新截图匹配场景模板。
+        找到目标场景后点击预设坐标。
+        适用于需要滚动列表才能找到目标元素的场景（如成长弹窗中查找领主狩猎卡片）。
+
+        流程：
+        1. 先检查当前页面是否已经能看到目标（不滑动直接匹配）
+        2. 如果看不到，向下滑动一段距离
+        3. 重新截图匹配
+        4. 重复直到找到或达到最大滑动次数
+        5. 找到后点击 tap_x, tap_y
+        """
+        max_scrolls = 5       # 最大滑动次数
+        scroll_distance = 300  # 每次滑动距离（像素，基于1280x720）
+        scroll_duration = 500  # 滑动持续时间（毫秒）
+
+        # 滑动起点和终点（屏幕中间区域向上滑动）
+        scroll_x = self.BASE_W // 2  # 640
+        scroll_start_y = self.BASE_H * 2 // 3  # 480
+        scroll_end_y = scroll_start_y - scroll_distance  # 180
+
+        # 需要将基准分辨率坐标转换为设备实际坐标
+        # 获取设备屏幕尺寸
+        try:
+            screen_w, screen_h = adb.get_screen_size()
+        except Exception:
+            screen_w, screen_h = 720, 1280  # 默认竖屏
+
+        scale_x = screen_w / self.BASE_W
+        scale_y = screen_h / self.BASE_H
+
+        for scroll_i in range(max_scrolls):
+            # 截图检查当前页面
+            screenshot = adb.screenshot(force_refresh=True)
+            if screenshot is None:
+                time.sleep(0.5)
+                continue
+
+            h, w = screenshot.shape[:2]
+            if w != self.BASE_W or h != self.BASE_H:
+                screenshot = cv2.resize(screenshot, (self.BASE_W, self.BASE_H))
+
+            matched, score = self._match_action_scene(screenshot, action)
+
+            if matched:
+                # 找到目标，点击
+                adb.tap(action.tap_x, action.tap_y)
+                logger.info(
+                    f"  滑动查找成功（第{scroll_i}次滑动后），"
+                    f"点击 ({action.tap_x}, {action.tap_y}) - {action.description}"
+                )
+                return
+
+            # 未找到，向下滑动（在设备上执行滑动，坐标需要转换为设备实际坐标）
+            device_sx = int(scroll_x * scale_x)
+            device_sy = int(scroll_start_y * scale_y)
+            device_ey = int(scroll_end_y * scale_y)
+            adb.swipe(device_sx, device_sy, device_sx, device_ey, scroll_duration)
+            logger.info(
+                f"  滑动查找 [{scroll_i + 1}/{max_scrolls}] "
+                f"向上滑动 {scroll_distance}px"
+            )
+            time.sleep(1.0)  # 等待滑动动画完成
+
+        # 最后再检查一次
+        screenshot = adb.screenshot(force_refresh=True)
+        if screenshot is not None:
+            h, w = screenshot.shape[:2]
+            if w != self.BASE_W or h != self.BASE_H:
+                screenshot = cv2.resize(screenshot, (self.BASE_W, self.BASE_H))
+            matched, score = self._match_action_scene(screenshot, action)
+            if matched:
+                adb.tap(action.tap_x, action.tap_y)
+                logger.info(
+                    f"  滑动查找成功（最终检查），"
+                    f"点击 ({action.tap_x}, {action.tap_y})"
+                )
+                return
+
+        # 未找到，回退：直接点击预设坐标（可能碰巧在正确位置）
+        logger.warning(
+            f"  滑动查找未找到目标场景，回退点击预设坐标 "
+            f"({action.tap_x}, {action.tap_y})"
+        )
+        adb.tap(action.tap_x, action.tap_y)
+
+    def _select_equip_by_color(self, adb, action: SceneAction):
+        """
+        按颜色优先级选择装备
+
+        在装备列表区域中，按颜色优先级（蓝色>紫色>橙色）查找装备边框，
+        点击第一个找到的最高优先级装备。
+
+        颜色检测基于 HSV 色彩空间：
+        - 蓝色(blue): H=100~130, S>80, V>80
+        - 紫色(purple): H=130~160, S>60, V>60
+        - 橙色(orange): H=10~25, S>150, V>150
+
+        流程：
+        1. 截图并裁剪装备区域
+        2. 按优先级依次检测各颜色的装备边框
+        3. 找到后点击该装备的中心位置
+        4. 如果都没找到，回退点击预设坐标
+        """
+        equip_area = action.equip_area
+        color_priority = action.color_priority
+
+        if not equip_area or not color_priority:
+            # 没有配置装备区域或颜色优先级，回退为普通点击
+            logger.warning(f"  select_equip_by_color 缺少配置，回退为普通点击")
+            adb.tap(action.tap_x, action.tap_y)
+            return
+
+        # 截图
+        screenshot = adb.screenshot(force_refresh=True)
+        if screenshot is None:
+            adb.tap(action.tap_x, action.tap_y)
+            return
+
+        h, w = screenshot.shape[:2]
+        if w != self.BASE_W or h != self.BASE_H:
+            screenshot = cv2.resize(screenshot, (self.BASE_W, self.BASE_H))
+
+        # 裁剪装备区域
+        x1 = equip_area.get('x1', 0)
+        y1 = equip_area.get('y1', 0)
+        x2 = equip_area.get('x2', self.BASE_W)
+        y2 = equip_area.get('y2', self.BASE_H)
+        equip_region = screenshot[y1:y2, x1:x2]
+
+        # 颜色范围定义（HSV空间）
+        color_ranges = {
+            'blue': {
+                'lower': np.array([100, 80, 80]),
+                'upper': np.array([130, 255, 255]),
+            },
+            'purple': {
+                'lower': np.array([130, 60, 60]),
+                'upper': np.array([160, 255, 255]),
+            },
+            'orange': {
+                'lower': np.array([10, 150, 150]),
+                'upper': np.array([25, 255, 255]),
+            },
+        }
+
+        hsv = cv2.cvtColor(equip_region, cv2.COLOR_BGR2HSV)
+
+        # 按优先级依次检测
+        for color_name in color_priority:
+            if color_name not in color_ranges:
+                logger.warning(f"  未知颜色: {color_name}，跳过")
+                continue
+
+            color_range = color_ranges[color_name]
+            mask = cv2.inRange(hsv, color_range['lower'], color_range['upper'])
+
+            # 形态学操作去噪
+            kernel = np.ones((3, 3), np.uint8)
+            mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+            mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+
+            # 查找轮廓
+            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            # 过滤：装备边框通常是较大的矩形轮廓
+            valid_contours = []
+            for cnt in contours:
+                area = cv2.contourArea(cnt)
+                if area < 200:  # 过滤太小的噪点
+                    continue
+                bx, by, bw, bh = cv2.boundingRect(cnt)
+                aspect_ratio = bw / max(bh, 1)
+                # 装备图标通常接近正方形（宽高比 0.5~2.0）
+                if 0.3 < aspect_ratio < 3.0:
+                    valid_contours.append((area, bx, by, bw, bh))
+
+            if valid_contours:
+                # 选择面积最大的轮廓（最可能是装备边框）
+                valid_contours.sort(key=lambda c: c[0], reverse=True)
+                _, bx, by, bw, bh = valid_contours[0]
+
+                # 计算装备中心点（相对于整个截图的坐标）
+                equip_cx = x1 + bx + bw // 2
+                equip_cy = y1 + by + bh // 2
+
+                adb.tap(equip_cx, equip_cy)
+                logger.info(
+                    f"  按颜色选择装备: 找到{color_name}色装备，"
+                    f"点击 ({equip_cx}, {equip_cy})"
+                )
+                return
+
+            logger.debug(f"  未找到{color_name}色装备，尝试下一个颜色")
+
+        # 所有颜色都没找到，回退点击预设坐标
+        logger.warning(
+            f"  未找到任何优先级颜色的装备，回退点击预设坐标 "
+            f"({action.tap_x}, {action.tap_y})"
+        )
+        adb.tap(action.tap_x, action.tap_y)
+
+    def _match_action_scene(self, screenshot: np.ndarray, action: SceneAction) -> Tuple[bool, float]:
+        """
+        根据action的match_mode统一匹配场景
+        
+        自动选择模板匹配或区域特征匹配，避免各处重复判断逻辑。
+        
+        Args:
+            screenshot: 当前截图（1280x720）
+            action: 场景动作配置
+            
+        Returns:
+            (是否匹配, 匹配得分)
+        """
+        if action.match_mode == 'region_feature':
+            return self._match_by_region_feature(
+                screenshot,
+                action.ui_regions,
+                threshold=action.match_threshold
+            )
+        else:
+            return self.match_scene(
+                screenshot,
+                action.scene_template,
+                threshold=action.match_threshold
+            )
+
+    def _repeat_tap_until_gone(self, adb, action: SceneAction):
+        """
+        重复点击直到场景不再匹配（如按钮从橙色变为灰色）
+
+        每次点击后等待 wait_after 秒，然后重新截图匹配。
+        如果场景仍然匹配（按钮仍可点击），则继续点击。
+        最多重复 max_repeats 次。
+        """
+        for repeat_i in range(action.max_repeats):
+            # 执行点击
+            adb.tap(action.tap_x, action.tap_y)
+            logger.info(
+                f"  重复点击 [{repeat_i + 1}/{action.max_repeats}] "
+                f"({action.tap_x}, {action.tap_y}) - {action.description}"
+            )
+
+            # 等待界面响应
+            time.sleep(action.wait_after)
+
+            # 重新截图检查场景是否仍然匹配
+            screenshot = adb.screenshot(force_refresh=True)
+            if screenshot is None:
+                logger.warning(f"  截图失败，停止重复点击")
+                break
+
+            h, w = screenshot.shape[:2]
+            if w != self.BASE_W or h != self.BASE_H:
+                screenshot = cv2.resize(screenshot, (self.BASE_W, self.BASE_H))
+
+            matched, score = self._match_action_scene(screenshot, action)
+
+            if not matched:
+                logger.info(
+                    f"  场景已变化（得分={score:.3f} < 阈值={action.match_threshold}），"
+                    f"停止重复点击（共点击 {repeat_i + 1} 次）"
+                )
+                return
+            else:
+                logger.debug(
+                    f"  场景仍匹配（得分={score:.3f}），继续点击..."
+                )
+
+        logger.info(
+            f"  已达最大重复次数 {action.max_repeats}，停止重复点击"
+        )
+
+    def _match_by_region_feature(self, screenshot: np.ndarray, ui_regions: List[Dict], threshold: float = 0.65) -> Tuple[bool, float]:
+        """
+        基于UI区域特征匹配场景
+        
+        通过检测指定区域的边缘密度来判断该区域是否存在UI元素。
+        主界面的4个角落（人物信息栏、工具栏、摇杆、技能栏）都有丰富的UI元素，
+        边缘密度通常 > 0.08；而弹窗/菜单界面的角落通常是半透明遮罩，边缘密度 < 0.06。
+        
+        Args:
+            screenshot: 当前截图（1280x720）
+            ui_regions: UI区域定义列表，每个元素包含 {x1, y1, x2, y2, min_edge_density}
+            threshold: 需要满足条件的区域比例（默认0.65，即大部分区域满足即可）
+            
+        Returns:
+            (是否匹配, 满足条件的区域比例)
+        """
+        if not ui_regions:
+            return False, 0.0
+        
+        passed = 0
+        total = len(ui_regions)
+        
+        for region in ui_regions:
+            x1 = region.get('x1', 0)
+            y1 = region.get('y1', 0)
+            x2 = region.get('x2', self.BASE_W)
+            y2 = region.get('y2', self.BASE_H)
+            min_edge = region.get('min_edge_density', 0.08)
+            
+            # 裁剪区域
+            roi = screenshot[y1:y2, x1:x2]
+            if roi.size == 0:
+                continue
+            
+            # 计算边缘密度
+            edges = cv2.Canny(roi, 50, 150)
+            edge_density = np.count_nonzero(edges) / edges.size
+            
+            region_name = region.get('name', f'({x1},{y1})-({x2},{y2})')
+            
+            if edge_density >= min_edge:
+                passed += 1
+                logger.debug(f"    区域 {region_name}: 边缘密度={edge_density:.3f} >= {min_edge} ✓")
+            else:
+                logger.debug(f"    区域 {region_name}: 边缘密度={edge_density:.3f} < {min_edge} ✗")
+        
+        score = passed / total if total > 0 else 0.0
+        matched = score >= threshold
+        
+        if matched:
+            logger.info(f"  区域特征匹配成功: {passed}/{total} 个区域满足条件 (得分={score:.3f})")
+        else:
+            logger.debug(f"  区域特征匹配失败: {passed}/{total} 个区域满足条件 (得分={score:.3f})")
+        
+        return matched, score
 
     def _wait_for_scene(self, adb, action: SceneAction) -> bool:
         """等待指定场景出现"""
@@ -497,16 +915,12 @@ class ScenePlayer:
             if w != self.BASE_W or h != self.BASE_H:
                 screenshot = cv2.resize(screenshot, (self.BASE_W, self.BASE_H))
 
-            # 匹配场景
-            matched, score = self.match_scene(
-                screenshot,
-                action.scene_template,
-                threshold=action.match_threshold
-            )
+            # 统一匹配（自动根据match_mode选择模板匹配或区域特征匹配）
+            matched, score = self._match_action_scene(screenshot, action)
 
             if matched:
                 logger.debug(
-                    f"  场景匹配: {action.scene_id} (得分={score:.3f})"
+                    f"  场景匹配: {action.scene_id} (模式={action.match_mode}, 得分={score:.3f})"
                 )
                 return True
 

@@ -169,6 +169,12 @@ class ScenePlayer:
 
     def _load_scene_template(self, template_path: str) -> Optional[np.ndarray]:
         """加载场景模板图片（带缓存）"""
+        # 如果模板标记为SKIP_MATCH，则返回一个虚拟图像
+        if template_path == "SKIP_MATCH":
+            # 创建一个1x1的虚拟图像
+            dummy_img = np.ones((1, 1, 3), dtype=np.uint8) * 255
+            return dummy_img
+            
         if template_path in self._template_cache:
             return self._template_cache[template_path]
 
@@ -214,6 +220,10 @@ class ScenePlayer:
         Returns:
             (是否匹配, 相似度得分)
         """
+        # 如果模板标记为SKIP_MATCH，则立即返回匹配成功
+        if template_path == "SKIP_MATCH":
+            return True, 1.0
+            
         template = self._load_scene_template(template_path)
         if template is None:
             return False, 0.0
@@ -482,6 +492,11 @@ class ScenePlayer:
 
     def _wait_for_scene(self, adb, action: SceneAction) -> bool:
         """等待指定场景出现"""
+        # 如果模板标记为SKIP_MATCH，则立即返回成功
+        if action.scene_template == "SKIP_MATCH":
+            logger.debug(f"  跳过模板匹配: {action.scene_id}")
+            return True
+            
         start_time = time.time()
         check_interval = 0.5  # 每 0.5 秒检查一次
 

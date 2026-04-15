@@ -19,10 +19,6 @@ tasks:
   # 启用的任务列表（按执行顺序）
   enabled:
     - daily_sign_in
-    - collect_mail
-    - daily_quest
-    - shop_buy
-    - auto_farm
 
   # 每日签到
   daily_sign_in:
@@ -61,25 +57,27 @@ tasks:
   auto_farm:
     duration: 600                         # 挂机时长（秒）
     use_auto_battle: true                 # 是否使用游戏内自动战斗按钮
-    auto_battle_template: "auto_battle.png"  # 自动战斗按钮模板
+    auto_battle_template: "templates/daily/scenes/base_icon/auto_battle.png"  # 自动战斗按钮模板
     check_interval: 30                    # 状态检查间隔（秒）
     death_check: true                     # 是否检测死亡
     timeout: 660                          # 总超时（比 duration 略长）
 
 # ==================== UI 检测配置 ====================
 ui:
-  templates_dir: "templates/daily"        # 模板图片目录
+  templates_dir: "screenshots/templates"        # 模板图片目录
   match_threshold: 0.8                    # 默认模板匹配阈值
   multi_scale: false                      # 是否启用多尺度匹配（更慢但更准）
   scales: [0.9, 1.0, 1.1]                # 多尺度匹配的缩放比例
 
   # 通用 UI 元素模板
   common_templates:
-    close_btn: "close_btn.png"            # 关闭按钮
-    confirm_btn: "confirm_btn.png"        # 确认按钮
-    cancel_btn: "cancel_btn.png"          # 取消按钮
-    back_btn: "back_btn.png"              # 返回按钮
-    home_btn: "home_btn.png"              # 主界面按钮
+    close_btn: "templates/daily/scenes/base_icon/close.png"      # 关闭按钮（X）
+    back_btn: "templates/daily/scenes/base_icon/back.png"        # 返回按钮（←）
+    confirm_btn: "templates/daily/scenes/base_icon/sure.png"     # 确认/确定按钮
+    cancel_btn: "templates/daily/scenes/base_icon/cancel.png"    # 取消按钮
+    auto_battle: "templates/daily/scenes/base_icon/auto_battle.png"  # 自动战斗按钮
+    start_btn: "selected/button_start_v2.png"         # 开始按钮
+    attack_btn: "selected/button_attack.png"          # 攻击按钮
 
   # 通用 UI 元素备用坐标（模板匹配失败时使用）
   fallback_positions:

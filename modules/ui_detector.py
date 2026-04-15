@@ -77,14 +77,23 @@ class UIDetector:
             self._load_template(filename)
 
     def _load_template(self, filename: str) -> Optional[np.ndarray]:
-        """加载模板图片（带缓存）"""
+        """加载模板图片（带缓存）
+        
+        查找顺序：
+        1. templates_dir 下查找
+        2. 项目根目录下查找（支持完整相对路径）
+        """
         if filename in self._template_cache:
             return self._template_cache[filename]
 
         filepath = os.path.join(self.templates_dir, filename)
         if not os.path.exists(filepath):
-            logger.warning(f"模板文件不存在: {filepath}")
-            return None
+            # 尝试从项目根目录查找
+            if os.path.exists(filename):
+                filepath = filename
+            else:
+                logger.warning(f"模板文件不存在: {filepath}")
+                return None
 
         template = cv2.imread(filepath)
         if template is None:
