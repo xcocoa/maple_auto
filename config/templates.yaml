@@ -1,0 +1,61 @@
+# UI模板配置文件
+# 此文件记录手动截取的模板信息
+#
+# 说明：
+#   系统有两套执行模式：
+#   1. 场景回放（主要）：使用 daily_scenes.yaml 中的完整场景截图匹配，不需要小按钮模板
+#   2. 传统模板匹配（回退）：场景回放失败时使用小按钮模板进行错误恢复和弹窗处理
+#
+#   以下模板主要用于模式2（回退方案）和通用的错误恢复场景
+
+templates:
+  # ==================== 核心模板（错误恢复必需） ====================
+  
+  # 关闭按钮 - 用于关闭意外弹窗、对话框
+  close_btn:
+    filename: templates/daily/scenes/base_icon/close.png
+    description: "右上角关闭按钮（X图标）"
+    category: core
+    match_threshold: 0.8
+    usage: "关闭弹窗、对话框，错误恢复时返回正常状态"
+    
+  # 返回按钮 - 用于从错误页面返回
+  back_btn:
+    filename: templates/daily/scenes/base_icon/back.png
+    description: "左上角返回按钮（←箭头）"
+    category: core
+    match_threshold: 0.8
+    usage: "从错误页面返回上一级，恢复到主界面"
+    
+  # 确认按钮 - 用于处理确认弹窗
+  confirm_btn:
+    filename: templates/daily/scenes/base_icon/sure.png
+    description: "确认/确定按钮"
+    category: core
+    match_threshold: 0.7
+    usage: "处理各种确认弹窗，如奖励领取、操作确认等"
+
+  # ==================== 可选模板（特定任务使用） ====================
+  
+  # 取消按钮 - 有 fallback 坐标兆底
+  cancel_btn:
+    filename: templates/daily/scenes/base_icon/cancel.png
+    description: "取消按钮"
+    category: optional
+    match_threshold: 0.7
+    fallback_position: [440, 500]
+    usage: "取消操作，有 fallback 坐标可兆底"
+# 模板验证规则
+validation:
+  min_non_black_pixels: 10.0  # 最低非黑像素比例%
+  max_size_variance: 5        # 尺寸允许的像素误差
+  # 只有核心模板是必需的
+  required_templates: [close_btn, back_btn, confirm_btn]
+  optional_templates: [cancel_btn]
+
+# 手动截取状态
+capture_status:
+  last_updated: "2026-04-14"
+  completed: []
+  pending: [close_btn, back_btn, confirm_btn]
+  notes: "核心模板需要手动从游戏中精确截取，请在游戏中找到对应按钮后截图裁剪"

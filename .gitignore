@@ -52,6 +52,15 @@ logs/
 temp/
 tmp/
 *.tmp
+nohup.out
+
+# 测试截图素材（从真机采集，不提交到仓库）
+tests/screenshots/
+
+# 视频文件
+*.MP4
+*.mp4
+*.avi
 
 # 数据库
 *.db

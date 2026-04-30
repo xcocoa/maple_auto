@@ -41,9 +41,10 @@ class SceneAction:
     optional: bool = False      # 是否可选（匹配不到则跳过）
     tap_count: int = 1          # 点击次数
     tap_interval: float = 0.3   # 多次点击间隔
-    action: str = "tap"          # 动作类型: tap(默认点击), scroll_and_find(滑动查找), repeat_tap_until_gone(重复点击直到场景变化), input_text(输入文本), select_equip_by_color(按颜色选装备)
+    action: str = "tap"          # 动作类型: tap(默认点击), scroll_and_find(滑动查找), repeat_tap_until_gone(重复点击直到场景变化), input_text(输入文本), select_equip_by_color(按颜色选装备), click_text(点击文本)
     max_repeats: int = 5         # repeat_tap_until_gone 最大重复次数
     input_text: str = ""         # input_text action: 要输入的文本内容
+    target_text: str = ""        # click_text action: 要点击的文本内容
     equip_area: Dict[str, int] = field(default_factory=dict)  # select_equip_by_color: 装备区域 {x1, y1, x2, y2}
     color_priority: List[str] = field(default_factory=list)    # select_equip_by_color: 颜色优先级列表
     match_mode: str = "template"  # 匹配模式: template(模板匹配,默认), region_feature(UI区域特征匹配)
@@ -166,6 +167,7 @@ class ScenePlayer:
                     action=action_data.get('action', 'tap'),
                     max_repeats=action_data.get('max_repeats', 5),
                     input_text=action_data.get('input_text', ''),
+                    target_text=action_data.get('target_text', ''),
                     equip_area=action_data.get('equip_area', {}),
                     color_priority=action_data.get('color_priority', []),
                     match_mode=action_data.get('match_mode', 'template'),
@@ -442,6 +444,27 @@ class ScenePlayer:
                 f"等待场景: {action.scene_id} - {action.description}"
             )
 
+            # click_text 动作不依赖模板匹配，直接通过 OCR 查找文本
+            if action.action == 'click_text':
+                success = self._click_text(adb, action)
+                if success:
+                    consecutive_timeouts = 0
+                    self.stats['actions_executed'] += 1
+                    time.sleep(action.wait_after)
+                elif action.optional:
+                    logger.info(f"  可选 OCR 文本未找到，跳过: {action.scene_id}")
+                    self.stats['actions_skipped'] += 1
+                else:
+                    consecutive_timeouts += 1
+                    self.stats['actions_timeout'] += 1
+                    if consecutive_timeouts >= max_consecutive_timeouts:
+                        logger.error(
+                            f"  连续 {max_consecutive_timeouts} 次超时，放弃流程: {flow.name}"
+                        )
+                        return False
+                    logger.info(f"  尝试跳过当前步骤，继续下一步...")
+                continue
+
             # 等待场景出现
             matched = self._wait_for_scene(adb, action)
 
@@ -485,6 +508,9 @@ class ScenePlayer:
             elif action.action == 'select_equip_by_color':
                 # 按颜色优先级选择装备
                 self._select_equip_by_color(adb, action)
+            elif action.action == 'click_text':
+                # 点击指定文本
+                self._click_text(adb, action)
             else:
                 # 默认：执行点击
                 for tap_i in range(action.tap_count):
@@ -770,6 +796,71 @@ class ScenePlayer:
         )
         adb.tap(action.tap_x, action.tap_y)
 
+    def _click_text(self, adb, action: SceneAction) -> bool:
+        """
+        点击指定文本操作（带超时重试）
+
+        流程：
+        1. 在 timeout 时间内反复截图 + OCR 查找目标文本
+        2. 找到后点击文本中心位置
+        3. 如果超时仍未找到，回退点击预设坐标
+
+        Returns:
+            是否成功找到并点击了文本
+        """
+        target_text = action.target_text
+        if not target_text:
+            logger.warning(f"  click_text action 但未配置 target_text 字段，回退为普通点击")
+            adb.tap(action.tap_x, action.tap_y)
+            return True
+
+        # 延迟导入 UIDetector 避免循环依赖
+        from modules.ui_detector import UIDetector
+
+        # 复用或创建 UIDetector 实例
+        if not hasattr(self, '_ui_detector'):
+            self._ui_detector = UIDetector({})
+        detector = self._ui_detector
+
+        start_time = time.time()
+        check_interval = 1.0  # OCR 比较耗时，间隔稍长
+
+        while time.time() - start_time < action.timeout:
+            # 截图
+            screenshot = adb.screenshot(force_refresh=True)
+            if screenshot is None:
+                time.sleep(check_interval)
+                continue
+
+            # 缩放到基准分辨率
+            h, w = screenshot.shape[:2]
+            if w != self.BASE_W or h != self.BASE_H:
+                screenshot = cv2.resize(screenshot, (self.BASE_W, self.BASE_H))
+
+            element = detector.find_text(screenshot, target_text)
+
+            if element:
+                adb.tap(element.x, element.y)
+                logger.info(
+                    f"  OCR 查找到文本 '{target_text}'，"
+                    f"点击 ({element.x}, {element.y}) - {action.description}"
+                )
+                return True
+
+            elapsed = time.time() - start_time
+            logger.debug(
+                f"  OCR 未找到文本 '{target_text}'，继续重试... ({elapsed:.1f}s/{action.timeout}s)"
+            )
+            time.sleep(check_interval)
+
+        # 超时，回退点击预设坐标
+        logger.warning(
+            f"  OCR 查找文本 '{target_text}' 超时 ({action.timeout}s)，"
+            f"回退点击预设坐标 ({action.tap_x}, {action.tap_y})"
+        )
+        adb.tap(action.tap_x, action.tap_y)
+        return False
+
     def _match_action_scene(self, screenshot: np.ndarray, action: SceneAction) -> Tuple[bool, float]:
         """
         根据action的match_mode统一匹配场景
@@ -963,3 +1054,138 @@ class ScenePlayer:
     def get_stats(self) -> Dict[str, int]:
         """获取执行统计"""
         return dict(self.stats)
+
+
+# ==================== 状态机适配层 ====================
+
+class StateMachinePlayer:
+    """
+    状态机播放器 — ScenePlayer 的升级替代
+    
+    封装 StateMachineEngine，提供与 ScenePlayer 兼容的接口。
+    同时保留对旧 ScenePlayer 的回退能力。
+    
+    使用方法：
+      player = StateMachinePlayer(config)
+      player.load_config("config/daily_states.yaml")
+      player.play("daily_all", adb)
+    """
+
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        self.config = config or {}
+
+        # 旧引擎（回退用）
+        self._legacy_player = ScenePlayer(config)
+
+        # 新状态机引擎（延迟初始化）
+        self._engine = None
+        self._engine_initialized = False
+
+        # 状态机配置路径
+        self._state_config_path: Optional[str] = None
+
+        # 统计
+        self.stats = {
+            'flows_executed': 0,
+            'sm_flows_executed': 0,
+            'legacy_flows_executed': 0,
+        }
+
+    def _ensure_engine(self):
+        """确保状态机引擎已初始化"""
+        if self._engine_initialized:
+            return
+
+        from modules.state_machine import StateMachineEngine
+        from modules.ui_detector import UIDetector
+
+        # 创建 UIDetector 实例（复用 OCR 能力）
+        ui_detector = UIDetector({})
+
+        self._engine = StateMachineEngine(
+            scene_player=self._legacy_player,
+            ui_detector=ui_detector,
+        )
+        self._engine_initialized = True
+
+    def load_config(self, config_path: str) -> bool:
+        """
+        加载配置文件
+        
+        同时加载旧格式（daily_scenes.yaml）和新格式（daily_states.yaml）。
+        优先使用状态机格式，回退到旧格式。
+        """
+        # 加载旧格式（始终加载，作为回退和场景匹配的基础）
+        legacy_loaded = self._legacy_player.load_config(config_path)
+
+        # 尝试加载状态机格式
+        # 自动推断状态机配置路径：daily_scenes.yaml → daily_states.yaml
+        state_config = config_path.replace('_scenes.yaml', '_states.yaml')
+        if os.path.exists(state_config):
+            self._state_config_path = state_config
+            self._ensure_engine()
+
+            from modules.state_machine import StateMachineConfigParser
+            flows = StateMachineConfigParser.parse_file(state_config)
+            for flow in flows.values():
+                self._engine.register_flow(flow)
+
+            logger.info(
+                f"状态机配置已加载: {state_config} "
+                f"({len(flows)} 个流程: {list(flows.keys())})"
+            )
+
+        return legacy_loaded or (self._state_config_path is not None)
+
+    def play(self, flow_name: str, adb, on_progress=None) -> bool:
+        """
+        执行流程
+        
+        优先使用状态机引擎，如果状态机中没有该流程则回退到旧引擎。
+        """
+        self.stats['flows_executed'] += 1
+
+        # 优先尝试状态机引擎
+        if self._engine and flow_name in self._engine.get_flow_names():
+            logger.info(f"使用状态机引擎执行: {flow_name}")
+            self.stats['sm_flows_executed'] += 1
+            return self._engine.run(flow_name, adb, on_progress)
+
+        # 回退到旧引擎
+        if flow_name in self._legacy_player.get_flow_names():
+            logger.info(f"回退到旧引擎执行: {flow_name}")
+            self.stats['legacy_flows_executed'] += 1
+            return self._legacy_player.play(flow_name, adb, on_progress)
+
+        logger.error(f"未找到流程: {flow_name}")
+        return False
+
+    def get_flow_names(self) -> List[str]:
+        """获取所有可用的流程名称（合并新旧引擎）"""
+        names = set(self._legacy_player.get_flow_names())
+        if self._engine:
+            names.update(self._engine.get_flow_names())
+        return list(names)
+
+    def get_flow_info(self, flow_name: str) -> Optional[Dict]:
+        """获取流程信息"""
+        return self._legacy_player.get_flow_info(flow_name)
+
+    def get_stats(self) -> Dict[str, Any]:
+        """获取统计信息"""
+        result = dict(self.stats)
+        result['legacy'] = self._legacy_player.get_stats()
+        if self._engine:
+            result['state_machine'] = self._engine.stats
+        return result
+
+    def clear_cache(self):
+        """清除缓存"""
+        self._legacy_player.clear_cache()
+
+    # 兼容旧接口
+    def match_scene(self, screenshot, template_path, threshold=0.7):
+        return self._legacy_player.match_scene(screenshot, template_path, threshold)
+
+    def find_best_scene(self, screenshot, candidates, threshold=0.7):
+        return self._legacy_player.find_best_scene(screenshot, candidates, threshold)

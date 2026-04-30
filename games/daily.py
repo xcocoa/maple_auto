@@ -21,7 +21,7 @@ from modules.minimap import MinimapDetector
 from modules.combat import CombatController
 from modules.navigation import Navigator
 from modules.skill import SkillDetector
-from modules.scene_player import ScenePlayer
+from modules.scene_player import ScenePlayer, StateMachinePlayer
 
 
 class DailyState(Enum):
@@ -181,12 +181,12 @@ class DailyGame:
         )
         self.skill_detector = SkillDetector(self.config.get('skill', {}))
 
-        # 初始化场景回放引擎（全自动模式）
-        self.scene_player = ScenePlayer(self.config.get('ui', {}))
+        # 初始化场景回放引擎（状态机模式，自动回退到旧引擎）
+        self.scene_player = StateMachinePlayer(self.config.get('ui', {}))
         scenes_config = self.config.get('scene_config', 'config/daily_scenes.yaml')
         if os.path.exists(scenes_config):
             self.scene_player.load_config(scenes_config)
-            self.logger.info(f"场景回放引擎已加载: {self.scene_player.get_flow_names()}")
+            self.logger.info(f"场景引擎已加载: {self.scene_player.get_flow_names()}")
 
         # 状态机
         self.current_state = DailyState.IDLE

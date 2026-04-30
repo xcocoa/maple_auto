@@ -1,0 +1,1401 @@
+# ==================== 冒险岛每日任务 - 状态机配置 ====================
+#
+# 与 daily_scenes.yaml（线性流水线）不同，本文件采用状态机格式：
+#   - 每个状态 = 一个可识别的画面场景
+#   - 每个状态定义：匹配条件 + 执行动作 + 下一状态
+#   - 支持全局处理器：任何状态下检测到意外弹窗都能自动处理
+#   - 支持超时回退：某个状态停留过久自动跳过或回退
+#
+# 所有坐标基于 1280x720 基准分辨率
+# 注意：全面屏设备（如2712x1220）会居中裁剪到16:9，
+# 右侧超出1280的坐标（如菜单按钮≡）仍可通过ScaledADB正确映射到设备坐标
+#
+
+global:
+  scenes_dir: templates/daily/scenes/core
+  match_threshold: 0.40
+  default_wait: 1.0
+
+flows:
+
+  # ==================== 总流程：串联执行全部日常任务 ====================
+  daily_all:
+    description: "每日任务总流程：依次执行5个核心任务 + 领取奖励"
+    initial_state: main_screen
+    max_total_time: 600.0
+    max_state_transitions: 150
+
+    # --- 全局处理器：任何状态下都会检测 ---
+    global_handlers:
+      # 装备信息弹窗：误点装备展示区域弹出的装备详情面板
+      - id: equip_info_close
+        description: "检测到装备信息弹窗（含基本属性/品质等），点击右上角X关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["基本属性", "品质"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        wait_after: 1.5
+        max_triggers: 3
+        cooldown: 2.0
+
+      # 个人主页意外打开：在非赠送人气流程中误入个人主页
+      - id: unexpected_profile_close
+        description: "检测到意外打开的个人主页，点击右上角X关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["个人主页", "道具信息"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        wait_after: 1.5
+        max_triggers: 3
+        cooldown: 2.0
+
+      # 工会界面意外残留：之前的签到操作后工会界面未关闭
+      - id: guild_page_close
+        description: "检测到工会界面（含公会信息/公会技能等），点击右上角X关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["公会信息", "公会技能"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        wait_after: 1.5
+        max_triggers: 3
+        cooldown: 2.0
+
+      # 社交界面意外残留：之前的赠送人气操作后社交界面未关闭
+      - id: social_page_close
+        description: "检测到社交界面残留（含社交/搜索等），点击右上角X关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["社交", "搜索", "邮箱"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        wait_after: 1.5
+        max_triggers: 3
+        cooldown: 2.0
+
+      # 铁匠铺界面意外残留：之前的强化操作后铁匠铺界面未关闭
+      - id: blacksmith_page_close
+        description: "检测到铁匠铺界面残留，点击右上角X关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["铁匠铺", "请选择菜单"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 1136
+          tap_y: 40
+        wait_after: 1.5
+        max_triggers: 3
+        cooldown: 2.0
+
+      # 日常玩法界面意外残留：之前的副本操作后日常玩法界面未关闭
+      - id: daily_play_page_close
+        description: "检测到日常玩法界面残留，点击右上角X关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["日常玩法", "宝石"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        wait_after: 1.5
+        max_triggers: 3
+        cooldown: 2.0
+
+      # 自动战斗任务完成弹窗：挂机结束后弹出的经验领取弹窗
+      - id: auto_battle_complete_close
+        description: "检测到自动战斗任务完成弹窗，点击X关闭"
+        match:
+          mode: ocr_text
+          ocr_text: "自动战斗任务完成"
+        action:
+          type: tap
+          tap_x: 949
+          tap_y: 397
+        wait_after: 1.5
+        max_triggers: 3
+        cooldown: 2.0
+
+      # 突发任务提示：神秘力量战场等突发任务弹窗
+      - id: sudden_task_close
+        description: "检测到突发任务提示，点击X关闭"
+        match:
+          mode: ocr_text
+          ocr_text: "突发任务开启"
+        action:
+          type: tap
+          tap_x: 1260
+          tap_y: 275
+        wait_after: 1.0
+        max_triggers: 3
+        cooldown: 2.0
+
+      # 角色已完成训练通知：挂机训练结束后弹出的通知条（多角色可能反复弹出）
+      # 通知条特征：同时包含"角色已完成训练"文本和"立即前往"按钮
+      # 注意：主界面聊天区域不会同时出现这两个文本
+      - id: training_complete_close
+        description: "检测到角色已完成训练通知（含立即前往按钮），点击X关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["角色已完成训练", "立即前往"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 945
+          tap_y: 393
+        wait_after: 1.0
+        max_triggers: 20
+        cooldown: 2.0
+
+      # 背包/货币目录弹窗：误触打开背包或货币目录
+      - id: bag_currency_close
+        description: "检测到背包或货币目录界面，按返回键关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["背包", "货币目录"]
+          ocr_any: true
+        action:
+          type: tap
+          tap_x: 1350
+          tap_y: 40
+        wait_after: 1.5
+        max_triggers: 5
+        cooldown: 2.0
+
+      # 联盟币/货币满值弹窗：联盟币达到最大值等提示
+      # 注意：主界面聊天区域也可能显示"联盟币达到最大"文本，
+      # 必须同时检测弹窗特有的"使用"按钮才能确认是弹窗
+      - id: alliance_coin_close
+        description: "检测到联盟币达到最大值弹窗（含使用按钮），点击关闭"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["联盟币达到最大", "使用"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 945
+          tap_y: 393
+        wait_after: 1.0
+        max_triggers: 10
+        cooldown: 2.0
+
+      # 通用弹窗关闭
+      - id: unexpected_dialog_close
+        description: "检测到意外弹窗时点击关闭（右上角X）"
+        match:
+          mode: ocr_text
+          ocr_text: "×"
+        action:
+          type: tap
+          tap_x: 1133
+          tap_y: 41
+        wait_after: 1.0
+        max_triggers: 5
+        cooldown: 2.0
+
+    # --- 状态定义 ---
+    states:
+
+      # ====== 前置：从主界面进入 ======
+      main_screen:
+        description: "主界面 → 点击右上角菜单按钮(≡)，打开功能面板"
+        match:
+          mode: region_feature
+          threshold: 0.85
+          ui_regions:
+            - {name: "左上角-人物信息栏", x1: 0, y1: 0, x2: 350, y2: 120, min_edge_density: 0.08}
+            - {name: "右上角-工具操作栏", x1: 900, y1: 0, x2: 1280, y2: 120, min_edge_density: 0.08}
+            - {name: "左下角-虚拟摇杆", x1: 0, y1: 500, x2: 300, y2: 720, min_edge_density: 0.08}
+            - {name: "右下角-技能栏", x1: 800, y1: 500, x2: 1280, y2: 720, min_edge_density: 0.08}
+        action:
+          type: tap
+          # 菜单按钮(≡)在全面屏右侧超出16:9裁剪区域，基准坐标x=1338
+          tap_x: 1338
+          tap_y: 38
+        next_state: menu_panel_1
+        wait_after: 1.5
+        timeout: 30.0
+        timeout_action: retry
+
+      # 确认菜单面板已打开（检测公会入口）
+      menu_panel_1:
+        description: "任务1前置：确认菜单面板已打开（检测公会入口）"
+        match:
+          mode: ocr_text
+          ocr_text: "公会"
+        action:
+          type: none
+        next_state: guild_enter
+        wait_after: 0.5
+        timeout: 6.0
+        timeout_action: fallback
+        fallback_state: main_screen
+
+      # ====== 任务1：工会签到 ======
+      guild_enter:
+        description: "任务1-工会签到：打开工会界面（自动签到）"
+        match:
+          mode: ocr_text
+          ocr_text: "公会"
+        action:
+          type: tap
+          tap_x: 974
+          tap_y: 112
+        next_state: guild_close
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      guild_close:
+        description: "任务1-工会签到：关闭工会界面"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["公会信息", "公会技能"]
+          ocr_any: true
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        next_state: return_main_1
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      return_main_1:
+        description: "任务1完成后：等待回到主界面"
+        match:
+          mode: region_feature
+          threshold: 0.85
+          ui_regions:
+            - {name: "左上角-人物信息栏", x1: 0, y1: 0, x2: 350, y2: 120, min_edge_density: 0.08}
+            - {name: "右上角-工具操作栏", x1: 900, y1: 0, x2: 1280, y2: 120, min_edge_density: 0.08}
+            - {name: "左下角-虚拟摇杆", x1: 0, y1: 500, x2: 300, y2: 720, min_edge_density: 0.08}
+            - {name: "右下角-技能栏", x1: 800, y1: 500, x2: 1280, y2: 720, min_edge_density: 0.08}
+        action:
+          type: tap
+          tap_x: 1338
+          tap_y: 38
+        next_state: menu_panel_2
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      menu_panel_2:
+        description: "任务2前置：确认菜单面板已打开（检测日常玩法入口）"
+        match:
+          mode: ocr_text
+          ocr_text: "日常玩法"
+        action:
+          type: none
+        next_state: daily_play_enter
+        wait_after: 0.5
+        timeout: 6.0
+        timeout_action: fallback
+        fallback_state: return_main_1
+
+      # ====== 任务2：通关宝石副本1次 ======
+      daily_play_enter:
+        description: "任务2-宝石副本：打开日常玩法列表"
+        match:
+          mode: ocr_text
+          ocr_text: "日常玩法"
+        action:
+          type: tap
+          tap_x: 969
+          tap_y: 327
+        next_state: gem_dungeon_select
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      gem_dungeon_select:
+        description: "任务2-宝石副本：选择宝石副本"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["日常玩法", "宝石"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 733
+          tap_y: 467
+        next_state: gem_dungeon_confirm
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      gem_dungeon_confirm:
+        description: "任务2-宝石副本：确认进入副本"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["入场", "确定"]
+          ocr_any: true
+        action:
+          type: click_text
+          target_text: "入场"
+          tap_x: 758
+          tap_y: 532
+        next_state: gem_dungeon_result
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      gem_dungeon_result:
+        description: "任务2-宝石副本：自动战斗结算-点击返回"
+        match:
+          mode: ocr_text
+          ocr_text: "离开"
+        action:
+          type: tap
+          tap_x: 599
+          tap_y: 402
+        next_state: return_main_2
+        wait_after: 1.5
+        timeout: 30.0
+        timeout_action: skip
+
+      return_main_2:
+        description: "任务2完成后：等待回到主界面"
+        match:
+          mode: region_feature
+          threshold: 0.85
+          ui_regions:
+            - {name: "左上角-人物信息栏", x1: 0, y1: 0, x2: 350, y2: 120, min_edge_density: 0.08}
+            - {name: "右上角-工具操作栏", x1: 900, y1: 0, x2: 1280, y2: 120, min_edge_density: 0.08}
+            - {name: "左下角-虚拟摇杆", x1: 0, y1: 500, x2: 300, y2: 720, min_edge_density: 0.08}
+            - {name: "右下角-技能栏", x1: 800, y1: 500, x2: 1280, y2: 720, min_edge_density: 0.08}
+        action:
+          type: tap
+          tap_x: 1338
+          tap_y: 38
+        next_state: menu_panel_3
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      menu_panel_3:
+        description: "任务3前置：确认菜单面板已打开（检测社交入口）"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["社交", "日常玩法"]
+          ocr_any: false
+        action:
+          type: none
+        next_state: social_enter
+        wait_after: 0.5
+        timeout: 6.0
+        timeout_action: fallback
+        fallback_state: return_main_2
+
+      # ====== 任务3：赠送1次人气值 ======
+      social_enter:
+        description: "任务3-赠送人气：进入社交入口（确认在菜单面板中）"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["社交", "日常玩法"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 968
+          tap_y: 327
+        next_state: social_page_action1
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      social_page_action1:
+        description: "任务3-赠送人气：点击搜索按钮"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["社交", "搜索"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 479
+          tap_y: 406
+        next_state: social_page_action2
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      social_page_action2:
+        description: "任务3-赠送人气：点击输入框弹出键盘"
+        match:
+          mode: ocr_text
+          ocr_text: "搜索玩家"
+        action:
+          type: tap
+          tap_x: 675
+          tap_y: 464
+        next_state: social_input_name
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      social_input_name:
+        description: "任务3-赠送人气：输入好友名称"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["取消", "确定"]
+          ocr_any: true
+        action:
+          type: input_text
+          input_text: "废都的王"
+          tap_x: 760
+          tap_y: 130
+        next_state: social_open
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      social_open:
+        description: "任务3-赠送人气：点击搜索确认"
+        match:
+          mode: ocr_text
+          ocr_text: "确定"
+        action:
+          type: tap
+          tap_x: 761
+          tap_y: 130
+        next_state: friend_search_btn
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      friend_search_btn:
+        description: "任务3-赠送人气：点击左下角按钮弹出礼物弹框"
+        match:
+          mode: ocr_text
+          ocr_text: "个人主页"
+        action:
+          type: tap
+          tap_x: 269
+          tap_y: 537
+        next_state: friend_search_page
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      friend_search_page:
+        description: "任务3-赠送人气：选中人气值"
+        match:
+          mode: ocr_text
+          ocr_text: "人气值礼物"
+        action:
+          type: tap
+          tap_x: 618
+          tap_y: 360
+        next_state: friend_input_name
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      friend_input_name:
+        description: "任务3-赠送人气：点击确定赠送"
+        match:
+          mode: ocr_text
+          ocr_text: "人气值礼物"
+        action:
+          type: click_text
+          target_text: "确定"
+          tap_x: 666
+          tap_y: 363
+        next_state: friend_search_confirm
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      friend_search_confirm:
+        description: "任务3-赠送人气：关闭个人主页"
+        match:
+          mode: ocr_text
+          ocr_text: "个人主页"
+        action:
+          type: tap
+          tap_x: 1133
+          tap_y: 41
+        next_state: social_close
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      social_close:
+        description: "任务3完成后：关闭社交界面"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["社交", "搜索"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        next_state: return_main_3
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      return_main_3:
+        description: "任务3完成后：等待回到主界面"
+        match:
+          mode: region_feature
+          threshold: 0.85
+          ui_regions:
+            - {name: "左上角-人物信息栏", x1: 0, y1: 0, x2: 350, y2: 120, min_edge_density: 0.08}
+            - {name: "右上角-工具操作栏", x1: 900, y1: 0, x2: 1280, y2: 120, min_edge_density: 0.08}
+            - {name: "左下角-虚拟摇杆", x1: 0, y1: 500, x2: 300, y2: 720, min_edge_density: 0.08}
+            - {name: "右下角-技能栏", x1: 800, y1: 500, x2: 1280, y2: 720, min_edge_density: 0.08}
+        action:
+          type: tap
+          tap_x: 1338
+          tap_y: 38
+        next_state: menu_panel_4
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      menu_panel_4:
+        description: "任务4前置：确认菜单面板已打开（检测铁匠铺入口）"
+        match:
+          mode: ocr_text
+          ocr_text: "铁匠铺"
+        action:
+          type: none
+        next_state: starforce_enter1
+        wait_after: 0.5
+        timeout: 6.0
+        timeout_action: fallback
+        fallback_state: return_main_3
+
+      # ====== 任务4：尝试1次星之力强化 ======
+      starforce_enter1:
+        description: "任务4-星之力强化：点击铁匠铺入口"
+        match:
+          mode: ocr_text
+          ocr_text: "铁匠铺"
+        action:
+          type: tap
+          tap_x: 820
+          tap_y: 331
+        next_state: starforce_enter2
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      starforce_enter2:
+        description: "任务4-星之力强化：选择星之力强化"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["请选择菜单", "星之力强化"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 379
+          tap_y: 233
+        next_state: starforce_select_equip
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      starforce_select_equip:
+        description: "任务4-星之力强化：按颜色选择装备"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["铁匠铺", "星之力强化"]
+          ocr_any: false
+        action:
+          type: select_equip_by_color
+          tap_x: 931
+          tap_y: 389
+          equip_area: {x1: 713, y1: 161, x2: 1150, y2: 618}
+          color_priority: ["blue", "purple", "orange"]
+        next_state: starforce_enhance
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      starforce_enhance:
+        description: "任务4-星之力强化：点击强化按钮"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["铁匠铺", "强化"]
+          ocr_any: false
+        action:
+          type: click_text
+          target_text: "强化"
+          tap_x: 640
+          tap_y: 660
+        next_state: starforce_result_confirm
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      starforce_result_confirm:
+        description: "任务4-星之力强化：确认强化结果"
+        match:
+          mode: ocr_text
+          ocr_text: "确认"
+        action:
+          type: click_text
+          target_text: "确认"
+          tap_x: 640
+          tap_y: 638
+        next_state: starforce_close
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      starforce_close:
+        description: "任务4-星之力强化：关闭铁匠铺"
+        match:
+          mode: ocr_text
+          ocr_text: "铁匠铺"
+        action:
+          type: tap
+          tap_x: 1136
+          tap_y: 40
+        next_state: return_main_4
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      return_main_4:
+        description: "任务4完成后：等待回到主界面"
+        match:
+          mode: region_feature
+          threshold: 0.85
+          ui_regions:
+            - {name: "左上角-人物信息栏", x1: 0, y1: 0, x2: 350, y2: 120, min_edge_density: 0.08}
+            - {name: "右上角-工具操作栏", x1: 900, y1: 0, x2: 1280, y2: 120, min_edge_density: 0.08}
+            - {name: "左下角-虚拟摇杆", x1: 0, y1: 500, x2: 300, y2: 720, min_edge_density: 0.08}
+            - {name: "右下角-技能栏", x1: 800, y1: 500, x2: 1280, y2: 720, min_edge_density: 0.08}
+        action:
+          type: tap
+          tap_x: 1338
+          tap_y: 38
+        next_state: menu_panel_5
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      menu_panel_5:
+        description: "任务5前置：确认菜单面板已打开（检测成长入口）"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["成长", "公会"]
+          ocr_any: false
+        action:
+          type: none
+        next_state: hunt_open_growth
+        wait_after: 0.5
+        timeout: 6.0
+        timeout_action: fallback
+        fallback_state: return_main_4
+
+      # ====== 任务5：参加天空岛领主狩猎 ======
+      hunt_open_growth:
+        description: "任务5-领主狩猎：点击成长"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["成长", "公会"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 820
+          tap_y: 264
+        next_state: hunt_goto
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      hunt_goto:
+        description: "任务5-领主狩猎：滑动找到领主狩猎卡片"
+        match:
+          mode: ocr_text
+          ocr_text: "天空岛领主狩猎"
+        action:
+          type: scroll_and_find
+          tap_x: 494
+          tap_y: 369
+        next_state: hunt_trade_enter
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      hunt_trade_enter:
+        description: "任务5-领主狩猎：点击入场"
+        match:
+          mode: ocr_text
+          ocr_text: "入场"
+        action:
+          type: click_text
+          target_text: "入场"
+          tap_x: 467
+          tap_y: 357
+        next_state: hunt_close_bag
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      hunt_close_bag:
+        description: "任务5-领主狩猎：收起行囊背包"
+        match:
+          mode: template
+          template: hunt_close_bag.png
+          threshold: 0.40
+        action:
+          type: tap
+          tap_x: 380
+          tap_y: 75
+        next_state: hunt_exit_scene
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      hunt_exit_scene:
+        description: "任务5-领主狩猎：点击退出按钮"
+        match:
+          mode: template
+          template: hunt_exit_scene.png
+          threshold: 0.40
+        action:
+          type: tap
+          tap_x: 1124
+          tap_y: 283
+        next_state: hunt_leave_confirm
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      hunt_leave_confirm:
+        description: "任务5-领主狩猎：确认离开"
+        match:
+          mode: ocr_text
+          ocr_text: "是否退出"
+        action:
+          type: click_text
+          target_text: "离开"
+          tap_x: 760
+          tap_y: 531
+        next_state: hunt_result_confirm
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      hunt_result_confirm:
+        description: "任务5-领主狩猎：确认结果"
+        match:
+          mode: ocr_text
+          ocr_text: "确定"
+        action:
+          type: click_text
+          target_text: "确定"
+          tap_x: 640
+          tap_y: 571
+        next_state: return_main_5
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      return_main_5:
+        description: "任务5完成后：等待回到主界面"
+        match:
+          mode: region_feature
+          threshold: 0.85
+          ui_regions:
+            - {name: "左上角-人物信息栏", x1: 0, y1: 0, x2: 350, y2: 120, min_edge_density: 0.08}
+            - {name: "右上角-工具操作栏", x1: 900, y1: 0, x2: 1280, y2: 120, min_edge_density: 0.08}
+            - {name: "左下角-虚拟摇杆", x1: 0, y1: 500, x2: 300, y2: 720, min_edge_density: 0.08}
+            - {name: "右下角-技能栏", x1: 800, y1: 500, x2: 1280, y2: 720, min_edge_density: 0.08}
+        action:
+          type: tap
+          tap_x: 1338
+          tap_y: 38
+        next_state: menu_panel_6
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      menu_panel_6:
+        description: "领取奖励前置：确认菜单面板已打开（检测成长入口）"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["成长", "公会"]
+          ocr_any: false
+        action:
+          type: none
+        next_state: reward_open_daily
+        wait_after: 0.5
+        timeout: 6.0
+        timeout_action: fallback
+        fallback_state: return_main_5
+
+      # ====== 领取全部日常奖励 ======
+      reward_open_daily:
+        description: "领取奖励：点击成长"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["成长", "公会"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 820
+          tap_y: 264
+        next_state: reward_collect1
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+
+      reward_collect1:
+        description: "领取奖励：点击全部领取"
+        match:
+          mode: ocr_text
+          ocr_text: "全部领取"
+        action:
+          type: click_text
+          target_text: "全部领取"
+          tap_x: 494
+          tap_y: 370
+        next_state: reward_collect2
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+        optional: true
+
+      reward_collect2:
+        description: "领取奖励：重复点击全部领取"
+        match:
+          mode: ocr_text
+          ocr_text: "全部领取"
+        action:
+          type: repeat_tap_until_gone
+          tap_x: 494
+          tap_y: 370
+          max_repeats: 5
+        next_state: flow_done
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+        optional: true
+
+      # ====== 终态 ======
+      flow_done:
+        description: "所有日常任务完成"
+        match:
+          mode: always
+        action:
+          type: none
+        is_terminal: true
+
+  # ==================== 独立子流程 ====================
+
+  # ------ 任务1：工会签到 ------
+  guild_sign_in:
+    description: "每日任务-工会签到"
+    initial_state: guild_enter
+    max_total_time: 60.0
+    states:
+      guild_enter:
+        description: "打开工会界面（自动签到）"
+        match:
+          mode: ocr_text
+          ocr_text: "公会"
+        action:
+          type: tap
+          tap_x: 974
+          tap_y: 112
+        next_state: guild_close
+        wait_after: 1.5
+        timeout: 6.0
+      guild_close:
+        description: "关闭工会界面"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["公会信息", "公会技能"]
+          ocr_any: true
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        next_state: done
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+      done:
+        description: "工会签到完成"
+        match:
+          mode: always
+        action:
+          type: none
+        is_terminal: true
+
+  # ------ 任务2：通关宝石副本1次 ------
+  gem_dungeon:
+    description: "每日任务-通关宝石副本1次"
+    initial_state: daily_play_enter
+    max_total_time: 120.0
+    states:
+      daily_play_enter:
+        description: "打开日常玩法列表"
+        match:
+          mode: ocr_text
+          ocr_text: "日常玩法"
+        action:
+          type: tap
+          tap_x: 969
+          tap_y: 327
+        next_state: gem_dungeon_select
+        wait_after: 1.5
+        timeout: 6.0
+      gem_dungeon_select:
+        description: "选择宝石副本"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["日常玩法", "宝石"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 733
+          tap_y: 467
+        next_state: gem_dungeon_confirm
+        wait_after: 1.5
+        timeout: 6.0
+      gem_dungeon_confirm:
+        description: "确认进入副本"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["入场", "确定"]
+          ocr_any: true
+        action:
+          type: click_text
+          target_text: "入场"
+          tap_x: 758
+          tap_y: 532
+        next_state: gem_dungeon_result
+        wait_after: 1.5
+        timeout: 6.0
+      gem_dungeon_result:
+        description: "战斗结算-点击返回"
+        match:
+          mode: ocr_text
+          ocr_text: "离开"
+        action:
+          type: tap
+          tap_x: 599
+          tap_y: 402
+        next_state: done
+        wait_after: 1.5
+        timeout: 30.0
+      done:
+        description: "宝石副本完成"
+        match:
+          mode: always
+        action:
+          type: none
+        is_terminal: true
+
+  # ------ 任务3：赠送1次人气值 ------
+  send_popularity:
+    description: "每日任务-赠送1次人气值"
+    initial_state: social_enter
+    max_total_time: 120.0
+    states:
+      social_enter:
+        description: "进入社交入口（确认在菜单面板中）"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["社交", "日常玩法"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 968
+          tap_y: 327
+        next_state: social_page_action1
+        wait_after: 1.5
+        timeout: 6.0
+      social_page_action1:
+        description: "点击搜索按钮"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["社交", "搜索"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 479
+          tap_y: 406
+        next_state: social_page_action2
+        wait_after: 1.5
+        timeout: 6.0
+      social_page_action2:
+        description: "点击输入框弹出键盘"
+        match:
+          mode: ocr_text
+          ocr_text: "搜索玩家"
+        action:
+          type: tap
+          tap_x: 675
+          tap_y: 464
+        next_state: social_input_name
+        wait_after: 1.5
+        timeout: 6.0
+      social_input_name:
+        description: "输入好友名称"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["取消", "确定"]
+          ocr_any: true
+        action:
+          type: input_text
+          input_text: "废都的王"
+          tap_x: 760
+          tap_y: 130
+        next_state: social_open
+        wait_after: 1.5
+        timeout: 6.0
+      social_open:
+        description: "点击搜索确认"
+        match:
+          mode: ocr_text
+          ocr_text: "确定"
+        action:
+          type: tap
+          tap_x: 761
+          tap_y: 130
+        next_state: friend_search_btn
+        wait_after: 1.5
+        timeout: 6.0
+      friend_search_btn:
+        description: "点击左下角按钮弹出礼物弹框"
+        match:
+          mode: ocr_text
+          ocr_text: "个人主页"
+        action:
+          type: tap
+          tap_x: 269
+          tap_y: 537
+        next_state: friend_search_page
+        wait_after: 1.5
+        timeout: 6.0
+      friend_search_page:
+        description: "选中人气值"
+        match:
+          mode: ocr_text
+          ocr_text: "人气值礼物"
+        action:
+          type: tap
+          tap_x: 618
+          tap_y: 360
+        next_state: friend_input_name
+        wait_after: 1.5
+        timeout: 6.0
+      friend_input_name:
+        description: "点击确定赠送"
+        match:
+          mode: ocr_text
+          ocr_text: "人气值礼物"
+        action:
+          type: click_text
+          target_text: "确定"
+          tap_x: 666
+          tap_y: 363
+        next_state: friend_search_confirm
+        wait_after: 1.5
+        timeout: 6.0
+      friend_search_confirm:
+        description: "关闭个人主页"
+        match:
+          mode: ocr_text
+          ocr_text: "个人主页"
+        action:
+          type: tap
+          tap_x: 1133
+          tap_y: 41
+        next_state: social_close
+        wait_after: 1.5
+        timeout: 6.0
+      social_close:
+        description: "关闭社交界面"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["社交", "搜索"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 1242
+          tap_y: 32
+        next_state: done
+        wait_after: 1.5
+        timeout: 6.0
+        timeout_action: skip
+      done:
+        description: "赠送人气完成"
+        match:
+          mode: always
+        action:
+          type: none
+        is_terminal: true
+
+  # ------ 任务4：尝试1次星之力强化 ------
+  starforce_enhance:
+    description: "每日任务-尝试1次星之力强化"
+    initial_state: starforce_enter1
+    max_total_time: 120.0
+    states:
+      starforce_enter1:
+        description: "点击铁匠铺入口"
+        match:
+          mode: ocr_text
+          ocr_text: "铁匠铺"
+        action:
+          type: tap
+          tap_x: 820
+          tap_y: 331
+        next_state: starforce_enter2
+        wait_after: 1.5
+        timeout: 6.0
+      starforce_enter2:
+        description: "选择星之力强化"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["请选择菜单", "星之力强化"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 379
+          tap_y: 233
+        next_state: starforce_select_equip
+        wait_after: 1.5
+        timeout: 6.0
+      starforce_select_equip:
+        description: "按颜色选择装备"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["铁匠铺", "星之力强化"]
+          ocr_any: false
+        action:
+          type: select_equip_by_color
+          tap_x: 931
+          tap_y: 389
+          equip_area: {x1: 713, y1: 161, x2: 1150, y2: 618}
+          color_priority: ["blue", "purple", "orange"]
+        next_state: starforce_do_enhance
+        wait_after: 1.5
+        timeout: 6.0
+      starforce_do_enhance:
+        description: "点击强化按钮"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["铁匠铺", "强化"]
+          ocr_any: false
+        action:
+          type: click_text
+          target_text: "强化"
+          tap_x: 640
+          tap_y: 660
+        next_state: starforce_result_confirm
+        wait_after: 1.5
+        timeout: 6.0
+      starforce_result_confirm:
+        description: "确认强化结果"
+        match:
+          mode: ocr_text
+          ocr_text: "确认"
+        action:
+          type: click_text
+          target_text: "确认"
+          tap_x: 640
+          tap_y: 638
+        next_state: starforce_close
+        wait_after: 1.5
+        timeout: 6.0
+      starforce_close:
+        description: "关闭铁匠铺"
+        match:
+          mode: ocr_text
+          ocr_text: "铁匠铺"
+        action:
+          type: tap
+          tap_x: 1136
+          tap_y: 40
+        next_state: done
+        wait_after: 1.5
+        timeout: 6.0
+      done:
+        description: "星之力强化完成"
+        match:
+          mode: always
+        action:
+          type: none
+        is_terminal: true
+
+  # ------ 任务5：参加天空岛领主狩猎 ------
+  sky_island_hunt:
+    description: "每日任务-参加天空岛领主狩猎"
+    initial_state: hunt_open_growth
+    max_total_time: 120.0
+    states:
+      hunt_open_growth:
+        description: "点击成长"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["成长", "公会"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 820
+          tap_y: 264
+        next_state: hunt_goto
+        wait_after: 1.5
+        timeout: 6.0
+      hunt_goto:
+        description: "滑动找到领主狩猎卡片"
+        match:
+          mode: ocr_text
+          ocr_text: "天空岛领主狩猎"
+        action:
+          type: scroll_and_find
+          tap_x: 494
+          tap_y: 369
+        next_state: hunt_trade_enter
+        wait_after: 1.5
+        timeout: 6.0
+      hunt_trade_enter:
+        description: "点击入场"
+        match:
+          mode: ocr_text
+          ocr_text: "入场"
+        action:
+          type: click_text
+          target_text: "入场"
+          tap_x: 467
+          tap_y: 357
+        next_state: hunt_close_bag
+        wait_after: 1.5
+        timeout: 6.0
+      hunt_close_bag:
+        description: "收起行囊背包"
+        match:
+          mode: template
+          template: hunt_close_bag.png
+          threshold: 0.40
+        action:
+          type: tap
+          tap_x: 380
+          tap_y: 75
+        next_state: hunt_exit_scene
+        wait_after: 1.5
+        timeout: 6.0
+      hunt_exit_scene:
+        description: "点击退出按钮"
+        match:
+          mode: template
+          template: hunt_exit_scene.png
+          threshold: 0.40
+        action:
+          type: tap
+          tap_x: 1124
+          tap_y: 283
+        next_state: hunt_leave_confirm
+        wait_after: 1.5
+        timeout: 6.0
+      hunt_leave_confirm:
+        description: "确认离开"
+        match:
+          mode: ocr_text
+          ocr_text: "是否退出"
+        action:
+          type: click_text
+          target_text: "离开"
+          tap_x: 760
+          tap_y: 531
+        next_state: hunt_result_confirm
+        wait_after: 1.5
+        timeout: 6.0
+      hunt_result_confirm:
+        description: "确认结果"
+        match:
+          mode: ocr_text
+          ocr_text: "确定"
+        action:
+          type: click_text
+          target_text: "确定"
+          tap_x: 640
+          tap_y: 571
+        next_state: done
+        wait_after: 1.5
+        timeout: 6.0
+      done:
+        description: "领主狩猎完成"
+        match:
+          mode: always
+        action:
+          type: none
+        is_terminal: true
+
+  # ------ 领取全部日常奖励 ------
+  collect_daily_rewards:
+    description: "领取全部每日任务奖励"
+    initial_state: reward_open_daily
+    max_total_time: 60.0
+    states:
+      reward_open_daily:
+        description: "点击成长"
+        match:
+          mode: ocr_multi
+          ocr_texts: ["成长", "公会"]
+          ocr_any: false
+        action:
+          type: tap
+          tap_x: 820
+          tap_y: 264
+        next_state: reward_collect1
+        wait_after: 1.5
+        timeout: 6.0
+      reward_collect1:
+        description: "点击全部领取"
+        match:
+          mode: ocr_text
+          ocr_text: "全部领取"
+        action:
+          type: click_text
+          target_text: "全部领取"
+          tap_x: 494
+          tap_y: 370
+        next_state: reward_collect2
+        wait_after: 1.5
+        timeout: 6.0
+        optional: true
+      reward_collect2:
+        description: "重复点击全部领取"
+        match:
+          mode: ocr_text
+          ocr_text: "全部领取"
+        action:
+          type: repeat_tap_until_gone
+          tap_x: 494
+          tap_y: 370
+          max_repeats: 5
+        next_state: done
+        wait_after: 1.5
+        timeout: 6.0
+        optional: true
+      done:
+        description: "奖励领取完成"
+        match:
+          mode: always
+        action:
+          type: none
+        is_terminal: true

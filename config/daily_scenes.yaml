@@ -31,9 +31,9 @@ flows:
     # ------ 前置：从主界面进入 ------
     - scene_id: main_screen
       scene_template: main_screen.png
-      tap_x: 237
-      tap_y: 99
-      description: "主界面 → 点击右上角按钮，打开设置页面"
+      tap_x: 1315
+      tap_y: 32
+      description: "主界面 → 点击右上角菜单按钮，打开功能面板"
       wait_after: 2.0
       timeout: 15.0
       match_threshold: 0.75
@@ -84,6 +84,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "入场"
     - scene_id: gem_dungeon_result
       scene_template: gem_dungeon_result.png
       tap_x: 599
@@ -169,6 +171,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "确定"
     - scene_id: friend_search_confirm
       scene_template: friend_search_confirm.png
       tap_x: 1133
@@ -219,6 +223,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "强化"
     - scene_id: starforce_result_confirm
       scene_template: starforce_result_confirm.png
       tap_x: 640
@@ -228,6 +234,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "确认"
     - scene_id: starforce_close
       scene_template: starforce_close.png
       tap_x: 1136
@@ -267,6 +275,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "入场"
     - scene_id: hunt_close_bag
       scene_template: hunt_close_bag.png
       tap_x: 380
@@ -294,6 +304,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "离开"
     - scene_id: hunt_result_confirm
       scene_template: hunt_result_confirm.png
       tap_x: 640
@@ -303,6 +315,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "确定"
 
     # ====== 领取全部日常奖励 ======
     - scene_id: reward_open_daily
@@ -323,6 +337,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: true
+      action: click_text
+      target_text: "全部领取"
     - scene_id: reward_collect2
       scene_template: reward_collect2.png
       tap_x: 494
@@ -386,6 +402,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "入场"
     - scene_id: gem_dungeon_result
       scene_template: gem_dungeon_result.png
       tap_x: 599
@@ -476,6 +494,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "确定"
     - scene_id: friend_search_confirm
       scene_template: friend_search_confirm.png
       tap_x: 1133
@@ -531,6 +551,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "强化"
     - scene_id: starforce_result_confirm
       scene_template: starforce_result_confirm.png
       tap_x: 640
@@ -540,6 +562,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "确认"
     - scene_id: starforce_close
       scene_template: starforce_close.png
       tap_x: 1136
@@ -584,6 +608,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "入场"
     - scene_id: hunt_close_bag
       scene_template: hunt_close_bag.png
       tap_x: 380
@@ -611,6 +637,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "离开"
     - scene_id: hunt_result_confirm
       scene_template: hunt_result_confirm.png
       tap_x: 640
@@ -620,6 +648,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: false
+      action: click_text
+      target_text: "确定"
 
   # ------ 领取全部日常奖励 ------
   collect_daily_rewards:
@@ -645,6 +675,8 @@ flows:
       timeout: 10.0
       match_threshold: 0.65
       optional: true
+      action: click_text
+      target_text: "全部领取"
     - scene_id: reward_collect2
       scene_template: reward_collect2.png
       tap_x: 494

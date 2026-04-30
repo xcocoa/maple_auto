@@ -6,8 +6,11 @@ device:
   id: "ZY22LJC9ST"
   adb_path: "adb"
   screenshot_interval: 0.1
-  base_width: 1220
-  base_height: 2712
+  # 基准分辨率：与 config/daily_scenes.yaml 中的坐标体系保持一致（1280x720 横屏）
+  # ScaledADB 会在截图时自动把真机分辨率（如 2712x1220）居中裁剪 16:9 后缩放到此基准，
+  # 并在 tap/swipe 时把基准坐标反向映射回真机物理坐标。
+  base_width: 1280
+  base_height: 720
 
 # ==================== 场景回放配置 ====================
 # 全自动模式生成的场景配置文件路径
@@ -17,10 +20,15 @@ scene_config: "config/daily_scenes.yaml"
 # ==================== 任务配置 ====================
 tasks:
   # 启用的任务列表（按执行顺序）
+  # daily_all: 使用状态机引擎执行全部5个日常任务 + 领取奖励
   enabled:
-    - daily_sign_in
+    - daily_all
 
-  # 每日签到
+  # 全部日常任务（状态机引擎，对应 config/daily_states.yaml 中的 daily_all 流程）
+  daily_all:
+    timeout: 600
+
+  # 每日签到（旧模板匹配方式，已被 daily_all 替代）
   daily_sign_in:
     template: "sign_in_btn.png"           # 签到按钮模板
     reward_template: "sign_in_reward.png" # 签到奖励弹窗模板
