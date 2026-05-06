@@ -174,9 +174,13 @@ class Player:
         threshold = scene_def.threshold if scene_def else 0.7
         deadline = time.time() + timeout
         poll_interval = 0.3
+        first_poll = True
 
         while time.time() < deadline:
-            screenshot = self._device.screenshot(force_refresh=True)
+            # First poll: tap already advanced the device to the next frame,
+            # so read current screenshot without forcing another advance.
+            screenshot = self._device.screenshot(force_refresh=not first_poll)
+            first_poll = False
             if screenshot is not None:
                 confidence = self._scene_matcher.match_scene(screenshot, scene_name)
                 if confidence >= threshold:
