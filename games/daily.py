@@ -22,6 +22,8 @@ from modules.combat import CombatController
 from modules.navigation import Navigator
 from modules.skill import SkillDetector
 from modules.scene_player import ScenePlayer, StateMachinePlayer
+from engine.flow_schema import load_flow
+from engine.player import Player
 
 
 class DailyState(Enum):
@@ -371,6 +373,15 @@ class DailyGame:
             self._change_state(DailyState.CHECK_TASKS, f"{task.display_name}超时")
             return
 
+        # 优先尝试 Flow 引擎（新系统）
+        flow_path = os.path.join("flows", f"{task.name}.yaml")
+        if os.path.exists(flow_path):
+            success = self._execute_with_flow_engine(task)
+            if success:
+                self._change_state(DailyState.TASK_COMPLETE, f"{task.display_name} Flow完成")
+                return
+            self.logger.warning(f"Flow 引擎失败，回退到旧方式: {task.name}")
+
         # 根据任务类型分发
         # 优先尝试场景回放（全自动模式生成的流程）
         if task.name in self.scene_player.get_flow_names():
@@ -386,6 +397,25 @@ class DailyGame:
 
         # 传统模板匹配方式
         self._execute_with_template(screenshot, task)
+
+    def _execute_with_flow_engine(self, task: Task) -> bool:
+        """使用新的 Flow 引擎执行任务"""
+        flow_path = os.path.join("flows", f"{task.name}.yaml")
+        if not os.path.exists(flow_path):
+            return False
+
+        self.logger.info(f"使用 Flow 引擎执行: {task.name}")
+        flow = load_flow(flow_path)
+        screenshot_dir = os.path.join("screenshots", task.name)
+        player = Player(device=self.adb, base_dir=screenshot_dir)
+        result = player.play(flow)
+
+        if result.success:
+            self.logger.info(f"Flow 引擎执行成功: {task.name} ({result.total_time:.1f}s)")
+        else:
+            self.logger.warning(f"Flow 引擎执行失败: {task.name} - {result.error}")
+
+        return result.success
 
     def _execute_with_template(self, screenshot: np.ndarray, task: Task):
         """使用传统模板匹配方式执行任务"""
