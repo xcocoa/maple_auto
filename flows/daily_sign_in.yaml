@@ -1,0 +1,189 @@
+# 每日签到流程
+# 从游戏主界面开始，打开活动面板，完成签到
+# 基于 testCheckIn.mp4 视频 OCR 分析生成，手动精简
+name: daily_sign_in
+display_name: 每日签到
+timeout: 90
+max_retries: 2
+
+steps:
+  # ===== 处理可能的弹窗 =====
+  - id: close_popup
+    description: "关闭可能出现的活动弹窗（X按钮）"
+    action:
+      type: tap
+      x: 1192
+      y: 23
+    verify:
+      scene: game_main
+      timeout: 5.0
+    on_fail: skip  # 没弹窗就跳过
+
+  # ===== 打开菜单 =====
+  - id: open_menu
+    description: "点击右上角打开菜单面板"
+    expect_scene: game_main
+    action:
+      type: tap
+      x: 1230
+      y: 30
+    verify:
+      scene: menu_panel
+      timeout: 3.0
+    on_fail: retry
+
+  # ===== 进入活动页面 =====
+  - id: open_activity
+    description: "点击活动图标进入活动面板"
+    expect_scene: menu_panel
+    action:
+      type: tap
+      target: activity_icon
+    verify:
+      scene: activity_panel
+      timeout: 5.0
+    on_fail: retry
+
+  # ===== 点击签到礼 =====
+  - id: click_sign_in_tab
+    description: "点击左侧'签到礼'标签"
+    expect_scene: activity_panel
+    action:
+      type: tap
+      target: sign_in_tab
+    verify:
+      scene: sign_in_detail
+      timeout: 3.0
+    on_fail: retry
+
+  # ===== 进入环游武陵桃园签到 =====
+  - id: click_huanyou
+    description: "点击'和枫小喵一起环游武陵桃园'"
+    expect_scene: sign_in_detail
+    action:
+      type: tap
+      target: huanyou_entry
+    verify:
+      scene: huanyou_map
+      timeout: 5.0
+    on_fail: skip  # 可能活动已结束
+
+  # ===== 点击签到按钮 =====
+  - id: click_sign_button
+    description: "点击签到按钮"
+    expect_scene: huanyou_map
+    action:
+      type: tap
+      target: sign_button
+    verify:
+      scene: sign_in_done
+      timeout: 5.0
+    on_fail: skip  # 可能已签到
+
+  # ===== 返回活动面板 =====
+  - id: back_to_activity
+    description: "返回活动面板（点X或返回）"
+    action:
+      type: tap
+      x: 1192
+      y: 23
+    verify:
+      scene: activity_panel
+      timeout: 3.0
+    on_fail: retry
+
+  # ===== 进入每日签到领奖 =====
+  - id: click_daily_reward
+    description: "点击'每日签到领整月好礼'"
+    expect_scene: activity_panel
+    action:
+      type: tap
+      target: daily_reward_entry
+    verify:
+      scene: daily_reward_page
+      timeout: 5.0
+    on_fail: skip
+
+  # ===== 领取奖励 =====
+  - id: collect_reward
+    description: "领取今日签到奖励（点击可领取的格子）"
+    expect_scene: daily_reward_page
+    action:
+      type: tap
+      target: collect_btn
+    verify:
+      scene: daily_reward_page
+      timeout: 3.0
+    on_fail: skip  # 可能已领取
+
+  # ===== 关闭活动面板回到主界面 =====
+  - id: close_activity
+    description: "关闭活动面板（点右上角X）"
+    action:
+      type: tap
+      x: 1192
+      y: 23
+    verify:
+      scene: game_main
+      timeout: 3.0
+    on_fail: retry
+
+# ===== 场景定义 =====
+scenes:
+  game_main:
+    templates:
+      - "scenes/scene_18.png"  # 游戏主界面
+      - "scenes/scene_27.png"  # 主界面（另一个角度）
+    threshold: 0.6
+  menu_panel:
+    templates:
+      - "scenes/scene_19.png"  # 菜单面板展开
+    threshold: 0.65
+  activity_panel:
+    templates:
+      - "scenes/scene_20.png"  # 活动面板（签到礼标签可见）
+      - "scenes/scene_24.png"  # 活动面板（另一状态）
+    threshold: 0.6
+  sign_in_detail:
+    templates:
+      - "scenes/scene_21.png"  # 签到礼详情（显示环游桃园/每日签到）
+    threshold: 0.6
+  huanyou_map:
+    templates:
+      - "scenes/scene_22.png"  # 环游武陵桃园地图
+    threshold: 0.6
+  sign_in_done:
+    templates:
+      - "scenes/scene_23.png"  # 签到完成后的地图（路径亮起）
+    threshold: 0.6
+  daily_reward_page:
+    templates:
+      - "scenes/scene_26.png"  # 每日签到领整月好礼日历
+    threshold: 0.6
+
+# ===== 点击目标定义 =====
+targets:
+  activity_icon:
+    template: "targets/target_20_签到礼.png"  # 活动入口图标
+    fallback_pos: [1167, 233]  # 菜单中"活动"位置
+    threshold: 0.65
+  sign_in_tab:
+    template: "targets/target_20_签到礼.png"
+    fallback_pos: [212, 104]  # 左侧"签到礼"标签
+    threshold: 0.65
+  huanyou_entry:
+    template: "targets/target_21_签到礼.png"
+    fallback_pos: [722, 103]  # "和枫小喵一起环游武陵桃园"
+    threshold: 0.6
+  sign_button:
+    template: "targets/target_22_66.png"
+    fallback_pos: [1036, 521]  # 签到按钮
+    threshold: 0.6
+  daily_reward_entry:
+    template: "targets/target_26_每日签到领整月好礼.png"
+    fallback_pos: [725, 99]  # "每日签到领整月好礼"标题/入口
+    threshold: 0.6
+  collect_btn:
+    template: "targets/target_26_每日签到领整月好礼.png"
+    fallback_pos: [373, 309]  # "领取奖励"按钮位置
+    threshold: 0.6
