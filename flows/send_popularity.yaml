@@ -1,0 +1,152 @@
+# 赠送人气值流程
+# 前置: 角色在主界面
+# 路径: 菜单(滚动) → 社交 → 搜索好友 → 输入名字(剪贴板粘贴) → 确定 → 发送人气 → 确定
+#
+# 坐标来源: getevent 真机验证 (2026-05-08)
+# 输入方式: cmd clipboard set + keyevent 279 (PASTE)
+#
+name: send_popularity
+display_name: 赠送人气
+timeout: 60
+max_retries: 1
+step_delay: 2.0
+
+# 自定义参数
+params:
+  friend_name: "废都的王"
+
+steps:
+  - id: stop_auto_battle
+    description: "停止自动战斗"
+    action:
+      type: tap
+      x: 819
+      y: 542
+    delay: 3.0
+    on_fail: skip
+
+  - id: open_menu
+    description: "打开菜单≡"
+    action:
+      type: tap
+      x: 1195
+      y: 15
+    delay: 3.0
+    on_fail: retry
+
+  - id: scroll_menu
+    description: "菜单向下滚动"
+    action:
+      type: swipe
+      x: 1100
+      y: 450
+    delay: 2.0
+    on_fail: skip
+
+  - id: click_social
+    description: "点击社交"
+    action:
+      type: tap
+      x: 1110
+      y: 215
+    delay: 3.0
+    on_fail: retry
+
+  - id: click_search
+    description: "点击搜索按钮"
+    action:
+      type: tap
+      x: 130
+      y: 72
+    delay: 2.0
+    on_fail: retry
+
+  - id: click_input_box
+    description: "点击输入框弹出键盘"
+    action:
+      type: tap
+      x: 629
+      y: 321
+    delay: 2.0
+    on_fail: retry
+
+  - id: paste_name
+    description: "粘贴好友名字(废都的王)"
+    action:
+      type: input_text
+      text: "废都的王"
+    delay: 1.0
+    on_fail: retry
+
+  - id: hide_keyboard
+    description: "收起键盘"
+    action:
+      type: back
+    delay: 1.0
+    on_fail: skip
+
+  - id: click_search_confirm
+    description: "点击确定搜索"
+    action:
+      type: tap
+      x: 652
+      y: 431
+    delay: 3.0
+    on_fail: retry
+
+  - id: click_send_popularity
+    description: "点击发送人气值按钮"
+    action:
+      type: tap
+      x: 165
+      y: 547
+    delay: 2.0
+    on_fail: skip
+
+  - id: select_popularity
+    description: "选择人气值"
+    action:
+      type: tap
+      x: 521
+      y: 301
+    delay: 1.0
+    on_fail: skip
+
+  - id: confirm_send
+    description: "确认赠送"
+    action:
+      type: tap
+      x: 667
+      y: 440
+    delay: 2.0
+    on_fail: skip
+
+  - id: close_profile
+    description: "关闭个人主页(X按钮)"
+    action:
+      type: tap
+      x: 1120
+      y: 25
+    delay: 1.0
+    on_fail: skip
+
+  - id: close_social
+    description: "关闭社交面板"
+    action:
+      type: tap
+      x: 1120
+      y: 25
+    delay: 1.0
+    on_fail: skip
+
+  - id: resume_auto_battle
+    description: "恢复自动战斗"
+    action:
+      type: tap
+      x: 465
+      y: 522
+    delay: 0.5
+    on_fail: skip
+
+scenes: {}
+targets: {}

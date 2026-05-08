@@ -37,6 +37,7 @@ class Step:
     action_target: Optional[str] = None
     action_x: Optional[int] = None
     action_y: Optional[int] = None
+    action_text: Optional[str] = None  # input_text 动作的文本内容
     verify_scene: Optional[str] = None
     verify_timeout: float = 3.0
     on_fail: str = "retry"  # retry | skip | abort
@@ -73,6 +74,7 @@ def load_flow(yaml_path: str) -> Flow:
             action_target=action.get('target'),
             action_x=action.get('x'),
             action_y=action.get('y'),
+            action_text=action.get('text'),
             verify_scene=verify.get('scene'),
             verify_timeout=verify.get('timeout', 3.0),
             on_fail=step_data.get('on_fail', 'retry'),

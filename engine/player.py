@@ -130,10 +130,11 @@ class Player:
             result.scene_matched = True
             result.scene_confidence = confidence
 
-        # 2. 定位目标（back/wait 等无坐标动作跳过定位）
-        if step.action_type in ("back", "wait"):
+        # 2. 定位目标（back/wait/input_text 等无坐标动作跳过定位）
+        if step.action_type in ("back", "wait", "input_text"):
             locate_result = None
             result.target_found_by = step.action_type
+            self._current_step_text = step.action_text or ''
         else:
             screenshot = self._device.screenshot(force_refresh=False)
             if screenshot is None:
@@ -177,12 +178,22 @@ class Player:
         elif action_type == "long_press":
             self._device.long_press(location.x, location.y)
         elif action_type == "back":
-            if hasattr(self._device, 'run'):
-                self._device.run('shell input keyevent KEYCODE_BACK')
-            elif hasattr(self._device, '_adb'):
-                self._device._adb.run('shell input keyevent KEYCODE_BACK')
+            self._run_shell('input keyevent KEYCODE_BACK')
+        elif action_type == "input_text":
+            # 通过剪贴板粘贴输入文字（支持中文）
+            text = self._current_step_text or ""
+            self._run_shell(f'cmd clipboard set "{text}"')
+            time.sleep(0.3)
+            self._run_shell('input keyevent 279')  # KEYCODE_PASTE
         elif action_type == "wait":
             time.sleep(1.0)
+
+    def _run_shell(self, cmd: str):
+        """执行 adb shell 命令"""
+        if hasattr(self._device, 'run'):
+            self._device.run(f'shell {cmd}')
+        elif hasattr(self._device, '_adb'):
+            self._device._adb.run(f'shell {cmd}')
 
     def _wait_for_scene(self, scene_name: str, flow: Flow, timeout: float) -> Optional[float]:
         scene_def = flow.scenes.get(scene_name)

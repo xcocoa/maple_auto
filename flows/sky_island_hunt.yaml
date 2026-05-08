@@ -1,0 +1,114 @@
+# 天空岛领主狩猎流程
+# 前置: 角色在主界面
+# 路径: 菜单 → 成长 → 滑动找领主狩猎 → 立即前往 → 入场 → 关闭背包 → 退出 → 确认离开 → 结果确认
+#
+# 坐标来源: getevent 真机录制 (2026-05-08)
+#
+name: sky_island_hunt
+display_name: 天空岛领主狩猎
+timeout: 90
+max_retries: 1
+step_delay: 2.0
+
+steps:
+  - id: stop_auto_battle
+    description: "停止自动战斗"
+    action:
+      type: tap
+      x: 819
+      y: 542
+    delay: 3.0
+    on_fail: skip
+
+  - id: open_menu
+    description: "打开菜单≡"
+    action:
+      type: tap
+      x: 1195
+      y: 15
+    delay: 3.0
+    on_fail: retry
+
+  - id: click_growth
+    description: "点击成长"
+    action:
+      type: tap
+      x: 1109
+      y: 108
+    delay: 3.0
+    on_fail: retry
+
+  - id: scroll_find_hunt
+    description: "滑动成长面板找到领主狩猎"
+    action:
+      type: swipe
+      x: 640
+      y: 400
+    delay: 2.0
+    on_fail: skip
+
+  - id: click_goto
+    description: "点击立即前往"
+    action:
+      type: tap
+      x: 1082
+      y: 322
+    delay: 3.0
+    on_fail: skip
+
+  - id: click_enter_hunt
+    description: "点击入场"
+    action:
+      type: tap
+      x: 1020
+      y: 519
+    delay: 5.0
+    on_fail: skip
+
+  - id: close_bag
+    description: "关闭背包界面"
+    action:
+      type: tap
+      x: 643
+      y: 156
+    delay: 2.0
+    on_fail: skip
+
+  - id: click_exit
+    description: "点击退出按钮"
+    action:
+      type: tap
+      x: 1190
+      y: 232
+    delay: 2.0
+    on_fail: skip
+
+  - id: confirm_leave
+    description: "确认离开"
+    action:
+      type: tap
+      x: 775
+      y: 434
+    delay: 3.0
+    on_fail: skip
+
+  - id: confirm_result
+    description: "结果确认"
+    action:
+      type: tap
+      x: 665
+      y: 464
+    delay: 2.0
+    on_fail: skip
+
+  - id: resume_auto_battle
+    description: "恢复自动战斗"
+    action:
+      type: tap
+      x: 465
+      y: 522
+    delay: 0.5
+    on_fail: skip
+
+scenes: {}
+targets: {}
