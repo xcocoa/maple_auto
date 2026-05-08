@@ -40,6 +40,7 @@ class Step:
     verify_scene: Optional[str] = None
     verify_timeout: float = 3.0
     on_fail: str = "retry"  # retry | skip | abort
+    delay: float = 0.0  # 动作执行后的等待时间（秒），0=使用Flow默认值
 
 
 @dataclass
@@ -49,6 +50,7 @@ class Flow:
     display_name: str
     timeout: int = 60
     max_retries: int = 2
+    step_delay: float = 2.0  # 默认步骤间延迟（秒）
     steps: List[Step] = field(default_factory=list)
     scenes: Dict[str, Scene] = field(default_factory=dict)
     targets: Dict[str, Target] = field(default_factory=dict)
@@ -74,6 +76,7 @@ def load_flow(yaml_path: str) -> Flow:
             verify_scene=verify.get('scene'),
             verify_timeout=verify.get('timeout', 3.0),
             on_fail=step_data.get('on_fail', 'retry'),
+            delay=step_data.get('delay', 0.0),
         )
         steps.append(step)
 
@@ -100,6 +103,7 @@ def load_flow(yaml_path: str) -> Flow:
         display_name=data.get('display_name', data['name']),
         timeout=data.get('timeout', 60),
         max_retries=data.get('max_retries', 2),
+        step_delay=data.get('step_delay', 2.0),
         steps=steps,
         scenes=scenes,
         targets=targets,

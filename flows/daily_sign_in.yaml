@@ -1,46 +1,43 @@
-# 每日签到流程 - 首次真机运行版（纯坐标模式）
-# 不依赖场景模板验证，纯靠坐标点击 + 时间等待
-# 跑通后会用 recorder 录制真实模板替换
+# 每日签到流程 - 活动面板内的详细签到操作
+# 前置条件: 角色在主界面（非菜单内）
+# ScaledADB: base_w=1280, base_h=0 (自适应=575)
+# 设备: ZY22LJC9ST (2712x1220)
+#
 name: daily_sign_in
 display_name: 每日签到
-timeout: 90
+timeout: 120
 max_retries: 1
+step_delay: 2.5
 
 steps:
-  # ===== 关闭可能的弹窗 =====
-  - id: close_popup
-    description: "关闭可能出现的弹窗（点击右上角X）"
+  # ===== 停止挂机 =====
+  - id: stop_auto_battle
+    description: "停止自动战斗"
     action:
       type: tap
-      x: 1230
-      y: 30
+      x: 819
+      y: 542
+    delay: 3.0
     on_fail: skip
 
-  # ===== 等一下让弹窗关闭 =====
-  - id: wait_after_close
-    description: "等待画面稳定"
-    action:
-      type: tap
-      x: 640
-      y: 360
-    on_fail: skip
-
-  # ===== 打开右上角菜单 =====
+  # ===== 打开菜单 =====
   - id: open_menu
-    description: "点击右上角菜单按钮"
+    description: "点击右上角菜单≡"
     action:
       type: tap
-      x: 1194
-      y: 28
+      x: 1195
+      y: 15
+    delay: 3.0
     on_fail: retry
 
-  # ===== 点击活动图标 =====
+  # ===== 点击活动 =====
   - id: click_activity
     description: "点击菜单中的活动图标"
     action:
       type: tap
-      x: 1155
-      y: 233
+      x: 1210
+      y: 295
+    delay: 3.0
     on_fail: retry
 
   # ===== 点击签到礼标签 =====
@@ -48,36 +45,10 @@ steps:
     description: "点击左侧签到礼标签"
     action:
       type: tap
-      x: 100
-      y: 103
+      x: 212
+      y: 175
+    delay: 2.0
     on_fail: retry
-
-  # ===== 点击环游武陵桃园 =====
-  - id: click_huanyou
-    description: "点击'和枫小喵一起环游武陵桃园'"
-    action:
-      type: tap
-      x: 722
-      y: 103
-    on_fail: skip
-
-  # ===== 点击签到按钮 =====
-  - id: click_sign
-    description: "点击签到按钮"
-    action:
-      type: tap
-      x: 1036
-      y: 521
-    on_fail: skip
-
-  # ===== 关闭签到地图 =====
-  - id: close_huanyou
-    description: "关闭环游地图（点X）"
-    action:
-      type: tap
-      x: 1192
-      y: 23
-    on_fail: skip
 
   # ===== 点击每日签到领整月好礼 =====
   - id: click_daily_reward
@@ -86,6 +57,7 @@ steps:
       type: tap
       x: 362
       y: 216
+    delay: 2.0
     on_fail: skip
 
   # ===== 领取奖励 =====
@@ -95,6 +67,7 @@ steps:
       type: tap
       x: 373
       y: 309
+    delay: 2.0
     on_fail: skip
 
   # ===== 关闭活动面板 =====
@@ -102,10 +75,20 @@ steps:
     description: "关闭活动面板"
     action:
       type: tap
-      x: 1192
-      y: 23
+      x: 1122
+      y: 32
+    delay: 2.0
     on_fail: skip
 
-# 无场景验证模式 - 纯坐标 + 时间等待
+  # ===== 恢复挂机 =====
+  - id: resume_auto_battle
+    description: "恢复自动战斗"
+    action:
+      type: tap
+      x: 465
+      y: 522
+    delay: 0.5
+    on_fail: skip
+
 scenes: {}
 targets: {}

@@ -7,13 +7,27 @@
 #   活动:  (1210, 295)
 #   签到礼: (212, 175)
 #   公会:  (930, 250)
+#   关闭X: (1122, 32) — 关闭公会后直接回到菜单面板
+#   停止挂机: (819, 542)
+#   恢复挂机: (465, 522)
 #
 name: daily_tasks
 display_name: 每日日常
 timeout: 120
 max_retries: 2
+step_delay: 3.0  # 默认步骤间等待3秒
 
 steps:
+  # ===== Part 0: 停止挂机（确保菜单可交互） =====
+  - id: stop_auto_battle
+    description: "停止自动战斗"
+    action:
+      type: tap
+      x: 819
+      y: 542
+    delay: 3.0
+    on_fail: skip
+
   # ===== Part 1: 工会签到（进入即完成） =====
   - id: open_menu_guild
     description: "打开菜单≡"
@@ -21,6 +35,7 @@ steps:
       type: tap
       x: 1195
       y: 15
+    delay: 3.0
     on_fail: retry
 
   - id: click_guild
@@ -29,31 +44,27 @@ steps:
       type: tap
       x: 930
       y: 250
+    delay: 3.0
     on_fail: retry
 
   - id: close_guild
-    description: "关闭工会面板（返回键）"
+    description: "关闭工会面板（X按钮，返回菜单）"
     action:
       type: tap
-      x: 38
-      y: 26
+      x: 1122
+      y: 32
+    delay: 2.0
     on_fail: skip
 
   # ===== Part 2: 活动签到 =====
-  - id: open_menu_activity
-    description: "打开菜单≡"
-    action:
-      type: tap
-      x: 1195
-      y: 15
-    on_fail: retry
-
+  # 关闭工会后直接回到菜单面板，无需重新打开
   - id: click_activity
     description: "点击活动入口"
     action:
       type: tap
       x: 1210
       y: 295
+    delay: 3.0
     on_fail: retry
 
   - id: click_sign_tab
@@ -62,14 +73,26 @@ steps:
       type: tap
       x: 212
       y: 175
+    delay: 2.0
     on_fail: skip
 
   - id: close_activity
     description: "关闭活动面板"
     action:
       type: tap
-      x: 1238
-      y: 18
+      x: 1122
+      y: 32
+    delay: 2.0
+    on_fail: skip
+
+  # ===== Part 3: 恢复挂机 =====
+  - id: resume_auto_battle
+    description: "恢复自动战斗"
+    action:
+      type: tap
+      x: 465
+      y: 522
+    delay: 0.5
     on_fail: skip
 
 scenes: {}

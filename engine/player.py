@@ -76,6 +76,12 @@ class Player:
                 success = False
                 break
 
+            # 步骤间延迟：优先使用步骤自身的 delay，否则用 Flow 默认值
+            delay = step.delay if step.delay > 0 else flow.step_delay
+            if delay > 0:
+                logger.debug(f"步骤延迟: {delay:.1f}s")
+                time.sleep(delay)
+
         total_time = time.time() - start_time
         return PlayResult(
             flow_name=flow.name, success=success,
@@ -124,17 +130,21 @@ class Player:
             result.scene_matched = True
             result.scene_confidence = confidence
 
-        # 2. 定位目标
-        screenshot = self._device.screenshot(force_refresh=False)
-        if screenshot is None:
-            result.error = "screenshot_failed"
-            return result
+        # 2. 定位目标（back/wait 等无坐标动作跳过定位）
+        if step.action_type in ("back", "wait"):
+            locate_result = None
+            result.target_found_by = step.action_type
+        else:
+            screenshot = self._device.screenshot(force_refresh=False)
+            if screenshot is None:
+                result.error = "screenshot_failed"
+                return result
 
-        locate_result = self._resolve_target(screenshot, step, flow)
-        if locate_result is None:
-            result.error = "target_not_found"
-            return result
-        result.target_found_by = locate_result.found_by
+            locate_result = self._resolve_target(screenshot, step, flow)
+            if locate_result is None:
+                result.error = "target_not_found"
+                return result
+            result.target_found_by = locate_result.found_by
 
         # 3. 执行动作
         self._execute_action(step.action_type, locate_result)
@@ -161,11 +171,16 @@ class Player:
             return self._target_locator.locate(screenshot, target_def)
         return None
 
-    def _execute_action(self, action_type: str, location: LocateResult):
+    def _execute_action(self, action_type: str, location: Optional[LocateResult]):
         if action_type == "tap":
             self._device.tap(location.x, location.y)
         elif action_type == "long_press":
             self._device.long_press(location.x, location.y)
+        elif action_type == "back":
+            if hasattr(self._device, 'run'):
+                self._device.run('shell input keyevent KEYCODE_BACK')
+            elif hasattr(self._device, '_adb'):
+                self._device._adb.run('shell input keyevent KEYCODE_BACK')
         elif action_type == "wait":
             time.sleep(1.0)
 
