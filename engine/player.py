@@ -7,6 +7,7 @@
 
 import time
 import logging
+import numpy as np
 from dataclasses import dataclass, field
 from typing import List, Optional
 
@@ -50,6 +51,8 @@ class Player:
         self._step_max_retries = step_max_retries
         self._scene_matcher: Optional[SceneMatcher] = None
         self._target_locator = TargetLocator(base_dir=base_dir)
+        self._ocr = None  # 延迟加载
+        self._current_step_text = ""
 
     def play(self, flow: Flow) -> PlayResult:
         """执行完整的 Flow"""
@@ -147,10 +150,51 @@ class Player:
                 return result
             result.target_found_by = locate_result.found_by
 
-        # 3. 执行动作
+        # 3. 执行前截图（用于差异校验）
+        before_screenshot = None
+        should_verify_change = (
+            step.verify_change
+            and step.action_type not in ("wait", "back", "input_text")
+            and step.on_fail != "skip"
+            and not step.verify_scene  # 有 verify_scene 时用场景验证，不重复做差异检测
+        )
+        if should_verify_change or step.verify_text or step.verify_text_gone:
+            before_screenshot = self._device.screenshot(force_refresh=True)
+
+        # 4. 执行动作
         self._execute_action(step.action_type, locate_result)
 
-        # 4. 验证结果
+        # 5. 等待画面更新
+        if should_verify_change or step.verify_text or step.verify_text_gone:
+            time.sleep(0.8)
+
+        # 6. 执行后截图 + 校验
+        if should_verify_change or step.verify_text or step.verify_text_gone:
+            after_screenshot = self._device.screenshot(force_refresh=True)
+
+            # 6a. 截图差异校验
+            if should_verify_change:
+                if not self._check_screen_changed(before_screenshot, after_screenshot, step.change_threshold):
+                    result.error = "verify_change_failed"
+                    logger.warning(f"步骤 {step.id}: 画面无变化，操作可能未生效")
+                    return result
+
+            # 6b. OCR 文字存在校验
+            if step.verify_text:
+                if not self._check_text_present(after_screenshot, step.verify_text):
+                    result.error = f"verify_text_not_found:{step.verify_text}"
+                    logger.warning(f"步骤 {step.id}: 未检测到文字 '{step.verify_text}'")
+                    return result
+                result.verify_matched = True
+
+            # 6c. OCR 文字消失校验
+            if step.verify_text_gone:
+                if self._check_text_present(after_screenshot, step.verify_text_gone):
+                    result.error = f"verify_text_still_present:{step.verify_text_gone}"
+                    logger.warning(f"步骤 {step.id}: 文字 '{step.verify_text_gone}' 仍然存在")
+                    return result
+
+        # 7. 场景验证（原有逻辑）
         if step.verify_scene:
             verified = self._wait_for_scene(step.verify_scene, flow, step.verify_timeout)
             if verified is not None:
@@ -194,6 +238,39 @@ class Player:
             self._device.run(f'shell {cmd}')
         elif hasattr(self._device, '_adb'):
             self._device._adb.run(f'shell {cmd}')
+
+    def _check_screen_changed(self, before, after, threshold: float = 0.02) -> bool:
+        """对比两张截图是否有显著差异"""
+        if before is None or after is None:
+            return True  # 无法对比，认为有变化
+        if before.shape != after.shape:
+            return True  # 尺寸不同，认为有变化
+        diff = np.abs(before.astype(float) - after.astype(float))
+        change_ratio = np.mean(diff) / 255.0
+        logger.debug(f"截图差异: {change_ratio:.4f} (阈值: {threshold})")
+        return change_ratio > threshold
+
+    def _check_text_present(self, screenshot, text: str) -> bool:
+        """OCR 检查截图中是否包含指定文字"""
+        if screenshot is None:
+            return False
+        if self._ocr is None:
+            try:
+                from paddleocr import PaddleOCR
+                self._ocr = PaddleOCR(lang='ch')
+            except ImportError:
+                logger.warning("PaddleOCR 未安装，跳过文字验证")
+                return True  # 无法验证，默认通过
+        try:
+            results = self._ocr.predict(screenshot)
+            for res in results:
+                for t in res['rec_texts']:
+                    if text in t:
+                        return True
+            return False
+        except Exception as e:
+            logger.warning(f"OCR 失败: {e}")
+            return True  # OCR 异常，默认通过
 
     def _wait_for_scene(self, scene_name: str, flow: Flow, timeout: float) -> Optional[float]:
         scene_def = flow.scenes.get(scene_name)

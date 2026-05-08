@@ -40,6 +40,10 @@ class Step:
     action_text: Optional[str] = None  # input_text 动作的文本内容
     verify_scene: Optional[str] = None
     verify_timeout: float = 3.0
+    verify_change: bool = True  # 执行后截图需和执行前不同
+    verify_text: Optional[str] = None  # 执行后需包含此文字
+    verify_text_gone: Optional[str] = None  # 执行后此文字需消失
+    change_threshold: float = 0.02  # 截图差异阈值
     on_fail: str = "retry"  # retry | skip | abort
     delay: float = 0.0  # 动作执行后的等待时间（秒），0=使用Flow默认值
 
@@ -77,6 +81,10 @@ def load_flow(yaml_path: str) -> Flow:
             action_text=action.get('text'),
             verify_scene=verify.get('scene'),
             verify_timeout=verify.get('timeout', 3.0),
+            verify_change=verify.get('change', True),
+            verify_text=verify.get('text'),
+            verify_text_gone=verify.get('text_gone'),
+            change_threshold=verify.get('threshold', 0.02),
             on_fail=step_data.get('on_fail', 'retry'),
             delay=step_data.get('delay', 0.0),
         )
