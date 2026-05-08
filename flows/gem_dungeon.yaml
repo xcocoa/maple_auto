@@ -1,70 +1,95 @@
+# 宝石副本流程
+# 前置: 角色在主界面
+# 路径: 菜单 → 成长 → 滑动找到"通关宝石副本1次" → 点击立即前往 → 入场 → 等待自动战斗 → 结算
+#
+# 坐标来源: getevent 真机验证 (2026-05-08)
+# 注: select_gem_dungeon 和 click_enter 需重新录制
+#
 name: gem_dungeon
 display_name: 宝石副本
-timeout: 90
+timeout: 120
 max_retries: 1
 step_delay: 2.0
+
 steps:
-- id: stop_auto_battle
-  description: 停止自动战斗
-  action:
-    type: tap
-    x: 819
-    y: 542
-  delay: 3.0
-  on_fail: skip
-- id: open_menu
-  description: 打开菜单≡
-  action:
-    type: tap
-    x: 1195
-    y: 15
-  delay: 3.0
-  on_fail: retry
-- id: click_daily_play
-  description: 点击日常玩法
-  action:
-    type: tap
-    x: 1156
-    y: 258
-  delay: 3.0
-  on_fail: retry
-- id: select_gem_dungeon
-  description: 选择宝石副本
-  action:
-    type: tap
-    x: 1196
-    y: 34
-  delay: 2.0
-  on_fail: retry
-- id: click_enter
-  description: 点击入场按钮
-  action:
-    type: tap
-    x: 1138
-    y: 529
-  delay: 3.0
-  on_fail: retry
-- id: wait_battle
-  description: 等待自动战斗结束（60秒）
-  action:
-    type: wait
-  delay: 60.0
-  on_fail: skip
-- id: click_result
-  description: 点击结算/返回按钮
-  action:
-    type: tap
-    x: 870
-    y: 281
-  delay: 3.0
-  on_fail: skip
-- id: resume_auto_battle
-  description: 恢复自动战斗
-  action:
-    type: tap
-    x: 465
-    y: 522
-  delay: 0.5
-  on_fail: skip
+  - id: stop_auto_battle
+    description: "停止自动战斗"
+    action:
+      type: tap
+      x: 819
+      y: 542
+    delay: 3.0
+    on_fail: skip
+
+  - id: open_menu
+    description: "打开菜单≡"
+    action:
+      type: tap
+      x: 1195
+      y: 15
+    delay: 3.0
+    on_fail: retry
+
+  - id: click_growth
+    description: "点击成长"
+    action:
+      type: tap
+      x: 1109
+      y: 108
+    delay: 3.0
+    on_fail: retry
+
+  - id: scroll_find_gem
+    description: "滑动成长面板找到宝石副本任务"
+    action:
+      type: swipe
+      x: 640
+      y: 400
+    delay: 2.0
+    on_fail: skip
+
+  - id: click_goto_gem
+    description: "点击立即前往（TODO: 需确认坐标）"
+    action:
+      type: tap
+      x: 640
+      y: 400
+    delay: 3.0
+    on_fail: retry
+
+  - id: click_enter
+    description: "点击入场按钮（TODO: 需确认坐标）"
+    action:
+      type: tap
+      x: 1138
+      y: 529
+    delay: 3.0
+    on_fail: retry
+
+  - id: wait_battle
+    description: "等待自动战斗结束（60秒）"
+    action:
+      type: wait
+    delay: 60.0
+    on_fail: skip
+
+  - id: click_result
+    description: "点击结算/返回按钮"
+    action:
+      type: tap
+      x: 870
+      y: 281
+    delay: 3.0
+    on_fail: skip
+
+  - id: resume_auto_battle
+    description: "恢复自动战斗"
+    action:
+      type: tap
+      x: 465
+      y: 522
+    delay: 0.5
+    on_fail: skip
+
 scenes: {}
 targets: {}
