@@ -35,11 +35,10 @@ steps:
     on_fail: skip
 
   - id: click_social
-    description: "点击社交"
+    description: "OCR识别并点击社交"
     action:
-      type: tap
-      x: 1110
-      y: 215
+      type: ocr_tap
+      text: "社交"
     delay: 3.0
     on_fail: retry
 

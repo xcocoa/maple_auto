@@ -141,8 +141,8 @@ class Player:
             result.scene_matched = True
             result.scene_confidence = confidence
 
-        # 2. 定位目标（back/wait/input_text 等无坐标动作跳过定位）
-        if step.action_type in ("back", "wait", "input_text"):
+        # 2. 定位目标（back/wait/input_text/ocr_tap 等无坐标动作跳过定位）
+        if step.action_type in ("back", "wait", "input_text", "ocr_tap"):
             locate_result = None
             result.target_found_by = step.action_type
             self._current_step_text = step.action_text or ''
@@ -243,6 +243,9 @@ class Player:
             # 从 location 坐标向上滑动 200px（用于列表滚动）
             x, y = location.x, location.y
             self._device.swipe(x, y, x, y - 200, duration=300)
+        elif action_type == "ocr_tap":
+            # OCR 识别文字并点击其中心
+            self._ocr_tap(self._current_step_text)
         elif action_type == "back":
             self._run_shell('input keyevent KEYCODE_BACK')
         elif action_type == "input_text":
@@ -253,6 +256,43 @@ class Player:
             self._run_shell('input keyevent 279')  # KEYCODE_PASTE
         elif action_type == "wait":
             time.sleep(1.0)
+
+    def _ocr_tap(self, target_text: str) -> bool:
+        """OCR 识别目标文字并点击其中心坐标"""
+        if not target_text:
+            logger.warning("ocr_tap: 未指定目标文字")
+            return False
+
+        screenshot = self._device.screenshot(force_refresh=True)
+        if screenshot is None:
+            logger.warning("ocr_tap: 截图失败")
+            return False
+
+        if self._ocr is None:
+            try:
+                from paddleocr import PaddleOCR
+                self._ocr = PaddleOCR(lang='ch')
+            except ImportError:
+                logger.warning("PaddleOCR 未安装，ocr_tap 无法使用")
+                return False
+
+        try:
+            results = self._ocr.predict(screenshot)
+            for res in results:
+                for i, text in enumerate(res['rec_texts']):
+                    if target_text in text:
+                        poly = res['dt_polys'][i]
+                        # poly 是 4 个顶点坐标，取中心
+                        cx = int(poly[:, 0].mean())
+                        cy = int(poly[:, 1].mean())
+                        logger.info(f"ocr_tap: 找到 '{target_text}' at ({cx}, {cy})")
+                        self._device.tap(cx, cy)
+                        return True
+            logger.warning(f"ocr_tap: 未找到文字 '{target_text}'")
+            return False
+        except Exception as e:
+            logger.warning(f"ocr_tap 失败: {e}")
+            return False
 
     def _run_shell(self, cmd: str):
         """执行 adb shell 命令"""
