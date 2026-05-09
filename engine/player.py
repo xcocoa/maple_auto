@@ -271,7 +271,12 @@ class Player:
         if self._ocr is None:
             try:
                 from paddleocr import PaddleOCR
-                self._ocr = PaddleOCR(lang='ch')
+                self._ocr = PaddleOCR(
+                    lang='ch',
+                    use_doc_orientation_classify=False,
+                    use_doc_unwarping=False,
+                    use_textline_orientation=False,
+                )
             except ImportError:
                 logger.warning("PaddleOCR 未安装，ocr_tap 无法使用")
                 return False
@@ -324,7 +329,12 @@ class Player:
         if self._ocr is None:
             try:
                 from paddleocr import PaddleOCR
-                self._ocr = PaddleOCR(lang='ch')
+                self._ocr = PaddleOCR(
+                    lang='ch',
+                    use_doc_orientation_classify=False,
+                    use_doc_unwarping=False,
+                    use_textline_orientation=False,
+                )
             except ImportError:
                 logger.warning("PaddleOCR 未安装，跳过文字验证")
                 return True  # 无法验证，默认通过
