@@ -80,8 +80,8 @@ steps:
     description: "点击确定搜索"
     action:
       type: tap
-      x: 652
-      y: 431
+      x: 762
+      y: 422
     delay: 3.0
     on_fail: retry
 
@@ -107,8 +107,8 @@ steps:
     description: "确认赠送"
     action:
       type: tap
-      x: 667
-      y: 440
+      x: 762
+      y: 422
     delay: 2.0
     on_fail: skip
 
