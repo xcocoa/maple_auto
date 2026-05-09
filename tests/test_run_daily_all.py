@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def test_flow_list_complete():
     from tools.run_daily_all import DAILY_FLOWS
-    assert len(DAILY_FLOWS) == 7
+    assert len(DAILY_FLOWS) == 6
     assert all(f.endswith('.yaml') for f in DAILY_FLOWS)
 
 
@@ -15,7 +15,7 @@ def test_filter_skip():
     flows = filter_flows(skip=["gem_dungeon", "sky_island_hunt"], only=None)
     assert "flows/gem_dungeon.yaml" not in flows
     assert "flows/sky_island_hunt.yaml" not in flows
-    assert len(flows) == 5
+    assert len(flows) == 4
 
 
 def test_filter_only():

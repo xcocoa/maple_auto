@@ -1,23 +1,20 @@
-# 每日日常任务流程 - 真机验证版
-# ScaledADB 全屏缩放模式: base_w=1280, base_h=0 (自适应=575)
-# 设备: ZY22LJC9ST (2712x1220)
+# 工会签到流程
+# 前置: 角色在主界面
+# 路径: 菜单 → 公会（进入即完成签到） → 关闭
 #
 # 已验证坐标 (2026-05-07):
 #   菜单≡: (1195, 15)
-#   活动:  (1210, 295)
-#   签到礼: (212, 175)
 #   公会:  (930, 250)
-#   关闭X: (1122, 32) — 关闭公会后直接回到菜单面板
+#   关闭X: (1122, 32)
 #
 name: daily_tasks
-display_name: 每日日常
-timeout: 120
+display_name: 工会签到
+timeout: 60
 max_retries: 2
 step_delay: 3.0
 
 steps:
-  # ===== Part 1: 工会签到（进入即完成） =====
-  - id: open_menu_guild
+  - id: open_menu
     description: "打开菜单≡"
     action:
       type: tap
@@ -27,7 +24,7 @@ steps:
     on_fail: retry
 
   - id: click_guild
-    description: "点击公会入口"
+    description: "点击公会入口（进入即签到）"
     action:
       type: tap
       x: 930
@@ -36,36 +33,7 @@ steps:
     on_fail: retry
 
   - id: close_guild
-    description: "关闭工会面板（X按钮，返回菜单）"
-    action:
-      type: tap
-      x: 1122
-      y: 32
-    delay: 2.0
-    on_fail: skip
-
-  # ===== Part 2: 活动签到 =====
-  # 关闭工会后直接回到菜单面板，无需重新打开
-  - id: click_activity
-    description: "点击活动入口"
-    action:
-      type: tap
-      x: 1210
-      y: 295
-    delay: 3.0
-    on_fail: retry
-
-  - id: click_sign_tab
-    description: "点击签到礼标签"
-    action:
-      type: tap
-      x: 212
-      y: 175
-    delay: 2.0
-    on_fail: skip
-
-  - id: close_activity
-    description: "关闭活动面板"
+    description: "关闭工会面板"
     action:
       type: tap
       x: 1122

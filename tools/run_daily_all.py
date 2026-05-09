@@ -26,7 +26,6 @@ from core.adb import ADB
 # 执行顺序（按游戏逻辑依赖排列）
 DAILY_FLOWS = [
     "flows/daily_tasks.yaml",
-    "flows/daily_sign_in.yaml",
     "flows/send_popularity.yaml",
     "flows/gem_dungeon.yaml",
     "flows/sky_island_hunt.yaml",
