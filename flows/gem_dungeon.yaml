@@ -1,25 +1,16 @@
 # 宝石副本流程
 # 前置: 角色在主界面
-# 路径: 菜单 → 成长 → 滑动找到"通关宝石副本1次" → 点击立即前往 → 选择超难 → 入场 → 等待自动战斗 → 结算
+# 路径: 菜单 → 成长 → 滑动找到"通关宝石副本1次" → 立即前往 → 选超难 → 入场 → 确认 → 等待战斗 → 结算
 #
 # 坐标来源: getevent 真机验证 (2026-05-09)
 #
 name: gem_dungeon
 display_name: 宝石副本
-timeout: 120
+timeout: 180
 max_retries: 1
 step_delay: 2.0
 
 steps:
-  - id: stop_auto_battle
-    description: "停止自动战斗"
-    action:
-      type: tap
-      x: 819
-      y: 542
-    delay: 3.0
-    on_fail: skip
-
   - id: open_menu
     description: "打开菜单≡"
     action:
@@ -74,6 +65,15 @@ steps:
     delay: 3.0
     on_fail: retry
 
+  - id: confirm_enter
+    description: "确认入场弹框"
+    action:
+      type: tap
+      x: 757
+      y: 425
+    delay: 3.0
+    on_fail: retry
+
   - id: wait_battle
     description: "等待自动战斗结束（60秒）"
     action:
@@ -88,15 +88,6 @@ steps:
       x: 870
       y: 281
     delay: 3.0
-    on_fail: skip
-
-  - id: resume_auto_battle
-    description: "恢复自动战斗"
-    action:
-      type: tap
-      x: 465
-      y: 522
-    delay: 0.5
     on_fail: skip
 
 scenes: {}

@@ -8,26 +8,14 @@
 #   签到礼: (212, 175)
 #   公会:  (930, 250)
 #   关闭X: (1122, 32) — 关闭公会后直接回到菜单面板
-#   停止挂机: (819, 542)
-#   恢复挂机: (465, 522)
 #
 name: daily_tasks
 display_name: 每日日常
 timeout: 120
 max_retries: 2
-step_delay: 3.0  # 默认步骤间等待3秒
+step_delay: 3.0
 
 steps:
-  # ===== Part 0: 停止挂机（确保菜单可交互） =====
-  - id: stop_auto_battle
-    description: "停止自动战斗"
-    action:
-      type: tap
-      x: 819
-      y: 542
-    delay: 3.0
-    on_fail: skip
-
   # ===== Part 1: 工会签到（进入即完成） =====
   - id: open_menu_guild
     description: "打开菜单≡"
@@ -83,16 +71,6 @@ steps:
       x: 1122
       y: 32
     delay: 2.0
-    on_fail: skip
-
-  # ===== Part 3: 恢复挂机 =====
-  - id: resume_auto_battle
-    description: "恢复自动战斗"
-    action:
-      type: tap
-      x: 465
-      y: 522
-    delay: 0.5
     on_fail: skip
 
 scenes: {}

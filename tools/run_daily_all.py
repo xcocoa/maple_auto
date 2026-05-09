@@ -27,11 +27,11 @@ from core.adb import ADB
 DAILY_FLOWS = [
     "flows/daily_tasks.yaml",
     "flows/daily_sign_in.yaml",
-    "flows/collect_mail.yaml",
     "flows/send_popularity.yaml",
     "flows/gem_dungeon.yaml",
     "flows/sky_island_hunt.yaml",
     "flows/starforce_enhance.yaml",
+    "flows/collect_mail.yaml",
 ]
 
 
@@ -46,13 +46,16 @@ def filter_flows(skip: Optional[List[str]], only: Optional[List[str]]) -> List[s
 
 
 def reset_to_main_screen(device) -> None:
-    """流程之间执行回到主界面的保障序列"""
-    # 恢复挂机
-    device.tap(465, 522)
-    time.sleep(3.0)
-    # 停止挂机（确保菜单可交互）
-    device.tap(819, 542)
-    time.sleep(2.0)
+    """流程之间执行回到主界面的保障序列：关闭可能打开的面板"""
+    # 点击通用关闭按钮位置（右上角X）
+    device.tap(1122, 32)
+    time.sleep(1.5)
+    # 再点一次确保嵌套面板也关闭
+    device.tap(1122, 32)
+    time.sleep(1.5)
+    # 点击空白区域关闭残余弹窗
+    device.tap(640, 500)
+    time.sleep(1.0)
 
 
 def run_single_flow(player: Player, flow_path: str, verbose: bool) -> dict:

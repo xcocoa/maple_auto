@@ -16,15 +16,6 @@ params:
   friend_name: "废都的王"
 
 steps:
-  - id: stop_auto_battle
-    description: "停止自动战斗"
-    action:
-      type: tap
-      x: 819
-      y: 542
-    delay: 3.0
-    on_fail: skip
-
   - id: open_menu
     description: "打开菜单≡"
     action:
@@ -128,15 +119,6 @@ steps:
       x: 1120
       y: 25
     delay: 1.0
-    on_fail: skip
-
-  - id: resume_auto_battle
-    description: "恢复自动战斗"
-    action:
-      type: tap
-      x: 465
-      y: 522
-    delay: 0.5
     on_fail: skip
 
 scenes: {}

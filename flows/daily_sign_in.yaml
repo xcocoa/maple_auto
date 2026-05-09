@@ -10,16 +10,6 @@ max_retries: 1
 step_delay: 2.5
 
 steps:
-  # ===== 停止挂机 =====
-  - id: stop_auto_battle
-    description: "停止自动战斗"
-    action:
-      type: tap
-      x: 819
-      y: 542
-    delay: 3.0
-    on_fail: skip
-
   # ===== 打开菜单 =====
   - id: open_menu
     description: "点击右上角菜单≡"
@@ -78,16 +68,6 @@ steps:
       x: 1122
       y: 32
     delay: 2.0
-    on_fail: skip
-
-  # ===== 恢复挂机 =====
-  - id: resume_auto_battle
-    description: "恢复自动战斗"
-    action:
-      type: tap
-      x: 465
-      y: 522
-    delay: 0.5
     on_fail: skip
 
 scenes: {}

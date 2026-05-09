@@ -11,15 +11,6 @@ max_retries: 1
 step_delay: 2.0
 
 steps:
-  - id: stop_auto_battle
-    description: "停止自动战斗"
-    action:
-      type: tap
-      x: 819
-      y: 542
-    delay: 3.0
-    on_fail: skip
-
   - id: open_menu
     description: "打开菜单≡"
     action:
