@@ -13,6 +13,7 @@ import argparse
 import subprocess
 import re
 import time
+import select
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -26,9 +27,10 @@ BASE_W = 1280
 BASE_H = 575
 
 # 触摸→屏幕映射 (横屏模式，已验证)
-# screenX = touch_y * device_w / touch_max_y
-# screenY = (touch_max_x - touch_x) * device_h / touch_max_x
 MAPPING = "Y->screenX, X_flip->screenY"
+
+# 去重防抖时间（毫秒）
+DEBOUNCE_MS = 300
 
 
 def touch_to_screen(touch_x: int, touch_y: int) -> tuple:
@@ -61,6 +63,14 @@ def find_touch_device(serial: str) -> str:
     return '/dev/input/event10'  # fallback
 
 
+def vibrate(serial: str):
+    """让设备震动确认（后台执行，不阻塞）"""
+    subprocess.Popen(
+        ['adb', '-s', serial, 'shell', 'cmd', 'vibrator_manager', 'oneshot', '100', '255'],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+
+
 def listen_taps(serial: str, device: str, count: int):
     """监听触摸事件并输出坐标"""
     print(f"\n{'='*50}")
@@ -73,7 +83,7 @@ def listen_taps(serial: str, device: str, count: int):
     print(f"设备分辨率: {DEVICE_W}x{DEVICE_H}")
     print(f"基准分辨率: {BASE_W}x{BASE_H}")
     print(f"{'='*50}")
-    print(f"\n请在设备上点击目标位置（共 {count} 次）...\n")
+    print(f"\n  等待第 1/{count} 次点击...", flush=True)
 
     proc = subprocess.Popen(
         ['adb', '-s', serial, 'shell', 'getevent', '-lt', device],
@@ -83,9 +93,14 @@ def listen_taps(serial: str, device: str, count: int):
     tap_count = 0
     current_x = None
     current_y = None
+    last_tap_time = 0
+    last_event_time = time.time()
+    results = []
 
     try:
         for line in proc.stdout:
+            last_event_time = time.time()
+
             # 解析 ABS_MT_POSITION_X
             if 'ABS_MT_POSITION_X' in line:
                 match = re.search(r'([0-9a-fA-F]+)\s*$', line.strip())
@@ -98,26 +113,35 @@ def listen_taps(serial: str, device: str, count: int):
                 if match:
                     current_y = int(match.group(1), 16)
 
-            # 手指抬起 = 一次完整的点击
-            elif 'BTN_TOUCH' in line and 'UP' in line.upper():
-                pass  # 有些设备没有这个
+            # SYN_REPORT = 一帧事件结束
             elif 'SYN_REPORT' in line and current_x is not None and current_y is not None:
-                # 只在有新坐标时记录
+                now = time.time()
+                # 去重防抖：DEBOUNCE_MS 内只记录一次
+                if (now - last_tap_time) * 1000 < DEBOUNCE_MS:
+                    continue
+
                 screen_x, screen_y = touch_to_screen(current_x, current_y)
                 base_x, base_y = screen_to_base(screen_x, screen_y)
 
                 tap_count += 1
-                print(f"  点击 #{tap_count}:")
-                print(f"    触摸原始: ({current_x}, {current_y})")
-                print(f"    设备坐标: ({screen_x}, {screen_y})")
-                print(f"    基准坐标: ({base_x}, {base_y})  ← 用这个")
-                print()
+                last_tap_time = now
+
+                # 即时反馈
+                print(f"\n  ✓ 点击 #{tap_count}: 基准坐标 ({base_x}, {base_y})", flush=True)
+                print(f"    (触摸原始: {current_x},{current_y} → 设备: {screen_x},{screen_y})", flush=True)
+
+                results.append((base_x, base_y))
+
+                # 震动确认
+                vibrate(serial)
 
                 current_x = None
                 current_y = None
 
                 if tap_count >= count:
                     break
+                else:
+                    print(f"\n  等待第 {tap_count+1}/{count} 次点击...", flush=True)
 
     except KeyboardInterrupt:
         pass
@@ -125,8 +149,11 @@ def listen_taps(serial: str, device: str, count: int):
         proc.terminate()
         proc.wait()
 
+    # 汇总输出
     print(f"\n{'='*50}")
-    print(f"完成! 共捕获 {tap_count} 次点击")
+    print(f"完成! 共捕获 {tap_count} 次点击:")
+    for i, (bx, by) in enumerate(results):
+        print(f"  #{i+1}: ({bx}, {by})")
     print(f"{'='*50}")
 
 
