@@ -1,9 +1,8 @@
 # 宝石副本流程
 # 前置: 角色在主界面
-# 路径: 菜单 → 成长 → 滑动找到"通关宝石副本1次" → 点击立即前往 → 入场 → 等待自动战斗 → 结算
+# 路径: 菜单 → 成长 → 滑动找到"通关宝石副本1次" → 点击立即前往 → 选择超难 → 入场 → 等待自动战斗 → 结算
 #
-# 坐标来源: getevent 真机验证 (2026-05-08)
-# 注: select_gem_dungeon 和 click_enter 需重新录制
+# 坐标来源: getevent 真机验证 (2026-05-09)
 #
 name: gem_dungeon
 display_name: 宝石副本
@@ -49,20 +48,29 @@ steps:
     on_fail: skip
 
   - id: click_goto_gem
-    description: "点击立即前往（TODO: 需确认坐标）"
+    description: "点击立即前往"
     action:
       type: tap
-      x: 640
-      y: 400
+      x: 664
+      y: 322
     delay: 3.0
     on_fail: retry
 
-  - id: click_enter
-    description: "点击入场按钮（TODO: 需确认坐标）"
+  - id: select_difficulty
+    description: "选择超难难度"
     action:
       type: tap
-      x: 1138
-      y: 529
+      x: 225
+      y: 376
+    delay: 2.0
+    on_fail: retry
+
+  - id: click_enter
+    description: "点击入场按钮"
+    action:
+      type: tap
+      x: 1042
+      y: 534
     delay: 3.0
     on_fail: retry
 
