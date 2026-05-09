@@ -55,13 +55,23 @@
 ### PaddleOCR 注意事项
 - 必须关闭文档预处理：`use_doc_orientation_classify=False, use_doc_unwarping=False, use_textline_orientation=False`
 - 否则 `dt_polys` 返回的坐标会超出原始图片尺寸（PaddleOCR v5 会旋转图片）
-- OCR 单次识别耗时约 9-10 秒
+- OCR 单次全屏识别耗时约 9-10 秒，ROI 裁剪后约 2.5 秒
+
+### ocr_tap 分层定位策略
+Player 的 `ocr_tap` 动作采用分层策略，兼顾速度和准确性：
+1. **查缓存**（0ms）— 首次 OCR 后所有识别到的文字坐标都缓存，同一界面内后续查找免费
+2. **ROI 裁剪 OCR**（~2.5s）— 只识别右侧菜单区域（850-1280, 50-500），速度是全屏的 3-4 倍
+3. **全屏 OCR**（~9s）— ROI 未找到时兜底
+4. **固定坐标 fallback** — 步骤同时定义了 x/y 时，OCR 全部失败仍可用坐标兜底
+- 每个新流程 `play()` 开始时自动清除缓存
+- `invalidate_ocr_cache()` 可手动清除（界面切换时）
 
 ### 其他经验
 - 关闭面板用具体X按钮坐标 (1122, 32)，不要用BACK键（可能退出游戏）
 - on_fail=skip 的步骤不做截图差异校验
 - 菜单需要滚动才能看到社交等入口，用 ocr_tap 代替固定坐标更可靠
 - Player 支持 swipe 动作（从坐标向上滑200px）
+- locate_tap 工具优化：即时输出+震动确认+300ms防抖
 - 流程间 `reset_to_main_screen` 通过点击关闭按钮(1122,32)来关闭面板
 - Guardian 卡死检测在流程转换时正常工作（连续相同帧检测+BACK恢复）
 - 切换输入法后必须切回搜狗：`adb shell ime set com.sohu.inputmethod.sogou.moto/com.sohu.inputmethod.sogou.SogouIME`
