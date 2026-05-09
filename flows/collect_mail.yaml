@@ -42,16 +42,6 @@ steps:
     delay: 2.0
     on_fail: skip
 
-  # ===== 勾选全部 =====
-  - id: select_all
-    description: "勾选选择全部"
-    action:
-      type: tap
-      x: 352
-      y: 546
-    delay: 1.0
-    on_fail: skip
-
   # ===== 点击选择领取 =====
   - id: collect_all
     description: "点击选择领取"
@@ -70,16 +60,6 @@ steps:
       x: 652
       y: 431
     delay: 2.0
-    on_fail: skip
-
-  # ===== 勾选全部（删除用） =====
-  - id: select_all_for_delete
-    description: "再次勾选选择全部"
-    action:
-      type: tap
-      x: 352
-      y: 546
-    delay: 1.0
     on_fail: skip
 
   # ===== 点击垃圾桶删除 =====
