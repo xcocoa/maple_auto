@@ -1,0 +1,7 @@
+# 通知配置
+# 将 webhook_url 替换为你的实际机器人地址
+enabled: false
+channel: dingtalk  # dingtalk | feishu | wecom | none
+webhook_url: "https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN_HERE"
+on_success: brief   # brief | full | silent
+on_failure: full     # brief | full
