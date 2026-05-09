@@ -52,6 +52,7 @@ class Player:
         self._scene_matcher: Optional[SceneMatcher] = None
         self._target_locator = TargetLocator(base_dir=base_dir)
         self._ocr = None  # 延迟加载
+        self._ocr_cache = {}  # 文字→坐标缓存，界面切换时清除
         self._current_step_text = ""
         self._guardian = guardian
 
@@ -60,6 +61,7 @@ class Player:
         start_time = time.time()
         logger.info(f"开始执行流程: {flow.display_name}")
 
+        self._ocr_cache.clear()  # 新流程清除OCR缓存
         self._scene_matcher = SceneMatcher(flow.scenes, base_dir=self._base_dir)
         step_results = []
         success = True
@@ -258,10 +260,24 @@ class Player:
             time.sleep(1.0)
 
     def _ocr_tap(self, target_text: str) -> bool:
-        """OCR 识别目标文字并点击其中心坐标"""
+        """
+        分层OCR定位并点击：缓存 → ROI OCR → 全屏 OCR
+
+        策略:
+          1. 查OCR缓存（0ms）
+          2. 缓存未命中 → 对菜单区域ROI做OCR并更新缓存（~2.5s）
+          3. ROI未找到 → 全屏OCR并更新缓存（~9s）
+        """
         if not target_text:
             logger.warning("ocr_tap: 未指定目标文字")
             return False
+
+        # 1. 查缓存
+        if target_text in self._ocr_cache:
+            cx, cy = self._ocr_cache[target_text]
+            logger.info(f"ocr_tap: 缓存命中 '{target_text}' at ({cx}, {cy})")
+            self._device.tap(cx, cy)
+            return True
 
         screenshot = self._device.screenshot(force_refresh=True)
         if screenshot is None:
@@ -282,27 +298,53 @@ class Player:
                 return False
 
         img_h, img_w = screenshot.shape[:2]
+
+        # 2. 先尝试 ROI（菜单按钮区域：右侧 850-1280, 50-500）
+        roi_x, roi_y = 850, 50
+        roi = screenshot[roi_y:500, roi_x:img_w]
+        result = self._ocr_find_in_image(roi, target_text, offset_x=roi_x, offset_y=roi_y, img_w=img_w, img_h=img_h)
+        if result:
+            cx, cy = result
+            self._device.tap(cx, cy)
+            return True
+
+        # 3. ROI 未找到，全屏 OCR
+        logger.debug(f"ocr_tap: ROI未找到 '{target_text}'，尝试全屏")
+        result = self._ocr_find_in_image(screenshot, target_text, offset_x=0, offset_y=0, img_w=img_w, img_h=img_h)
+        if result:
+            cx, cy = result
+            self._device.tap(cx, cy)
+            return True
+
+        logger.warning(f"ocr_tap: 未找到文字 '{target_text}'")
+        return False
+
+    def _ocr_find_in_image(self, image, target_text: str,
+                           offset_x: int = 0, offset_y: int = 0,
+                           img_w: int = 1280, img_h: int = 575):
+        """在图像中OCR查找目标文字，找到则更新缓存并返回坐标"""
         try:
-            results = self._ocr.predict(screenshot)
+            results = self._ocr.predict(image)
             for res in results:
                 for i, text in enumerate(res['rec_texts']):
-                    if target_text in text:
-                        poly = res['dt_polys'][i]
-                        # poly 是 4 个顶点坐标 [[x1,y1],[x2,y2],[x3,y3],[x4,y4]]，取中心
-                        cx = int(poly[:, 0].mean())
-                        cy = int(poly[:, 1].mean())
-                        # 范围检查：坐标必须在图像内
-                        if 0 <= cx <= img_w and 0 <= cy <= img_h:
+                    poly = res['dt_polys'][i]
+                    cx = int(poly[:, 0].mean()) + offset_x
+                    cy = int(poly[:, 1].mean()) + offset_y
+                    # 范围检查
+                    if 0 <= cx <= img_w and 0 <= cy <= img_h:
+                        # 更新缓存（所有识别到的文字都缓存）
+                        self._ocr_cache[text] = (cx, cy)
+                        if target_text in text:
                             logger.info(f"ocr_tap: 找到 '{target_text}' at ({cx}, {cy})")
-                            self._device.tap(cx, cy)
-                            return True
-                        else:
-                            logger.debug(f"ocr_tap: '{target_text}' 坐标 ({cx},{cy}) 超出范围，跳过")
-            logger.warning(f"ocr_tap: 未找到文字 '{target_text}'")
-            return False
+                            return (cx, cy)
+            return None
         except Exception as e:
-            logger.warning(f"ocr_tap 失败: {e}")
-            return False
+            logger.warning(f"ocr_tap OCR 失败: {e}")
+            return None
+
+    def invalidate_ocr_cache(self):
+        """清除OCR缓存（界面切换时调用）"""
+        self._ocr_cache.clear()
 
     def _run_shell(self, cmd: str):
         """执行 adb shell 命令"""
