@@ -53,13 +53,22 @@ steps:
     on_fail: retry
 
   - id: click_input_box
-    description: "点击输入框弹出键盘"
+    description: "点击输入框进入输入模式"
+    action:
+      type: tap
+      x: 635
+      y: 327
+    delay: 1.0
+    on_fail: retry
+
+  - id: click_input_box_again
+    description: "再次点击输入框确保焦点"
     action:
       type: tap
       x: 635
       y: 327
     delay: 2.0
-    on_fail: retry
+    on_fail: skip
 
   - id: paste_name
     description: "粘贴好友名字(废都的王)"
