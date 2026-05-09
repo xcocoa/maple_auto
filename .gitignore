@@ -54,6 +54,9 @@ tmp/
 *.tmp
 nohup.out
 
+# 调试截图目录（临时调试用，不提交到仓库）
+debug_screenshots/
+
 # 测试截图素材（从真机采集，不提交到仓库）
 tests/screenshots/
 
@@ -86,3 +89,4 @@ captures/
 .externalNativeBuild/
 .cxx/
 *.hprof
+.claude/settings.local.json
