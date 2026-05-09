@@ -7,7 +7,7 @@
 #
 name: send_popularity
 display_name: 赠送人气
-timeout: 60
+timeout: 90
 max_retries: 1
 step_delay: 2.0
 
@@ -47,8 +47,8 @@ steps:
     description: "点击搜索按钮"
     action:
       type: tap
-      x: 130
-      y: 72
+      x: 200
+      y: 101
     delay: 2.0
     on_fail: retry
 
@@ -56,8 +56,8 @@ steps:
     description: "点击输入框弹出键盘"
     action:
       type: tap
-      x: 629
-      y: 321
+      x: 635
+      y: 327
     delay: 2.0
     on_fail: retry
 
