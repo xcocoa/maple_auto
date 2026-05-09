@@ -1,6 +1,6 @@
 # 宝石副本流程
 # 前置: 角色在主界面
-# 路径: 菜单 → 成长 → 滑动找到"通关宝石副本1次" → 立即前往 → 选超难 → 入场 → 确认 → 等待战斗 → 结算
+# 路径: 菜单 → 成长 → 滑动 → 立即前往 → 选超难 → 入场 → 确认 → 等待战斗 → 结算 → 关闭回主界面
 #
 # 坐标来源: getevent 真机验证 (2026-05-09)
 #
@@ -8,7 +8,7 @@ name: gem_dungeon
 display_name: 宝石副本
 timeout: 180
 max_retries: 1
-step_delay: 2.0
+step_delay: 1.0
 
 steps:
   - id: open_menu
@@ -17,7 +17,7 @@ steps:
       type: tap
       x: 1195
       y: 15
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: click_growth
@@ -26,7 +26,7 @@ steps:
       type: tap
       x: 1109
       y: 108
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: scroll_find_gem
@@ -35,7 +35,7 @@ steps:
       type: swipe
       x: 640
       y: 400
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
   - id: click_goto_gem
@@ -44,7 +44,7 @@ steps:
       type: tap
       x: 664
       y: 322
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: select_difficulty
@@ -53,7 +53,7 @@ steps:
       type: tap
       x: 225
       y: 376
-    delay: 2.0
+    delay: 1.0
     on_fail: retry
 
   - id: click_enter
@@ -62,7 +62,7 @@ steps:
       type: tap
       x: 1042
       y: 534
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: confirm_enter
@@ -71,7 +71,7 @@ steps:
       type: tap
       x: 757
       y: 425
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: wait_battle
@@ -82,12 +82,21 @@ steps:
     on_fail: skip
 
   - id: click_result
-    description: "点击结算/返回按钮"
+    description: "点击结算页面"
     action:
       type: tap
-      x: 870
-      y: 281
-    delay: 3.0
+      x: 640
+      y: 300
+    delay: 1.5
+    on_fail: skip
+
+  - id: close_result
+    description: "关闭结算回到主界面"
+    action:
+      type: tap
+      x: 1122
+      y: 32
+    delay: 1.0
     on_fail: skip
 
 scenes: {}

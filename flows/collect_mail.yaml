@@ -1,95 +1,84 @@
 # 邮件收取流程
 # 入口: 主界面顶栏信封图标
-# 操作: 打开邮箱 → 关闭提示 → 个人标签 → 全选 → 领取 → 确认 → 全选 → 删除 → 关闭
-#
-# 坐标来源: getevent 真机验证 (2026-05-08)
-# 设备: ZY22LJC9ST (2712x1220), 基准: 1280x575
+# 操作: 打开邮箱 → 关闭提示 → 个人标签 → 领取 → 确认 → 删除 → 确认 → 关闭
 #
 name: collect_mail
 display_name: 邮件收取
 timeout: 60
 max_retries: 1
-step_delay: 2.0
+step_delay: 1.0
 
 steps:
-  # ===== 打开邮箱 =====
   - id: open_mail
     description: "点击顶栏信封图标"
     action:
       type: tap
       x: 1031
       y: 16
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
-  # ===== 关闭24小时提示弹窗 =====
   - id: close_alert
     description: "关闭邮件过期提示（确定）"
     action:
       type: tap
       x: 652
       y: 431
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
-  # ===== 切换到个人标签 =====
   - id: click_personal_tab
     description: "点击个人标签"
     action:
       type: tap
       x: 475
       y: 105
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
-  # ===== 点击选择领取 =====
   - id: collect_all
     description: "点击选择领取"
     action:
       type: tap
       x: 640
       y: 540
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
-  # ===== 确认奖励弹窗 =====
   - id: confirm_reward
     description: "点击确定关闭奖励弹窗"
     action:
       type: tap
       x: 652
       y: 431
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
-  # ===== 点击垃圾桶删除 =====
   - id: delete_mail
     description: "点击垃圾桶删除已读邮件"
     action:
       type: tap
       x: 543
       y: 535
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
-  # ===== 确认删除弹窗 =====
   - id: confirm_delete
     description: "确认删除弹窗"
     action:
       type: tap
       x: 652
       y: 431
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
-  # ===== 关闭邮箱面板 =====
   - id: close_mail
-    description: "关闭社交面板(X按钮)"
+    description: "关闭邮箱面板(X按钮)"
     action:
       type: tap
       x: 1120
       y: 25
-    delay: 1.0
+    delay: 0.5
     on_fail: skip
 
 scenes: {}

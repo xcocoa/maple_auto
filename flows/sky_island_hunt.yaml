@@ -2,13 +2,11 @@
 # 前置: 角色在主界面
 # 路径: 菜单 → 成长 → 滑动找领主狩猎 → 立即前往 → 入场 → 关闭背包 → 退出 → 确认离开 → 结果确认
 #
-# 坐标来源: getevent 真机录制 (2026-05-08)
-#
 name: sky_island_hunt
 display_name: 天空岛领主狩猎
 timeout: 90
 max_retries: 1
-step_delay: 2.0
+step_delay: 1.0
 
 steps:
   - id: open_menu
@@ -17,7 +15,7 @@ steps:
       type: tap
       x: 1195
       y: 15
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: click_growth
@@ -26,7 +24,7 @@ steps:
       type: tap
       x: 1109
       y: 108
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: scroll_find_hunt_1
@@ -35,7 +33,7 @@ steps:
       type: swipe
       x: 640
       y: 400
-    delay: 1.5
+    delay: 1.0
     on_fail: skip
 
   - id: scroll_find_hunt_2
@@ -44,7 +42,7 @@ steps:
       type: swipe
       x: 640
       y: 400
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
   - id: click_goto
@@ -53,7 +51,7 @@ steps:
       type: tap
       x: 1082
       y: 322
-    delay: 3.0
+    delay: 1.5
     on_fail: skip
 
   - id: click_enter_hunt
@@ -62,7 +60,7 @@ steps:
       type: tap
       x: 1020
       y: 519
-    delay: 5.0
+    delay: 2.5
     on_fail: skip
 
   - id: close_bag
@@ -71,7 +69,7 @@ steps:
       type: tap
       x: 643
       y: 156
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
   - id: click_exit
@@ -80,7 +78,7 @@ steps:
       type: tap
       x: 1190
       y: 232
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
   - id: confirm_leave
@@ -89,7 +87,7 @@ steps:
       type: tap
       x: 775
       y: 434
-    delay: 3.0
+    delay: 1.5
     on_fail: skip
 
   - id: confirm_result
@@ -98,7 +96,7 @@ steps:
       type: tap
       x: 665
       y: 464
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
 scenes: {}

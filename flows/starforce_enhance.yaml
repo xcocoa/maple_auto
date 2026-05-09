@@ -2,13 +2,11 @@
 # 前置: 角色在主界面
 # 路径: 菜单 → 铁匠铺 → 星之力强化 → 选装备 → 强化 → 确认 → 关闭
 #
-# 坐标待真机验证
-#
 name: starforce_enhance
 display_name: 星之力强化
 timeout: 60
 max_retries: 1
-step_delay: 2.0
+step_delay: 1.0
 
 steps:
   - id: open_menu
@@ -17,7 +15,7 @@ steps:
       type: tap
       x: 1195
       y: 15
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: click_blacksmith
@@ -26,7 +24,7 @@ steps:
       type: tap
       x: 1011
       y: 259
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: click_starforce
@@ -35,7 +33,7 @@ steps:
       type: tap
       x: 381
       y: 191
-    delay: 2.0
+    delay: 1.0
     on_fail: retry
 
   - id: select_equip
@@ -44,7 +42,7 @@ steps:
       type: tap
       x: 1100
       y: 443
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
   - id: click_enhance
@@ -53,7 +51,7 @@ steps:
       type: tap
       x: 640
       y: 534
-    delay: 3.0
+    delay: 1.5
     on_fail: skip
 
   - id: confirm_result
@@ -62,7 +60,7 @@ steps:
       type: tap
       x: 629
       y: 514
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
   - id: close_blacksmith
@@ -71,7 +69,7 @@ steps:
       type: tap
       x: 1120
       y: 25
-    delay: 1.0
+    delay: 0.5
     on_fail: skip
 
 scenes: {}

@@ -2,16 +2,11 @@
 # 前置: 角色在主界面
 # 路径: 菜单 → 公会（进入即完成签到） → 关闭
 #
-# 已验证坐标 (2026-05-07):
-#   菜单≡: (1195, 15)
-#   公会:  (930, 250)
-#   关闭X: (1122, 32)
-#
 name: daily_tasks
 display_name: 工会签到
 timeout: 60
 max_retries: 2
-step_delay: 3.0
+step_delay: 1.5
 
 steps:
   - id: open_menu
@@ -20,7 +15,7 @@ steps:
       type: tap
       x: 1195
       y: 15
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: click_guild
@@ -29,7 +24,7 @@ steps:
       type: tap
       x: 930
       y: 250
-    delay: 3.0
+    delay: 1.5
     on_fail: retry
 
   - id: close_guild
@@ -38,7 +33,7 @@ steps:
       type: tap
       x: 1122
       y: 32
-    delay: 2.0
+    delay: 1.0
     on_fail: skip
 
 scenes: {}
