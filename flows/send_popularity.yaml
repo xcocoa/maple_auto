@@ -31,6 +31,15 @@ steps:
       type: swipe
       x: 1100
       y: 450
+    delay: 1.5
+    on_fail: skip
+
+  - id: scroll_menu_2
+    description: "菜单再次向下滚动"
+    action:
+      type: swipe
+      x: 1100
+      y: 450
     delay: 2.0
     on_fail: skip
 
@@ -39,8 +48,10 @@ steps:
     action:
       type: ocr_tap
       text: "社交"
+    verify:
+      change: false
     delay: 5.0
-    on_fail: retry
+    on_fail: skip
 
   - id: click_search
     description: "点击搜索按钮"
