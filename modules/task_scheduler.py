@@ -66,6 +66,7 @@ class Task:
 
 # 任务显示名称映射
 TASK_DISPLAY_NAMES = {
+    'daily_all': '全部日常任务',
     'daily_sign_in': '每日签到',
     'collect_mail': '收取邮件',
     'daily_quest': '每日任务',
