@@ -45,7 +45,7 @@ class PlayResult:
 class Player:
     """回放引擎 — 执行 Flow YAML 定义的步骤序列"""
 
-    def __init__(self, device, base_dir: str = ".", step_max_retries: int = 3):
+    def __init__(self, device, base_dir: str = ".", step_max_retries: int = 3, guardian=None):
         self._device = device
         self._base_dir = base_dir
         self._step_max_retries = step_max_retries
@@ -53,6 +53,7 @@ class Player:
         self._target_locator = TargetLocator(base_dir=base_dir)
         self._ocr = None  # 延迟加载
         self._current_step_text = ""
+        self._guardian = guardian
 
     def play(self, flow: Flow) -> PlayResult:
         """执行完整的 Flow"""
@@ -114,6 +115,13 @@ class Player:
     def _try_step(self, step: Step, flow: Flow) -> StepResult:
         """尝试执行一次步骤"""
         result = StepResult(step_id=step.id, success=False)
+
+        # 0. Guardian 异常检查
+        if self._guardian:
+            guardian_result = self._guardian.check_and_handle()
+            if guardian_result == "abort_flow":
+                result.error = "guardian_abort"
+                return result
 
         # 1. 检查前置场景
         if step.expect_scene:
