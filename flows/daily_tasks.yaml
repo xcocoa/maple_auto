@@ -19,11 +19,12 @@ steps:
     on_fail: retry
 
   - id: click_guild
-    description: "点击公会入口（进入即签到）"
+    description: "OCR识别并点击公会"
     action:
-      type: tap
-      x: 930
-      y: 250
+      type: ocr_tap
+      text: "公会"
+    verify:
+      change: false
     delay: 1.5
     on_fail: retry
 
