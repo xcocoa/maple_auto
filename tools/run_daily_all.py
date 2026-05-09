@@ -24,9 +24,9 @@ from core.scaled_adb import ScaledADB
 from core.adb import ADB
 
 # 执行顺序（按游戏逻辑依赖排列）
+# 注: send_popularity 暂时移除（中文输入问题待解决）
 DAILY_FLOWS = [
     "flows/daily_tasks.yaml",
-    "flows/send_popularity.yaml",
     "flows/gem_dungeon.yaml",
     "flows/sky_island_hunt.yaml",
     "flows/starforce_enhance.yaml",
