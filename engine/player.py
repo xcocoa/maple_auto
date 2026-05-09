@@ -239,6 +239,10 @@ class Player:
             self._device.tap(location.x, location.y)
         elif action_type == "long_press":
             self._device.long_press(location.x, location.y)
+        elif action_type == "swipe":
+            # 从 location 坐标向上滑动 200px（用于列表滚动）
+            x, y = location.x, location.y
+            self._device.swipe(x, y, x, y - 200, duration=300)
         elif action_type == "back":
             self._run_shell('input keyevent KEYCODE_BACK')
         elif action_type == "input_text":

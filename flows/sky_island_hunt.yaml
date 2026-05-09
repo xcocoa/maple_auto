@@ -38,8 +38,17 @@ steps:
     delay: 3.0
     on_fail: retry
 
-  - id: scroll_find_hunt
-    description: "滑动成长面板找到领主狩猎"
+  - id: scroll_find_hunt_1
+    description: "第一次滑动成长面板"
+    action:
+      type: swipe
+      x: 640
+      y: 400
+    delay: 1.5
+    on_fail: skip
+
+  - id: scroll_find_hunt_2
+    description: "第二次滑动找到领主狩猎"
     action:
       type: swipe
       x: 640
@@ -99,15 +108,6 @@ steps:
       x: 665
       y: 464
     delay: 2.0
-    on_fail: skip
-
-  - id: resume_auto_battle
-    description: "恢复自动战斗"
-    action:
-      type: tap
-      x: 465
-      y: 522
-    delay: 0.5
     on_fail: skip
 
 scenes: {}
