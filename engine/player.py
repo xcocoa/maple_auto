@@ -276,18 +276,23 @@ class Player:
                 logger.warning("PaddleOCR 未安装，ocr_tap 无法使用")
                 return False
 
+        img_h, img_w = screenshot.shape[:2]
         try:
             results = self._ocr.predict(screenshot)
             for res in results:
                 for i, text in enumerate(res['rec_texts']):
                     if target_text in text:
                         poly = res['dt_polys'][i]
-                        # poly 是 4 个顶点坐标，取中心
+                        # poly 是 4 个顶点坐标 [[x1,y1],[x2,y2],[x3,y3],[x4,y4]]，取中心
                         cx = int(poly[:, 0].mean())
                         cy = int(poly[:, 1].mean())
-                        logger.info(f"ocr_tap: 找到 '{target_text}' at ({cx}, {cy})")
-                        self._device.tap(cx, cy)
-                        return True
+                        # 范围检查：坐标必须在图像内
+                        if 0 <= cx <= img_w and 0 <= cy <= img_h:
+                            logger.info(f"ocr_tap: 找到 '{target_text}' at ({cx}, {cy})")
+                            self._device.tap(cx, cy)
+                            return True
+                        else:
+                            logger.debug(f"ocr_tap: '{target_text}' 坐标 ({cx},{cy}) 超出范围，跳过")
             logger.warning(f"ocr_tap: 未找到文字 '{target_text}'")
             return False
         except Exception as e:

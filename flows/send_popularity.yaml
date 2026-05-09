@@ -39,7 +39,7 @@ steps:
     action:
       type: ocr_tap
       text: "社交"
-    delay: 3.0
+    delay: 5.0
     on_fail: retry
 
   - id: click_search
