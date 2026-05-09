@@ -47,6 +47,12 @@ logs/
 !templates/daily/scenes/*/
 !templates/daily/scenes/**/*.png
 !templates/daily/scenes/**/*.jpg
+!templates/scenes/
+!templates/scenes/*.png
+!templates/popups/
+!templates/popups/*.png
+!templates/buttons/
+!templates/buttons/*.png
 
 # 临时文件
 temp/
