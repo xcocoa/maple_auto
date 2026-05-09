@@ -144,8 +144,14 @@ def main():
         sys.exit(1)
     print(f"设备已连接: {args.device}, 基准分辨率: {img.shape[1]}x{img.shape[0]}")
 
+    # 创建 Guardian（如果模板目录存在）
+    from engine.guardian import Guardian
+    guardian = None
+    if os.path.isdir("templates"):
+        guardian = Guardian(device=scaled, templates_dir="templates")
+
     # 逐个执行
-    player = Player(device=scaled, base_dir=".", step_max_retries=3)
+    player = Player(device=scaled, base_dir=".", step_max_retries=3, guardian=guardian)
     results = []
     total_start = time.time()
 
@@ -162,6 +168,9 @@ def main():
         # 流程间重置（最后一个流程后不需要）
         if i < len(flows) - 1:
             reset_to_main_screen(scaled)
+            # 重置 Guardian 状态
+            if guardian:
+                guardian.reset()
 
     total_duration = time.time() - total_start
     print_summary(results, total_duration)
