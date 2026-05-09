@@ -217,11 +217,21 @@ class Player:
         return result
 
     def _resolve_target(self, screenshot, step: Step, flow: Flow) -> Optional[LocateResult]:
-        if step.action_x is not None and step.action_y is not None:
-            return self._target_locator.locate_fixed(step.action_x, step.action_y)
+        # 优先尝试模板匹配（如果定义了 target）
         if step.action_target and step.action_target in flow.targets:
             target_def = flow.targets[step.action_target]
-            return self._target_locator.locate(screenshot, target_def)
+            result = self._target_locator.locate(screenshot, target_def)
+            if result is not None:
+                return result
+            # 模板匹配失败，尝试使用固定坐标作为 fallback
+            if step.action_x is not None and step.action_y is not None:
+                logger.debug(f"模板匹配失败，使用固定坐标 ({step.action_x}, {step.action_y})")
+                return self._target_locator.locate_fixed(step.action_x, step.action_y)
+            return None
+
+        # 无 target 定义，使用固定坐标
+        if step.action_x is not None and step.action_y is not None:
+            return self._target_locator.locate_fixed(step.action_x, step.action_y)
         return None
 
     def _execute_action(self, action_type: str, location: Optional[LocateResult]):
